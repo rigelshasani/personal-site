@@ -1,3 +1,4 @@
+// src/app/projects/[slug]/page.tsx
 import fs from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
@@ -11,10 +12,14 @@ export async function generateStaticParams() {
   return files.map(f => ({ slug: f.replace(/\.mdx$/, "") }));
 }
 
+type ParamsSync = { slug: string };
+type ParamsAsync = Promise<ParamsSync>;
+
 export default async function ProjectPage(
-  props: { params: { slug: string } }
+  props: { params: ParamsSync | ParamsAsync }
 ) {
-  const { slug } = props.params;          // ← safe, no warning
+  // Always await – works whether params is plain object or promise
+  const { slug } = await props.params;
 
   let raw: string;
   try {
@@ -32,9 +37,7 @@ export default async function ProjectPage(
         {new Date(data.date).toLocaleDateString()}
         {data.status ? ` · ${data.status}` : ""}
       </p>
-
       <MDXRemote source={content} />
-
       {(data.stack || data.impact) && (
         <aside className="mt-10 text-sm text-text-mid space-y-1">
           {data.stack && (
