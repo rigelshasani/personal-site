@@ -100,7 +100,7 @@ export default function AboutPage() {
               <h3 className="text-xl font-semibold mb-4">Get in Touch</h3>
               <div className="flex flex-wrap gap-4">
                 <a 
-                  href="mailto:your.email@example.com"
+                  href="mailto:rigelshasani@protonmail.com"
                   className="text-accent hover:underline"
                 >
                   Email
