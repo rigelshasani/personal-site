@@ -24,11 +24,13 @@ export function ThemeToggle() {
       root.style.setProperty('--background', '#0d0d0d');
       root.style.setProperty('--foreground', '#fafafa');
       root.style.setProperty('--text-mid', '#999999');
+      root.style.setProperty('--color-accent', '#10a37f'); // Green for dark mode
     } else {
       root.classList.remove('dark');
       root.style.setProperty('--background', '#ffffff');
       root.style.setProperty('--foreground', '#171717');
       root.style.setProperty('--text-mid', '#666666');
+      root.style.setProperty('--color-accent', '#1e40af'); // Dark blue for light mode
     }
   };
 
