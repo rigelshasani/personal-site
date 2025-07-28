@@ -1,12 +1,16 @@
-// src/components/ThemeToggle.tsx (Alternative version)
+// src/components/ThemeToggle.tsx - SSR Safe
 'use client';
 
 import { useState, useEffect } from 'react';
 
 export function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Mark as mounted to prevent hydration mismatch
+    setMounted(true);
+    
     // Check if user has a saved preference
     const saved = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -38,9 +42,28 @@ export function ThemeToggle() {
     const newTheme = !isDark;
     setIsDark(newTheme);
     updateTheme(newTheme);
-    
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
   };
+
+  // Don't render anything until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <button
+        className="p-2 rounded-lg transition-colors bg-gray-100 text-gray-800"
+        aria-label="Toggle theme"
+        disabled
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+          />
+        </svg>
+      </button>
+    );
+  }
 
   return (
     <button

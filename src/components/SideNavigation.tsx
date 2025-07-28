@@ -11,9 +11,7 @@ interface SideNavigationProps {
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/projects', label: 'Projects' },
-  { href: '/writing', label: 'Writing' },
-  { href: '/philosophy', label: 'Philosophy' },
-  { href: '/tech', label: 'Tech' },
+  { href: '/posts', label: 'Posts' },
   { href: '/about', label: 'About' },
 ];
 
