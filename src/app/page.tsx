@@ -1,33 +1,80 @@
-import { getAllPosts } from "@/lib/content";
-import { getAllProjects } from "@/lib/projects";
-import { PostCard } from "@/components/PostCard";
-import { ProjectCard } from "@/components/ProjectCard";
+// src/app/page.tsx
+import { getAllProjects, getStandalonePosts } from '@/lib/content';
+import { ProjectBox } from '@/components/ProjectBox';
+import { PostBox } from '@/components/PostBox';
 
 export default async function Home() {
-  const [posts, projects] = await Promise.all([
-    getAllPosts(),
-    getAllProjects(),
-  ]);
+  const projects = getAllProjects();
+  const standalonePosts = getStandalonePosts();
+  const featuredProjects = projects.filter(p => p.meta.featured);
+  const recentProjects = projects.slice(0, 3);
 
   return (
-    <section className="py-16 space-y-16">
-      <div>
-        <h1 className="text-4xl font-bold mb-12">Latest Essays</h1>
-        <div className="space-y-12">
-          {posts.slice(0, 5).map((p) => (
-            <PostCard key={p.slug} meta={p} />
-          ))}
-        </div>
-      </div>
+    <div className="space-y-12">
+      {/* Hero Section */}
+      <section className="py-12">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          Thoughts & Analytics
+        </h1>
+        <p className="text-xl text-foreground/80 max-w-2xl">
+          Personal essays and data projects exploring the intersection of 
+          technology, analytics, and human behavior.
+        </p>
+      </section>
 
-      <div>
-        <h2 className="text-3xl font-semibold mb-8">Projects</h2>
-        <div className="space-y-8">
-          {projects.slice(0, 4).map((pr) => (
-            <ProjectCard key={pr.slug} meta={pr} />
+      {/* Featured Projects */}
+      {featuredProjects.length > 0 && (
+        <section>
+          <h2 className="text-2xl font-bold mb-6">Featured Projects</h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            {featuredProjects.map(project => (
+              <ProjectBox key={project.slug} project={project} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Recent Projects */}
+      <section>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">Latest Projects</h2>
+          <a 
+            href="/projects" 
+            className="text-accent hover:underline"
+          >
+            View all →
+          </a>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {recentProjects.map(project => (
+            <ProjectBox 
+              key={project.slug} 
+              project={project} 
+              showPosts={true}
+            />
           ))}
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Standalone Posts */}
+      {standalonePosts.length > 0 && (
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Latest Essays</h2>
+            <a 
+              href="/posts" 
+              className="text-accent hover:underline"
+            >
+              View all →
+            </a>
+          </div>
+          <div className="space-y-4">
+            {standalonePosts.slice(0, 5).map(post => (
+              <PostBox key={post.slug} post={post} />
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
   );
 }

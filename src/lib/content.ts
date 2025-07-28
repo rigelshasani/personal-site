@@ -1,44 +1,123 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-import matter from "gray-matter";
+// src/lib/content.ts - Enhanced with project relationships
+
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+
+const contentDirectory = path.join(process.cwd(), 'src/content');
 
 export interface PostMeta {
-  slug: string;
   title: string;
-  date: string; // ISO
-  summary: string;
-  readingMinutes: number;
+  date: string;
+  description: string;
+  readingTime?: string; // Optional manual override
+  tags?: string[];
+  project?: string; // Links post to a project
+  order?: number;   // Order within project
 }
 
-const POSTS_DIR = path.join(process.cwd(), "src/content/posts");
-const WPM = 225;
+export interface ProjectMeta {
+  title: string;
+  description: string;
+  date: string;
+  status: 'active' | 'completed' | 'archived';
+  tech?: string[];
+  github?: string;
+  demo?: string;
+  featured?: boolean;
+}
 
-export async function getAllPosts(): Promise<PostMeta[]> {
-  const files = (await fs.readdir(POSTS_DIR)).filter((f) => f.endsWith(".mdx"));
+export interface Post {
+  slug: string;
+  meta: PostMeta;
+  content: string;
+  readingTime: string; // Auto-calculated
+}
 
-  const metas: PostMeta[] = [];
-  for (const file of files) {
-    const raw = await fs.readFile(path.join(POSTS_DIR, file), "utf8");
-    const { data, content } = matter(raw);
+export interface Project {
+  slug: string;
+  meta: ProjectMeta;
+  content: string;
+  posts: Post[]; // Related posts
+}
 
-    if (!data.title || !data.date || !data.summary) {
-      // optionally throw instead:
-      // throw new Error(`Missing frontmatter fields in ${file}`);
-      continue;
-    }
+// Calculate reading time
+function calculateReadingTime(content: string): string {
+  const words = content.split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.round(words / 225));
+  return `${minutes} min`;
+}
 
-    const words = content.split(/\s+/).filter(Boolean).length;
-    const readingMinutes = Math.max(1, Math.round(words / WPM));
+// Get all posts
+export function getAllPosts(): Post[] {
+  const postsDirectory = path.join(contentDirectory, 'posts');
+  const filenames = fs.readdirSync(postsDirectory);
+  
+  const posts = filenames
+    .filter(name => name.endsWith('.mdx'))
+    .map(filename => {
+      const slug = filename.replace('.mdx', '');
+      const fullPath = path.join(postsDirectory, filename);
+      const fileContents = fs.readFileSync(fullPath, 'utf8');
+      const { data, content } = matter(fileContents);
+      
+      return {
+        slug,
+        meta: data as PostMeta,
+        content,
+        readingTime: data.readingTime || calculateReadingTime(content),
+      };
+    })
+    .sort((a, b) => new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime());
+    
+  return posts;
+}
 
-    metas.push({
-      slug: file.replace(/\.mdx$/, ""),
-      title: data.title,
-      date: data.date,
-      summary: data.summary,
-      readingMinutes,
-    });
-  }
+// Get all projects with their related posts
+export function getAllProjects(): Project[] {
+  const projectsDirectory = path.join(contentDirectory, 'projects');
+  const filenames = fs.readdirSync(projectsDirectory);
+  const allPosts = getAllPosts();
+  
+  const projects = filenames
+    .filter(name => name.endsWith('.mdx'))
+    .map(filename => {
+      const slug = filename.replace('.mdx', '');
+      const fullPath = path.join(projectsDirectory, filename);
+      const fileContents = fs.readFileSync(fullPath, 'utf8');
+      const { data, content } = matter(fileContents);
+      
+      // Find posts related to this project
+      const relatedPosts = allPosts
+        .filter(post => post.meta.project === slug)
+        .sort((a, b) => (a.meta.order || 0) - (b.meta.order || 0));
+      
+      return {
+        slug,
+        meta: data as ProjectMeta,
+        content,
+        posts: relatedPosts,
+      };
+    })
+    .sort((a, b) => new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime());
+    
+  return projects;
+}
 
-  metas.sort((a, b) => (a.date < b.date ? 1 : -1));
-  return metas;
+// Get posts that don't belong to any project
+export function getStandalonePosts(): Post[] {
+  const allPosts = getAllPosts();
+  return allPosts.filter(post => !post.meta.project);
+}
+
+// Get a specific project with its posts
+export function getProject(slug: string): Project | null {
+  const projects = getAllProjects();
+  return projects.find(project => project.slug === slug) || null;
+}
+
+// Get a specific post
+export function getPost(slug: string): Post | null {
+  const posts = getAllPosts();
+  return posts.find(post => post.slug === slug) || null;
 }
