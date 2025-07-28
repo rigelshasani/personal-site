@@ -41,11 +41,11 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
       </header>
 
       <div className="flex">
-        {/* Side Navigation */}
-        <SideNavigation isCollapsed={isCollapsed} />
+        {/* Side Navigation - Only render on desktop */}
+        <div className="hidden md:block">
+          <SideNavigation isCollapsed={isCollapsed} />
+        </div>
 
-        {/* Mobile Overlay - Not needed anymore */}
-        
         {/* Main Content */}
         <main className={`flex-1 transition-all duration-300 ${
           isCollapsed ? 'ml-0' : 'ml-0 md:ml-36'

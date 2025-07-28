@@ -21,7 +21,7 @@ export function SideNavigation({ isCollapsed }: SideNavigationProps) {
   if (isCollapsed) return null;
 
   return (
-    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 md:w-36 bg-bg transition-all duration-300 z-40 border-r border-border-light md:border-r-0 shadow-lg md:shadow-none">
+    <aside className="hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] w-36 bg-bg transition-all duration-300 z-40">
       {/* Navigation Content - Centered */}
       <div className="h-full flex items-center justify-center">
         <nav className="space-y-8 md:space-y-6">
