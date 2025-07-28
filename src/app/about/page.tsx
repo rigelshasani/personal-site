@@ -1,6 +1,4 @@
 // src/app/about/page.tsx
-import Image from 'next/image';
-
 export const metadata = {
   title: 'About',
   description: 'About Rigels Hasani - Data Analyst and Writer',
@@ -54,16 +52,16 @@ export default function AboutPage() {
           {/* Bio Section */}
           <div className="md:col-span-2 space-y-6">
             <div>
-              <h2 className="text-2xl font-bold mb-4">Hello, I'm Rigels</h2>
+              <h2 className="text-2xl font-bold mb-4">Hello, I&apos;m Rigels</h2>
               <div className="prose prose-lg max-w-none text-foreground/80 space-y-4">
                 <p>
-                  I'm a data analyst and writer passionate about uncovering insights from complex datasets 
+                  I&apos;m a data analyst and writer passionate about uncovering insights from complex datasets 
                   and translating them into meaningful stories. My work sits at the intersection of 
                   technology, analytics, and human behavior.
                 </p>
                 
                 <p>
-                  When I'm not diving deep into data, you'll find me writing about philosophy, 
+                  When I&apos;m not diving deep into data, you&apos;ll find me writing about philosophy, 
                   exploring new technologies, or sharing tutorials that help others solve technical challenges. 
                   I believe in the power of clear communication to make complex ideas accessible.
                 </p>
@@ -71,7 +69,7 @@ export default function AboutPage() {
                 <p>
                   This site serves as my digital garden where I share my latest projects, 
                   thoughts on data analytics, philosophical musings, and technical insights 
-                  I've gathered along the way.
+                  I&apos;ve gathered along the way.
                 </p>
               </div>
             </div>
@@ -113,7 +111,7 @@ export default function AboutPage() {
                 >
                   GitHub
                 </a>
-                <a 
+                <a
                   href="https://linkedin.com/in/rigelshasani"
                   className="text-accent hover:underline"
                   target="_blank"
