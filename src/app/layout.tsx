@@ -41,7 +41,7 @@ export default function RootLayout({
                 bar.style.cssText='position:fixed;top:0;left:0;height:2px;width:0;background:var(--color-accent);z-index:100';
                 document.body.appendChild(bar);
                 window.addEventListener('scroll',()=>{bar.style.width=(100*document.documentElement.scrollTop/(document.documentElement.scrollHeight-document.documentElement.clientHeight))+"%";},{passive:true});
-              })();`
+              })();`,
           }}
         />
       </body>
