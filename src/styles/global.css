@@ -1,26 +1,31 @@
+/* src/styles/global.css */
+
+/* 1 – Tailwind imports (v4 syntax) */
 @import "tailwindcss";
 
+/* 2 – tokens */
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-bellota), ui-sans-serif, system-ui;
+  --color-accent: #3b82f6;
+  --text-mid: #666666;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0d0d0d;
+    --foreground: #fafafa;
+    --text-mid: #999999;
   }
+}
+
+/* 3 – defaults */
+html {
+  font-family: var(--font-sans);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

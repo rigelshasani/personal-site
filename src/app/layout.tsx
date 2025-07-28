@@ -1,4 +1,5 @@
 import "@/styles/global.css";
+import { bellota } from "@/fonts";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -18,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="antialiased bg-bg text-text-high">
+    <html lang="en" className={bellota.variable}>
+      <body className="font-sans antialiased bg-bg text-foreground">
         <header className="mx-auto max-w-6xl px-6 py-6 flex items-center">
           <Link href="/" className="font-semibold tracking-tight">
             Rigels
@@ -27,7 +28,7 @@ export default function RootLayout({
         </header>
         <main className="mx-auto max-w-6xl px-6">{children}</main>
         <footer
-          className="mx-auto max-w-6xl px-6 py-10 text-sm text-text-mid"
+          className="mx-auto max-w-6xl px-6 py-10 text-sm opacity-60"
           aria-label="Site footer"
         >
           ©{year} Rigels Hasani
@@ -38,7 +39,7 @@ export default function RootLayout({
             __html: `
               (function(){
                 const bar=document.createElement('div');
-                bar.style.cssText='position:fixed;top:0;left:0;height:2px;width:0;background:var(--color-accent);z-index:100';
+                bar.style.cssText='position:fixed;top:0;left:0;height:2px;width:0;background:#3b82f6;z-index:100';
                 document.body.appendChild(bar);
                 window.addEventListener('scroll',()=>{bar.style.width=(100*document.documentElement.scrollTop/(document.documentElement.scrollHeight-document.documentElement.clientHeight))+"%";},{passive:true});
               })();`,

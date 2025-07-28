@@ -7,19 +7,16 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
-        bg:      "var(--color-bg)",
-        surface: "var(--color-surface)",
-        text:    {
-          high: "var(--color-text-high)",
-          mid:  "var(--color-text-mid)"
-        },
-        accent:  "var(--color-accent)"
+      fontFamily: { 
+        sans: ["var(--font-bellota)", "ui-sans-serif", "system-ui"] 
       },
-      borderRadius: {
-        md: "var(--radius-md)"
-      }
-    }
+      colors: {
+        bg: "var(--background)",
+        foreground: "var(--foreground)",
+        accent: "var(--color-accent)",
+        "text-mid": "var(--text-mid)",
+      },
+    },
   },
-  plugins: [require("@tailwindcss/typography")]
+  plugins: [require("@tailwindcss/typography")],
 } satisfies Config;
