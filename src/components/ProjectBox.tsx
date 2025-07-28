@@ -16,12 +16,12 @@ export function ProjectBox({ project, showPosts = true }: ProjectBoxProps) {
   };
 
   return (
-    <div className="border border-gray-200 dark:border-gray-800 rounded-2xl p-6 hover:shadow-lg transition-shadow">
-      <div className="flex items-start justify-between mb-4">
-        <div>
+    <div className="border border-gray-200 dark:border-gray-800 rounded-2xl p-4 md:p-6 hover:shadow-lg transition-shadow">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 space-y-2 sm:space-y-0">
+        <div className="flex-1 min-w-0">
           <Link 
             href={`/projects/${project.slug}`}
-            className="text-xl font-semibold hover:text-accent transition-colors"
+            className="text-lg md:text-xl font-semibold hover:text-accent transition-colors block"
           >
             {project.meta.title}
           </Link>
@@ -29,17 +29,17 @@ export function ProjectBox({ project, showPosts = true }: ProjectBoxProps) {
             {formatDate(project.meta.date)}
           </p>
         </div>
-        <span className={`px-2 py-1 text-xs rounded-full ${statusColors[project.meta.status]}`}>
+        <span className={`px-2 py-1 text-xs rounded-full ${statusColors[project.meta.status]} flex-shrink-0`}>
           {project.meta.status}
         </span>
       </div>
       
-      <p className="text-foreground/80 mb-4">
+      <p className="text-sm md:text-base text-foreground/80 mb-4">
         {project.meta.description}
       </p>
       
-      {project.meta.tech && (
-        <div className="flex flex-wrap gap-2 mb-4">
+      {project.meta.tech && project.meta.tech.length > 0 && (
+        <div className="flex flex-wrap gap-1 md:gap-2 mb-4">
           {project.meta.tech.map(tech => (
             <span 
               key={tech} 
@@ -78,7 +78,7 @@ export function ProjectBox({ project, showPosts = true }: ProjectBoxProps) {
         </div>
       )}
       
-      <div className="flex gap-3 mt-4">
+      <div className="flex flex-wrap gap-3 mt-4">
         {project.meta.github && (
           <a 
             href={project.meta.github}

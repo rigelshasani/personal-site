@@ -1,4 +1,4 @@
-// src/components/SidebarLayout.tsx
+// src/components/SidebarLayout.tsx - SSR Safe
 'use client';
 
 import { useState } from 'react';
@@ -13,7 +13,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
     <>
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border-light bg-bg/80 backdrop-blur-sm">
-        <div className="flex items-center justify-between h-16 px-6">
+        <div className="flex items-center justify-between h-16 px-4 md:px-6">
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-xl font-semibold text-foreground hover:text-accent transition-colors">
               Rigels
@@ -44,9 +44,19 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
         {/* Side Navigation */}
         <SideNavigation isCollapsed={isCollapsed} />
 
+        {/* Mobile Overlay - CSS only, no JS detection */}
+        {!isCollapsed && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-30 md:hidden"
+            onClick={() => setIsCollapsed(true)}
+          />
+        )}
+
         {/* Main Content */}
-        <main className={`flex-1 transition-all duration-300 ${isCollapsed ? 'ml-0' : 'ml-36'}`}>
-          <div className="max-w-4xl mx-auto px-8 py-12">
+        <main className={`flex-1 transition-all duration-300 ${
+          isCollapsed ? 'ml-0' : 'ml-0 md:ml-36'
+        }`}>
+          <div className="max-w-4xl mx-auto px-4 md:px-8 py-6 md:py-12">
             {children}
           </div>
         </main>
