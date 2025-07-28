@@ -1,12 +1,14 @@
+//src/app/layout.tsx
 import "@/styles/global.css";
 import { bellota } from "@/fonts";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const metadata: Metadata = {
   title: {
-    default: "Rigels · Thoughts & Analytics",
-    template: "%s · Rigels",
+    default: "Rigels Hasani· Thoughts & Analytics",
+    template: "%s · Rigels H",
   },
   description: "Personal essays and data projects.",
 };
@@ -21,10 +23,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={bellota.variable}>
       <body className="font-sans antialiased bg-bg text-foreground">
-        <header className="mx-auto max-w-6xl px-6 py-6 flex items-center">
+        <header className="mx-auto max-w-6xl px-6 py-6 flex items-center justify-between">
           <Link href="/" className="font-semibold tracking-tight">
             Rigels
           </Link>
+          <ThemeToggle />
         </header>
         <main className="mx-auto max-w-6xl px-6">{children}</main>
         <footer
