@@ -106,7 +106,7 @@ export default function AboutPage() {
                   Email
                 </a>
                 <a 
-                  href="https://github.com/rigelhasani"
+                  href="https://github.com/rigelshasani"
                   className="text-accent hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -114,15 +114,7 @@ export default function AboutPage() {
                   GitHub
                 </a>
                 <a 
-                  href="https://twitter.com/rigelhasani"
-                  className="text-accent hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Twitter
-                </a>
-                <a 
-                  href="https://linkedin.com/in/rigelhasani"
+                  href="https://linkedin.com/in/rigelshasani"
                   className="text-accent hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
