@@ -43,7 +43,7 @@ export function ProjectBox({ project, showPosts = true }: ProjectBoxProps) {
           {project.meta.tech.map(tech => (
             <span 
               key={tech} 
-              className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 rounded-md"
+              className="px-2 py-1 text-xs bg-surface border border-border-light text-foreground rounded-md"
             >
               {tech}
             </span>
