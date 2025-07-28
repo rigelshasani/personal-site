@@ -1,4 +1,4 @@
-// src/components/ThemeToggle.tsx - SSR Safe
+// src/components/ThemeToggle.tsx - Fixed Version
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,19 +8,26 @@ export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Mark as mounted to prevent hydration mismatch
     setMounted(true);
     
-    // Check if user has a saved preference
+    // Check initial theme - default to LIGHT mode
     const saved = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let shouldBeDark = false;
     
-    const shouldBeDark = saved === 'dark' || (!saved && prefersDark);
+    if (saved === 'dark') {
+      shouldBeDark = true;
+    } else if (saved === 'light') {
+      shouldBeDark = false;
+    } else {
+      // No saved preference - default to light mode instead of system preference
+      shouldBeDark = false;
+    }
+    
     setIsDark(shouldBeDark);
-    updateTheme(shouldBeDark);
+    applyTheme(shouldBeDark);
   }, []);
 
-  const updateTheme = (dark: boolean) => {
+  const applyTheme = (dark: boolean) => {
     const root = document.documentElement;
     
     if (dark) {
@@ -28,24 +35,25 @@ export function ThemeToggle() {
       root.style.setProperty('--background', '#0d0d0d');
       root.style.setProperty('--foreground', '#fafafa');
       root.style.setProperty('--text-mid', '#999999');
-      root.style.setProperty('--color-accent', '#10a37f'); // Green for dark mode
+      root.style.setProperty('--color-accent', '#10a37f');
     } else {
+      // IMPORTANT: Remove the dark class for light mode
       root.classList.remove('dark');
       root.style.setProperty('--background', '#ffffff');
       root.style.setProperty('--foreground', '#171717');
       root.style.setProperty('--text-mid', '#666666');
-      root.style.setProperty('--color-accent', '#1e40af'); // Dark blue for light mode
+      root.style.setProperty('--color-accent', '#1e40af');
     }
   };
 
   const toggleTheme = () => {
     const newTheme = !isDark;
     setIsDark(newTheme);
-    updateTheme(newTheme);
+    applyTheme(newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
   };
 
-  // Don't render anything until mounted to prevent hydration mismatch
+// Don't render anything until mounted to prevent hydration mismatch
   if (!mounted) {
     return (
       <button

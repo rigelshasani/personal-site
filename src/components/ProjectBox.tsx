@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { Project } from '@/lib/content';
 import { formatDate } from '@/lib/format';
+import { statusColors } from '@/lib/constants';
 
 interface ProjectBoxProps {
   project: Project;
@@ -9,11 +10,6 @@ interface ProjectBoxProps {
 }
 
 export function ProjectBox({ project, showPosts = true }: ProjectBoxProps) {
-  const statusColors = {
-    active: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
-    completed: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
-    archived: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300',
-  };
 
   return (
     <div className="border border-gray-200 dark:border-gray-800 rounded-2xl p-4 md:p-6 hover:shadow-lg transition-shadow">
@@ -43,7 +39,7 @@ export function ProjectBox({ project, showPosts = true }: ProjectBoxProps) {
           {project.meta.tech.map(tech => (
             <span 
               key={tech} 
-              className="px-2 py-1 text-xs bg-surface border border-border-light text-foreground rounded-md"
+              className="px-2 py-1 text-xs bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md"
             >
               {tech}
             </span>

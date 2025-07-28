@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getProject, getAllProjects } from "@/lib/content";
 import { formatDate } from "@/lib/format";
 import { PostBox } from "@/components/PostBox";
+import { statusColors } from '@/lib/constants';
 
 export async function generateStaticParams() {
   const projects = getAllProjects();
@@ -53,15 +54,9 @@ export default async function ProjectPage({
     notFound();
   }
 
-  const statusColors = {
-    active: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
-    completed: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
-    archived: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300',
-  };
-
   return (
     <div className="py-16">
-      {/* Back navigation */}
+            {/* Back navigation */}
       <div className="mb-8">
         <Link 
           href="/projects"
@@ -94,41 +89,41 @@ export default async function ProjectPage({
         {/* Tech Stack */}
         {project.meta.tech && project.meta.tech.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
-            {project.meta.tech.map(tech => (
-              <span 
-                key={tech}
-                className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 rounded-md"
-              >
-                {tech}
-              </span>
-            ))}
+          {project.meta.tech.map(tech => (
+            <span 
+              key={tech}
+              className="px-3 py-1 text-sm bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md"
+            >
+              {tech}
+            </span>
+          ))}
           </div>
         )}
 
         {/* Links */}
         {(project.meta.github || project.meta.demo) && (
-          <div className="flex gap-4">
-            {project.meta.github && (
-              <a 
-                href={project.meta.github}
-                className="text-accent hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View on GitHub →
-              </a>
-            )}
-            {project.meta.demo && (
-              <a 
-                href={project.meta.demo}
-                className="text-accent hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Live Demo →
-              </a>
-            )}
-          </div>
+        <div className="flex gap-4">
+          {project.meta.github && (
+            <a 
+              href={project.meta.github}
+              className="text-accent hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View on GitHub →
+            </a>
+          )}
+          {project.meta.demo && (
+            <a 
+              href={project.meta.demo}
+              className="text-accent hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Live Demo →
+            </a>
+          )}
+        </div>
         )}
       </header>
 
