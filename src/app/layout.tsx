@@ -1,8 +1,7 @@
+//./src/app/layout.tsx
 import "@/styles/global.css";
 import { bellota } from "@/fonts";
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { SidebarLayout } from "@/components/SidebarLayout";
 
 export const metadata: Metadata = {
@@ -12,8 +11,6 @@ export const metadata: Metadata = {
   },
   description: "Personal essays and data projects.",
 };
-
-const year = new Date().getFullYear();
 
 export default function RootLayout({
   children,
