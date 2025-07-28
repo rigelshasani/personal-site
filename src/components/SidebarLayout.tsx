@@ -19,10 +19,10 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
               Rigels
             </Link>
             
-            {/* Toggle Button */}
+            {/* Toggle Button - Only show on desktop where sidebar exists */}
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-2 rounded-md hover:bg-surface-hover transition-all duration-300"
+              className="hidden md:block p-2 rounded-md hover:bg-surface-hover transition-all duration-300"
               aria-label={isCollapsed ? 'Open sidebar' : 'Close sidebar'}
             >
               <svg 
@@ -44,14 +44,8 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
         {/* Side Navigation */}
         <SideNavigation isCollapsed={isCollapsed} />
 
-        {/* Mobile Overlay - CSS only, no JS detection */}
-        {!isCollapsed && (
-          <div 
-            className="fixed inset-0 bg-black/50 z-30 md:hidden"
-            onClick={() => setIsCollapsed(true)}
-          />
-        )}
-
+        {/* Mobile Overlay - Not needed anymore */}
+        
         {/* Main Content */}
         <main className={`flex-1 transition-all duration-300 ${
           isCollapsed ? 'ml-0' : 'ml-0 md:ml-36'
