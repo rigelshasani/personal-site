@@ -6,6 +6,7 @@ import { getProject, getAllProjects } from "@/lib/content";
 import { formatDate } from "@/lib/format";
 import { PostBox } from "@/components/PostBox";
 import { statusColors } from '@/lib/constants';
+import { Figure } from "@/components/mdx/Figure";
 
 export async function generateStaticParams() {
   const projects = getAllProjects();
@@ -129,7 +130,12 @@ export default async function ProjectPage({
 
       {/* Project Content */}
       <article className="prose prose-invert max-w-none mb-16">
-        <MDXRemote source={project.content} />
+        <MDXRemote 
+          source={project.content} 
+          components={{
+            Figure,
+          }}
+        />
       </article>
 
       {/* Related Posts */}

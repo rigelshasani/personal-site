@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPost, getAllPosts, getProject } from "@/lib/content";
 import { formatDate } from "@/lib/format";
+import { Figure } from "@/components/mdx/Figure";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -122,7 +123,12 @@ export default async function PostPage({
         )}
       </header>
       
-      <MDXRemote source={post.content} />
+      <MDXRemote 
+        source={post.content} 
+        components={{
+          Figure,
+        }}
+      />
       
       {/* Navigation to next/prev posts in project */}
       {project && project.posts.length > 1 && (
