@@ -14,6 +14,7 @@ export interface PostMeta {
   tags?: string[];
   project?: string; // Links post to a project
   order?: number;   // Order within project
+  images?: string[]; // Array of image URLs
 }
 
 export interface ProjectMeta {

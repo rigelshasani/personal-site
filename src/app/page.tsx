@@ -1,14 +1,28 @@
 // src/app/page.tsx
 import Link from 'next/link';
-import { getAllProjects, getStandalonePosts } from '@/lib/content';
+import { getAllProjects, getStandalonePosts, getAllPosts } from '@/lib/content';
 import { ProjectBox } from '@/components/ProjectBox';
 import { PostBox } from '@/components/PostBox';
+import { FeaturedPostCard } from '@/components/FeaturedPostCard';
 
 export default async function Home() {
   const projects = getAllProjects();
+  const allPosts = getAllPosts();
   const standalonePosts = getStandalonePosts();
   const featuredProjects = projects.filter(p => p.meta.featured);
   const recentProjects = projects.slice(0, 3);
+  
+  // Filter posts with images for featured section
+  const postsWithImages = allPosts.filter(post => {
+    // Check frontmatter images
+    if (post.meta.images && post.meta.images.length > 0) return true;
+    // Check content for markdown images or Figure components
+    return post.content.match(/!\[.*?\]\(.*?\)/) || post.content.match(/<Figure[^>]+src="/);
+  });
+  
+  const featuredPost = postsWithImages[0];
+  const secondaryFeaturedPosts = postsWithImages.slice(1, 3);
+  const regularPosts = standalonePosts.filter(post => !postsWithImages.includes(post));
 
   return (
     <div className="space-y-12">
@@ -22,6 +36,29 @@ export default async function Home() {
           technology, analytics, and human behavior.
         </p>
       </section>
+
+      {/* Featured Posts with Images */}
+      {postsWithImages.length > 0 && (
+        <section>
+          <h2 className="text-2xl font-bold mb-8">Featured Posts</h2>
+          
+          {/* Main featured post */}
+          {featuredPost && (
+            <div className="mb-8">
+              <FeaturedPostCard post={featuredPost} size="large" />
+            </div>
+          )}
+          
+          {/* Secondary featured posts */}
+          {secondaryFeaturedPosts.length > 0 && (
+            <div className="grid gap-6 md:grid-cols-2">
+              {secondaryFeaturedPosts.map(post => (
+                <FeaturedPostCard key={post.slug} post={post} size="medium" />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Featured Projects */}
       {featuredProjects.length > 0 && (
@@ -57,8 +94,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Standalone Posts */}
-      {standalonePosts.length > 0 && (
+      {/* Other Posts */}
+      {regularPosts.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Latest Posts</h2>
@@ -70,7 +107,7 @@ export default async function Home() {
             </Link>
           </div>
           <div className="space-y-4">
-            {standalonePosts.slice(0, 5).map(post => (
+            {regularPosts.slice(0, 5).map(post => (
               <PostBox key={post.slug} post={post} />
             ))}
           </div>
