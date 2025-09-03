@@ -4,6 +4,7 @@ import { getAllProjects, getStandalonePosts, getAllPosts } from '@/lib/content';
 import { ProjectBox } from '@/components/ProjectBox';
 import { PostBox } from '@/components/PostBox';
 import { FeaturedPostCard } from '@/components/FeaturedPostCard';
+import { FeaturedPostsCarousel } from '@/components/FeaturedPostsCarousel';
 
 export default async function Home() {
   const projects = getAllProjects();
@@ -41,18 +42,12 @@ export default async function Home() {
       {postsWithImages.length > 0 && (
         <section>
           <h2 className="text-2xl font-bold mb-8">Featured Posts</h2>
+          <FeaturedPostsCarousel posts={postsWithImages} />
           
-          {/* Main featured post */}
-          {featuredPost && (
-            <div className="mb-8">
-              <FeaturedPostCard post={featuredPost} size="large" />
-            </div>
-          )}
-          
-          {/* Secondary featured posts */}
-          {secondaryFeaturedPosts.length > 0 && (
-            <div className="grid gap-6 md:grid-cols-2">
-              {secondaryFeaturedPosts.map(post => (
+          {/* Secondary featured posts grid */}
+          {postsWithImages.length > 1 && (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-8">
+              {postsWithImages.slice(1, 4).map(post => (
                 <FeaturedPostCard key={post.slug} post={post} size="medium" />
               ))}
             </div>

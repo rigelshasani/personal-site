@@ -17,16 +17,16 @@ export function FeaturedPostCard({ post, size = 'large' }: FeaturedPostCardProps
       return post.meta.images[0];
     }
     
-    // Look for markdown images in content
+    // Look for markdown images in content - improved regex
     const imageMatch = post.content.match(/!\[.*?\]\((.*?)\)/);
-    if (imageMatch) {
-      return imageMatch[1];
+    if (imageMatch && imageMatch[1]) {
+      return imageMatch[1].trim();
     }
     
-    // Look for Figure components
+    // Look for Figure components - improved regex
     const figureMatch = post.content.match(/<Figure[^>]+src="([^"]+)"/);
-    if (figureMatch) {
-      return figureMatch[1];
+    if (figureMatch && figureMatch[1]) {
+      return figureMatch[1].trim();
     }
     
     return null;
@@ -58,24 +58,34 @@ export function FeaturedPostCard({ post, size = 'large' }: FeaturedPostCardProps
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
       
       {/* Content overlay */}
-      <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white z-10">
+      <div className={`absolute inset-0 flex flex-col justify-end text-white z-10 ${
+        size === 'large' ? 'p-6 md:p-8' : 'p-4 md:p-5'
+      }`}>
           {post.meta.tags && (
-            <div className="mb-2 md:mb-3">
-              <span className="inline-block px-3 py-1 text-xs font-medium bg-white/20 backdrop-blur-sm rounded-full">
+            <div className={size === 'large' ? 'mb-2 md:mb-3' : 'mb-2'}>
+              <span className={`inline-block px-2 py-1 font-medium bg-white/20 backdrop-blur-sm rounded-full ${
+                size === 'large' ? 'text-xs px-3' : 'text-xs'
+              }`}>
                 {post.meta.tags[0]}
               </span>
             </div>
           )}
           
-          <h3 className={`font-bold mb-2 leading-tight ${size === 'large' ? 'text-2xl md:text-3xl' : 'text-lg md:text-xl'}`}>
+          <h3 className={`font-bold mb-2 leading-tight ${
+            size === 'large' ? 'text-2xl md:text-3xl' : 'text-base md:text-lg'
+          }`}>
             {post.meta.title}
           </h3>
           
-          <p className={`text-white mb-3 md:mb-4 leading-relaxed ${size === 'large' ? 'text-base md:text-lg' : 'text-sm md:text-base'}`}>
+          <p className={`text-white mb-2 leading-relaxed line-clamp-2 ${
+            size === 'large' ? 'text-base md:text-lg mb-3 md:mb-4' : 'text-xs md:text-sm'
+          }`}>
             {post.meta.description}
           </p>
           
-          <div className="flex items-center gap-4 text-xs md:text-sm text-white/90">
+          <div className={`flex items-center gap-3 text-white/90 ${
+            size === 'large' ? 'text-xs md:text-sm' : 'text-xs'
+          }`}>
             <span>{formatDate(post.meta.date)}</span>
             <span>•</span>
             <span>{post.readingTime}</span>
