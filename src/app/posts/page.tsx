@@ -17,8 +17,11 @@ export default function PostsPage() {
   const techPosts = posts.filter(post => 
     post.meta.tags?.includes('tech') || post.meta.tags?.includes('programming') || post.meta.tags?.includes('tutorial')
   );
+  const analyticsPosts = posts.filter(post => 
+    post.meta.tags?.includes('analytics')
+  );
   const otherPosts = posts.filter(post => 
-    !post.meta.tags?.some(tag => ['philosophy', 'thoughts', 'tech', 'programming', 'tutorial'].includes(tag))
+    !post.meta.tags?.some(tag => ['philosophy', 'thoughts', 'tech', 'programming', 'tutorial', 'analytics'].includes(tag))
   );
 
   return (
@@ -48,6 +51,18 @@ export default function PostsPage() {
           <h2 className="text-2xl font-bold mb-6">Tech & Programming</h2>
           <div className="space-y-6">
             {techPosts.map(post => (
+              <PostBox key={post.slug} post={post} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Analytics Posts */}
+      {analyticsPosts.length > 0 && (
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold mb-6">Data Analytics</h2>
+          <div className="space-y-6">
+            {analyticsPosts.map(post => (
               <PostBox key={post.slug} post={post} />
             ))}
           </div>
