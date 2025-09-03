@@ -3,6 +3,7 @@ import "@/styles/global.css";
 import { bellota } from "@/fonts";
 import type { Metadata } from "next";
 import { SidebarLayout } from "@/components/SidebarLayout";
+import { ProgressBar } from "@/components/ProgressBar";
 
 export const metadata: Metadata = {
   title: {
@@ -23,22 +24,7 @@ export default function RootLayout({
         <SidebarLayout>
           {children}
         </SidebarLayout>
-
-        {/* Progress bar */}
-        <div className="fixed top-0 left-0 h-0.5 bg-accent z-[100] transition-all duration-150" id="progress-bar" />
-        
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(){
-                const bar = document.getElementById('progress-bar');
-                window.addEventListener('scroll', () => {
-                  const progress = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-                  bar.style.width = progress + '%';
-                }, { passive: true });
-              })();`,
-          }}
-        />
+        <ProgressBar />
       </body>
     </html>
   );
