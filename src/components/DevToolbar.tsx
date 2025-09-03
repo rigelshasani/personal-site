@@ -31,14 +31,14 @@ export function DevToolbar() {
         </div>
         
         {lastReload && (
-          <div className="text-gray-300">
+          <div className="text-gray-300 dark:text-gray-400">
             Loaded: {lastReload.toLocaleTimeString()}
           </div>
         )}
         
         <button
           onClick={refreshContent}
-          className="px-2 py-1 bg-blue-600 hover:bg-blue-500 rounded text-xs transition-colors"
+          className="px-2 py-1 bg-blue-600 hover:bg-blue-500 dark:bg-green-600 dark:hover:bg-green-500 rounded text-xs transition-colors"
           title="Refresh content"
         >
           🔄 Refresh

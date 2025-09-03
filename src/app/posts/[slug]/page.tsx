@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/format";
 import { Figure } from "@/components/mdx/Figure";
 import { OptimizedImage } from "@/components/mdx/OptimizedImage";
 import { ViewTrackerWithNotification } from "@/components/ViewTrackerWithNotification";
+import { Comments } from "@/components/Comments";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -73,7 +74,7 @@ export default async function PostPage({
           </div>
         )}
         
-        <h1>{post.meta.title}</h1>
+        <h1 className="text-4xl font-bold mb-4">{post.meta.title}</h1>
         
         <div className="flex items-center gap-4 text-sm text-mid not-prose">
           <span>{formatDate(post.meta.date)}</span>
@@ -176,6 +177,9 @@ export default async function PostPage({
           </div>
         </footer>
       )}
+      
+      {/* Comments section */}
+      <Comments slug={slug} />
     </article>
   );
 }

@@ -112,7 +112,7 @@ export function PopularPosts({
                     #{index + 1}
                   </span>
                   {showViewCounts && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       {formatViewCount(post.views)}
                     </span>
                   )}
@@ -120,7 +120,7 @@ export function PopularPosts({
                 <h4 className="font-medium text-sm group-hover:text-accent transition-colors line-clamp-2">
                   {post.title}
                 </h4>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {formatDate(post.date)}
                 </p>
               </div>
