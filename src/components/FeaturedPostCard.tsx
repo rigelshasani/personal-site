@@ -32,7 +32,16 @@ export function FeaturedPostCard({ post, size = 'large' }: FeaturedPostCardProps
     return null;
   };
 
-  const imageUrl = getPostImage();
+  const rawImageUrl = getPostImage();
+  
+  // Validate image URL - must be absolute path or valid URL
+  const isValidImageUrl = (url: string): boolean => {
+    if (url.startsWith('/')) return true; // Absolute path
+    if (url.startsWith('http://') || url.startsWith('https://')) return true; // External URL
+    return false;
+  };
+
+  const imageUrl = rawImageUrl && isValidImageUrl(rawImageUrl) ? rawImageUrl : null;
   
   if (!imageUrl) {
     return null; // Don't render if no image

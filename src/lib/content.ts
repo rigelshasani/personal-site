@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { cacheContent, devLog, validateFrontmatter, watchContentChanges } from './dev-utils';
+import { cacheContent, devLog, validatePost, watchContentChanges } from './dev-utils';
 
 // Initialize content watching in development
 if (process.env.NODE_ENV === 'development') {
@@ -71,8 +71,8 @@ export function getAllPosts(): Post[] {
         const fileContents = fs.readFileSync(fullPath, 'utf8');
         const { data, content } = matter(fileContents);
         
-        // Validate frontmatter in development
-        validateFrontmatter(data, filename);
+        // Validate post in development (frontmatter + content)
+        validatePost(data, content, filename);
         
         return {
           slug,
@@ -105,8 +105,8 @@ export function getAllProjects(): Project[] {
         const fileContents = fs.readFileSync(fullPath, 'utf8');
         const { data, content } = matter(fileContents);
         
-        // Validate frontmatter in development
-        validateFrontmatter(data, filename);
+        // Validate post in development (frontmatter + content)
+        validatePost(data, content, filename);
         
         // Find posts related to this project
         const relatedPosts = allPosts
