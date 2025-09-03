@@ -5,6 +5,7 @@ import { ProjectBox } from '@/components/ProjectBox';
 import { PostBox } from '@/components/PostBox';
 import { FeaturedPostCard } from '@/components/FeaturedPostCard';
 import { FeaturedPostsCarousel } from '@/components/FeaturedPostsCarousel';
+import { PopularPosts } from '@/components/PopularPosts';
 
 export default async function Home() {
   const projects = getAllProjects();
@@ -108,6 +109,19 @@ export default async function Home() {
           </div>
         </section>
       )}
+
+      {/* Popular Posts */}
+      <section>
+        <PopularPosts 
+          posts={allPosts.map(post => ({
+            slug: post.slug,
+            title: post.meta.title,
+            date: post.meta.date,
+            views: 0 // Will be populated on client-side
+          }))}
+          showViewCounts={true} 
+        />
+      </section>
     </div>
   );
 }

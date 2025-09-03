@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { Post } from '@/lib/content';
 import { formatDate } from '@/lib/format';
+import { ViewCount } from '@/components/ViewCounter';
 
 interface PostBoxProps {
   post: Post;
@@ -18,9 +19,10 @@ export function PostBox({ post, showProject = true }: PostBoxProps) {
         >
           {post.meta.title}
         </Link>
-        <div className="text-sm text-mid whitespace-nowrap sm:ml-4 flex-shrink-0">
-          {formatDate(post.meta.date)}
-          <span className="ml-2">• {post.readingTime}</span>
+        <div className="text-sm text-mid whitespace-nowrap sm:ml-4 flex-shrink-0 flex items-center gap-2">
+          <span>{formatDate(post.meta.date)}</span>
+          <span>• {post.readingTime}</span>
+          <ViewCount slug={post.slug} />
         </div>
       </div>
       
