@@ -4,6 +4,7 @@ import { bellota } from "@/fonts";
 import type { Metadata } from "next";
 import { SidebarLayout } from "@/components/SidebarLayout";
 import { ProgressBar } from "@/components/ProgressBar";
+import { DevToolbar } from "@/components/DevToolbar";
 
 export const metadata: Metadata = {
   title: {
@@ -25,6 +26,7 @@ export default function RootLayout({
           {children}
         </SidebarLayout>
         <ProgressBar />
+        <DevToolbar />
       </body>
     </html>
   );

@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:content": "next dev --turbopack --experimental-https",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "content:check": "echo 'Checking content...' && find src/content -name '*.mdx' -exec echo 'Found: {}' \\;"
   },
   "dependencies": {
     "@mdx-js/mdx": "^3.1.0",

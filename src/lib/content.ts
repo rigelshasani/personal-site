@@ -3,6 +3,12 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { cacheContent, devLog, validateFrontmatter, watchContentChanges } from './dev-utils';
+
+// Initialize content watching in development
+if (process.env.NODE_ENV === 'development') {
+  watchContentChanges();
+}
 
 const contentDirectory = path.join(process.cwd(), 'src/content');
 
@@ -51,58 +57,74 @@ function calculateReadingTime(content: string): string {
 
 // Get all posts
 export function getAllPosts(): Post[] {
-  const postsDirectory = path.join(contentDirectory, 'posts');
-  const filenames = fs.readdirSync(postsDirectory);
-  
-  const posts = filenames
-    .filter(name => name.endsWith('.mdx'))
-    .map(filename => {
-      const slug = filename.replace('.mdx', '');
-      const fullPath = path.join(postsDirectory, filename);
-      const fileContents = fs.readFileSync(fullPath, 'utf8');
-      const { data, content } = matter(fileContents);
-      
-      return {
-        slug,
-        meta: data as PostMeta,
-        content,
-        readingTime: data.readingTime || calculateReadingTime(content),
-      };
-    })
-    .sort((a, b) => new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime());
+  return cacheContent('all-posts', () => {
+    devLog('Loading all posts...');
     
-  return posts;
+    const postsDirectory = path.join(contentDirectory, 'posts');
+    const filenames = fs.readdirSync(postsDirectory);
+    
+    const posts = filenames
+      .filter(name => name.endsWith('.mdx'))
+      .map(filename => {
+        const slug = filename.replace('.mdx', '');
+        const fullPath = path.join(postsDirectory, filename);
+        const fileContents = fs.readFileSync(fullPath, 'utf8');
+        const { data, content } = matter(fileContents);
+        
+        // Validate frontmatter in development
+        validateFrontmatter(data, filename);
+        
+        return {
+          slug,
+          meta: data as PostMeta,
+          content,
+          readingTime: data.readingTime || calculateReadingTime(content),
+        };
+      })
+      .sort((a, b) => new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime());
+      
+    devLog(`Loaded ${posts.length} posts`);
+    return posts;
+  });
 }
 
 // Get all projects with their related posts
 export function getAllProjects(): Project[] {
-  const projectsDirectory = path.join(contentDirectory, 'projects');
-  const filenames = fs.readdirSync(projectsDirectory);
-  const allPosts = getAllPosts();
-  
-  const projects = filenames
-    .filter(name => name.endsWith('.mdx'))
-    .map(filename => {
-      const slug = filename.replace('.mdx', '');
-      const fullPath = path.join(projectsDirectory, filename);
-      const fileContents = fs.readFileSync(fullPath, 'utf8');
-      const { data, content } = matter(fileContents);
-      
-      // Find posts related to this project
-      const relatedPosts = allPosts
-        .filter(post => post.meta.project === slug)
-        .sort((a, b) => (a.meta.order || 0) - (b.meta.order || 0));
-      
-      return {
-        slug,
-        meta: data as ProjectMeta,
-        content,
-        posts: relatedPosts,
-      };
-    })
-    .sort((a, b) => new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime());
+  return cacheContent('all-projects', () => {
+    devLog('Loading all projects...');
     
-  return projects;
+    const projectsDirectory = path.join(contentDirectory, 'projects');
+    const filenames = fs.readdirSync(projectsDirectory);
+    const allPosts = getAllPosts();
+    
+    const projects = filenames
+      .filter(name => name.endsWith('.mdx'))
+      .map(filename => {
+        const slug = filename.replace('.mdx', '');
+        const fullPath = path.join(projectsDirectory, filename);
+        const fileContents = fs.readFileSync(fullPath, 'utf8');
+        const { data, content } = matter(fileContents);
+        
+        // Validate frontmatter in development
+        validateFrontmatter(data, filename);
+        
+        // Find posts related to this project
+        const relatedPosts = allPosts
+          .filter(post => post.meta.project === slug)
+          .sort((a, b) => (a.meta.order || 0) - (b.meta.order || 0));
+        
+        return {
+          slug,
+          meta: data as ProjectMeta,
+          content,
+          posts: relatedPosts,
+        };
+      })
+      .sort((a, b) => new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime());
+      
+    devLog(`Loaded ${projects.length} projects`);
+    return projects;
+  });
 }
 
 // Get posts that don't belong to any project
