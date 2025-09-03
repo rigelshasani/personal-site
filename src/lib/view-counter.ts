@@ -62,12 +62,6 @@ export function recordView(slug: string): number {
   if (typeof window === 'undefined') return 0;
   
   const viewData = getViewData();
-  const sessionViews = getSessionViews();
-  
-  // Don't count multiple views in the same session
-  if (sessionViews.has(slug)) {
-    return viewData[slug]?.views || 0;
-  }
   
   // Initialize or update view data
   if (!viewData[slug]) {
@@ -79,17 +73,13 @@ export function recordView(slug: string): number {
     };
   }
   
-  // Increment view count
+  // Always increment view count (no session restriction)
   viewData[slug].views += 1;
   viewData[slug].lastViewed = new Date().toISOString();
   viewData[slug].sessionViewed = true;
   
-  // Mark as viewed in this session
-  sessionViews.add(slug);
-  
   // Save data
   saveViewData(viewData);
-  saveSessionViews(sessionViews);
   
   return viewData[slug].views;
 }

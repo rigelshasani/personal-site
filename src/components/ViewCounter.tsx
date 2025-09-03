@@ -19,16 +19,20 @@ export function ViewCounter({
   const recordingHook = useViewCounter(slug);
   const displayHook = useViewCountDisplay(slug);
   
-  const { viewCount, formattedViewCount } = shouldRecord ? recordingHook : displayHook;
+  const { viewCount, formattedViewCount, justIncremented } = shouldRecord ? recordingHook : { ...displayHook, justIncremented: false };
 
   // Don't render anything if no views yet (avoids showing "0 views" everywhere)
   if (viewCount === 0) return null;
 
   return (
-    <span className={`inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 ${className}`}>
+    <span className={`inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 transition-all duration-500 ${
+      justIncremented ? 'text-green-600 dark:text-green-400 scale-110' : ''
+    } ${className}`}>
       {showIcon && (
         <svg 
-          className="w-4 h-4" 
+          className={`w-4 h-4 transition-all duration-500 ${
+            justIncremented ? 'text-green-600 dark:text-green-400' : ''
+          }`} 
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
@@ -48,7 +52,16 @@ export function ViewCounter({
           />
         </svg>
       )}
-      <span>{formattedViewCount}</span>
+      <span className={`transition-all duration-500 ${
+        justIncremented ? 'font-semibold' : ''
+      }`}>
+        {formattedViewCount}
+        {justIncremented && (
+          <span className="ml-1 text-green-600 dark:text-green-400 animate-pulse">
+            +1
+          </span>
+        )}
+      </span>
     </span>
   );
 }

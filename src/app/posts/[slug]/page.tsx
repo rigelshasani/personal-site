@@ -6,7 +6,7 @@ import { getPost, getAllPosts, getProject } from "@/lib/content";
 import { formatDate } from "@/lib/format";
 import { Figure } from "@/components/mdx/Figure";
 import { OptimizedImage } from "@/components/mdx/OptimizedImage";
-import { ViewTracker } from "@/components/ViewCounter";
+import { ViewTrackerWithNotification } from "@/components/ViewTrackerWithNotification";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -78,7 +78,7 @@ export default async function PostPage({
         <div className="flex items-center gap-4 text-sm text-mid not-prose">
           <span>{formatDate(post.meta.date)}</span>
           <span>• {post.readingTime}</span>
-          <ViewTracker slug={post.slug} />
+          <ViewTrackerWithNotification slug={post.slug} />
           {post.meta.tags && (
             <>
               <span>•</span>

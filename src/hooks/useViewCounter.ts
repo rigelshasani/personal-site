@@ -6,7 +6,7 @@ import { recordView, getViewCount, formatViewCount } from '@/lib/view-counter';
 
 export function useViewCounter(slug: string) {
   const [viewCount, setViewCount] = useState(0);
-  const [isRecorded, setIsRecorded] = useState(false);
+  const [justIncremented, setJustIncremented] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -15,22 +15,28 @@ export function useViewCounter(slug: string) {
     const initialCount = getViewCount(slug);
     setViewCount(initialCount);
 
-    // Record view after a short delay to ensure user actually viewed the content
+    // Record view after a delay to ensure user actually viewed the content
     const timer = setTimeout(() => {
-      if (!isRecorded) {
-        const newCount = recordView(slug);
+      const newCount = recordView(slug);
+      const previousCount = viewCount || initialCount;
+      
+      // Only animate if count actually increased
+      if (newCount > previousCount) {
+        setJustIncremented(true);
         setViewCount(newCount);
-        setIsRecorded(true);
+        
+        // Reset animation after animation completes
+        setTimeout(() => setJustIncremented(false), 2000);
       }
-    }, 3000); // 3 second delay
+    }, 5000); // 5 second delay
 
     return () => clearTimeout(timer);
-  }, [slug, isRecorded]);
+  }, [slug]); // Removed isRecorded dependency to allow re-recording on revisits
 
   return {
     viewCount,
     formattedViewCount: formatViewCount(viewCount),
-    isRecorded
+    justIncremented
   };
 }
 
