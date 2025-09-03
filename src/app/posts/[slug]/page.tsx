@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getPost, getAllPosts, getProject } from "@/lib/content";
 import { formatDate } from "@/lib/format";
 import { Figure } from "@/components/mdx/Figure";
+import { OptimizedImage } from "@/components/mdx/OptimizedImage";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -127,6 +128,15 @@ export default async function PostPage({
         source={post.content} 
         components={{
           Figure,
+          img: (props: any) => (
+            <OptimizedImage
+              src={props.src}
+              alt={props.alt}
+              width={props.width || 800}
+              height={props.height || 600}
+              className="rounded-lg my-4"
+            />
+          ),
         }}
       />
       

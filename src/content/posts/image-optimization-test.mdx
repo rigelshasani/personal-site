@@ -1,0 +1,39 @@
+---
+title: "Image Optimization Test"
+description: "Testing Next.js Image optimization with various image formats and sizes."
+date: "2025-01-15"
+tags: ["test", "images"]
+---
+
+# Image Optimization Test
+
+This post demonstrates the new Next.js Image optimization features.
+
+## Regular Markdown Image
+Here's a regular markdown image that will now be optimized:
+
+![Test Image](https://picsum.photos/800/600?random=1)
+
+## Custom Figure Component
+And here's the same image using our custom Figure component:
+
+<Figure 
+  src="https://picsum.photos/800/600?random=1" 
+  alt="Test Figure Component" 
+  caption="This image uses the optimized Figure component"
+  align="center"
+/>
+
+## Different Sizes
+
+Small image:
+![Small Image](https://picsum.photos/400/300?random=3)
+
+Large image:
+![Large Image](https://picsum.photos/1200/800?random=4)
+
+You should notice:
+- Blur placeholders while images load
+- WebP/AVIF format conversion for better compression
+- Responsive sizing based on screen size
+- Lazy loading for images below the fold
