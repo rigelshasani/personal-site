@@ -46,7 +46,7 @@ const { TextEncoder, TextDecoder } = require('util')
 global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
 
-// Mock Request for API tests
+// Mock Request and Response for API tests
 global.Request = class MockRequest {
   constructor(url, options = {}) {
     this.url = url
@@ -57,5 +57,30 @@ global.Request = class MockRequest {
   
   async json() {
     return JSON.parse(this.body)
+  }
+}
+
+global.Response = class MockResponse {
+  constructor(body, init = {}) {
+    this.body = body
+    this.status = init.status || 200
+    this.statusText = init.statusText || 'OK'
+    this.headers = new Map(Object.entries(init.headers || {}))
+    this.ok = this.status >= 200 && this.status < 300
+  }
+  
+  static json(object, init) {
+    return new MockResponse(JSON.stringify(object), {
+      ...init,
+      headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) }
+    })
+  }
+  
+  async json() {
+    return JSON.parse(this.body)
+  }
+  
+  async text() {
+    return this.body
   }
 }

@@ -167,7 +167,7 @@ describe('Content Functions', () => {
       
       // Mock for projects directory (called by getAllProjects)
       mockFs.readdirSync.mockReturnValueOnce(mockProjectFiles as any)
-      // Mock for posts directory (called by getAllPosts inside getAllProjects)
+      // Mock for posts directory (called by getAllPosts inside getAllProjects)  
       mockFs.readdirSync.mockReturnValueOnce(mockPostFiles as any)
       
       // Mock project content
@@ -182,7 +182,7 @@ describe('Content Functions', () => {
         content: '# Project content',
       } as any)
       
-      // Mock post contents
+      // Mock post 1 content
       mockFs.readFileSync.mockReturnValueOnce('post1 content')
       mockMatter.mockReturnValueOnce({
         data: {
@@ -195,6 +195,7 @@ describe('Content Functions', () => {
         content: '# Post 1',
       } as any)
       
+      // Mock post 2 content  
       mockFs.readFileSync.mockReturnValueOnce('post2 content')
       mockMatter.mockReturnValueOnce({
         data: {
