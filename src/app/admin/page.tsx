@@ -1,3 +1,5 @@
+'use client';
+
 import { getAllPosts } from '@/lib/content';
 import { formatDate } from '@/lib/format';
 import Link from 'next/link';
@@ -60,6 +62,26 @@ export default function AdminDashboard() {
                   >
                     Edit
                   </Link>
+                  <button
+                    onClick={async () => {
+                      if (!confirm(`Delete "${post.meta.title}"? This cannot be undone.`)) return;
+                      try {
+                        const response = await fetch(`/api/admin/posts/${post.slug}`, {
+                          method: 'DELETE',
+                        });
+                        if (response.ok) {
+                          window.location.reload();
+                        } else {
+                          alert('Failed to delete post');
+                        }
+                      } catch (error) {
+                        alert('Failed to delete post');
+                      }
+                    }}
+                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 text-sm font-medium"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
