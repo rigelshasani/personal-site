@@ -1,0 +1,55 @@
+'use client';
+
+import { useSession, signIn, signOut } from 'next-auth/react';
+import { useState } from 'react';
+import { isAdmin } from '@/lib/auth';
+import Link from 'next/link';
+
+export function AdminLoginButton() {
+  const { data: session, status } = useSession();
+  const [isVisible, setIsVisible] = useState(false);
+  
+  if (status === 'loading') return null;
+  
+  const userIsAdmin = isAdmin(session?.user?.login);
+  
+  if (session && userIsAdmin) {
+    return (
+      <div className="fixed bottom-4 right-4 flex gap-2 z-50">
+        <Link 
+          href="/admin"
+          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors"
+        >
+          Admin
+        </Link>
+        <button
+          onClick={() => signOut()}
+          className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-xs transition-colors"
+        >
+          Logout
+        </button>
+      </div>
+    );
+  }
+  
+  return (
+    <div 
+      className="fixed bottom-2 right-2 z-50"
+      onMouseEnter={() => setIsVisible(true)}
+      onMouseLeave={() => setIsVisible(false)}
+    >
+      <div 
+        className={`transition-opacity duration-300 ${
+          isVisible ? 'opacity-100' : 'opacity-10'
+        }`}
+      >
+        <button
+          onClick={() => signIn('github')}
+          className="bg-gray-800 hover:bg-gray-900 text-white px-2 py-1 rounded text-xs transition-all hover:scale-105"
+        >
+          •
+        </button>
+      </div>
+    </div>
+  );
+}

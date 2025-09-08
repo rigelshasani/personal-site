@@ -5,6 +5,8 @@ import type { Metadata } from "next";
 import { SidebarLayout } from "@/components/SidebarLayout";
 import { ProgressBar } from "@/components/ProgressBar";
 import { DevToolbar } from "@/components/DevToolbar";
+import { SessionProvider } from "@/components/SessionProvider";
+import { AdminLoginButton } from "@/components/AdminLoginButton";
 
 export const metadata: Metadata = {
   title: {
@@ -22,11 +24,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={bellota.variable}>
       <body className="font-sans antialiased bg-bg text-foreground min-h-screen">
-        <SidebarLayout>
-          {children}
-        </SidebarLayout>
-        <ProgressBar />
-        <DevToolbar />
+        <SessionProvider>
+          <SidebarLayout>
+            {children}
+          </SidebarLayout>
+          <ProgressBar />
+          <DevToolbar />
+          <AdminLoginButton />
+        </SessionProvider>
       </body>
     </html>
   );
