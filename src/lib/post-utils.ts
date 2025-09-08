@@ -11,6 +11,7 @@ export function generateSlug(title: string): string {
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/--+/g, '-')
+    .replace(/^-+|-+$/g, '')
     .trim();
 }
 
