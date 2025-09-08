@@ -1,11 +1,39 @@
 'use client';
 
-import { getAllPosts } from '@/lib/content';
+import { useState, useEffect } from 'react';
 import { formatDate } from '@/lib/format';
 import Link from 'next/link';
+import { Post } from '@/lib/content';
 
 export default function AdminDashboard() {
-  const posts = getAllPosts();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch posts on client side to avoid hydration issues
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('/api/admin/posts/list');
+        if (response.ok) {
+          const data = await response.json();
+          setPosts(data.posts);
+        }
+      } catch (error) {
+        console.error('Failed to fetch posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-64">
+        <div className="text-lg text-gray-600 dark:text-gray-400">Loading posts...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

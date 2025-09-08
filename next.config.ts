@@ -8,7 +8,7 @@ const baseConfig = {
       optimizePackageImports: ['gray-matter', '@mdx-js/react'],
     },
     // Faster refresh for MDX content
-    webpack: (config, { dev, isServer }) => {
+    webpack: (config: any, { dev, isServer }: any) => {
       if (dev && !isServer) {
         // Watch for changes in content directory
         config.watchOptions = {

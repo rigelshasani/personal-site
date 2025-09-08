@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { PostEditor } from '@/components/PostEditor';
-import { PostMeta, getPost } from '@/lib/content';
+import { PostMeta } from '@/lib/content';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
 
@@ -13,23 +13,31 @@ interface EditPostPageProps {
 export default function EditPostPage({ params }: EditPostPageProps) {
   const { slug } = use(params);
   const router = useRouter();
-  const [post, setPost] = useState<any>(null);
+  const [post, setPost] = useState<{ meta: PostMeta; content: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const postData = getPost(slug);
-      if (!postData) {
-        setError('Post not found');
-      } else {
-        setPost(postData);
+    const fetchPost = async () => {
+      try {
+        const response = await fetch(`/api/admin/posts/${slug}/get`);
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError('Post not found');
+          } else {
+            setError('Failed to load post');
+          }
+          return;
+        }
+        const data = await response.json();
+        setPost(data.post);
+      } catch (err) {
+        setError('Failed to load post');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError('Failed to load post');
-    } finally {
-      setLoading(false);
-    }
+    };
+    fetchPost();
   }, [slug]);
 
   const handleSave = async (meta: PostMeta, content: string) => {

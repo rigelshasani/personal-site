@@ -2,7 +2,6 @@
 
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { useState } from 'react';
-import { isAdmin } from '@/lib/auth';
 import Link from 'next/link';
 
 export function AdminLoginButton() {
@@ -11,7 +10,8 @@ export function AdminLoginButton() {
   
   if (status === 'loading') return null;
   
-  const userIsAdmin = isAdmin(session?.user?.login);
+  const userIsAdmin = session?.user?.login && 
+    process.env.NEXT_PUBLIC_ADMIN_GITHUB_LOGINS?.split(',').includes(session.user.login);
   
   if (session && userIsAdmin) {
     return (
