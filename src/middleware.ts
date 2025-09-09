@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 export default withAuth(
   function middleware(req) {
     // Check if user is trying to access admin routes
-    if (req.nextUrl.pathname.startsWith('/admin')) {
+    if (req.nextUrl.pathname.startsWith('/admin') || req.nextUrl.pathname.startsWith('/api/admin')) {
       const adminLogins = process.env.ADMIN_GITHUB_LOGINS?.split(',') || [];
       const userLogin = req.nextauth.token?.login;
       
@@ -20,7 +20,7 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         // Require auth for admin routes
-        if (req.nextUrl.pathname.startsWith('/admin')) {
+        if (req.nextUrl.pathname.startsWith('/admin') || req.nextUrl.pathname.startsWith('/api/admin')) {
           return !!token;
         }
         return true;
