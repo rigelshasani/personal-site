@@ -40,6 +40,8 @@ jest.mock('@monaco-editor/react', () => ({
 process.env.ADMIN_GITHUB_LOGINS = 'testadmin'
 process.env.NEXT_PUBLIC_ADMIN_GITHUB_LOGINS = 'testadmin'
 process.env.NEXTAUTH_SECRET = 'test-secret'
+process.env.GITHUB_ID = 'test-github-id'
+process.env.GITHUB_SECRET = 'test-github-secret'
 
 // Polyfills for Node.js environment
 const { TextEncoder, TextDecoder } = require('util')
