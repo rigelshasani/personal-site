@@ -151,7 +151,7 @@ export function PostEditor({
             <input
               type="number"
               value={meta.order || ''}
-              onChange={(e) => handleMetaChange('order', parseInt(e.target.value) || undefined)}
+              onChange={(e) => handleMetaChange('order', e.target.value ? parseInt(e.target.value) : '')}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
               placeholder="1"
               min="1"

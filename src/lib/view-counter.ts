@@ -34,28 +34,6 @@ function saveViewData(data: Record<string, ViewData>) {
   }
 }
 
-// Get current session views
-function getSessionViews(): Set<string> {
-  if (typeof window === 'undefined') return new Set();
-  
-  try {
-    const stored = sessionStorage.getItem(SESSION_KEY);
-    return stored ? new Set(JSON.parse(stored)) : new Set();
-  } catch {
-    return new Set();
-  }
-}
-
-// Save session views
-function saveSessionViews(views: Set<string>) {
-  if (typeof window === 'undefined') return;
-  
-  try {
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify([...views]));
-  } catch (error) {
-    console.warn('Could not save session views:', error);
-  }
-}
 
 // Record a view for a post
 export function recordView(slug: string): number {

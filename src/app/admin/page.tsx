@@ -102,7 +102,7 @@ export default function AdminDashboard() {
                         } else {
                           alert('Failed to delete post');
                         }
-                      } catch (error) {
+                      } catch {
                         alert('Failed to delete post');
                       }
                     }}

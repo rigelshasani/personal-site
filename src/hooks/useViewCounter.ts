@@ -18,10 +18,9 @@ export function useViewCounter(slug: string) {
     // Record view after a delay to ensure user actually viewed the content
     const timer = setTimeout(() => {
       const newCount = recordView(slug);
-      const previousCount = viewCount || initialCount;
       
       // Only animate if count actually increased
-      if (newCount > previousCount) {
+      if (newCount > initialCount) {
         setJustIncremented(true);
         setViewCount(newCount);
         

@@ -31,7 +31,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
         }
         const data = await response.json();
         setPost(data.post);
-      } catch (err) {
+      } catch {
         setError('Failed to load post');
       } finally {
         setLoading(false);

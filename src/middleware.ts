@@ -9,7 +9,7 @@ export default withAuth(
       const userLogin = req.nextauth.token?.login;
       
       // If not an admin, redirect to home
-      if (!adminLogins.includes(userLogin || '')) {
+      if (!adminLogins.includes(typeof userLogin === 'string' ? userLogin : '')) {
         return NextResponse.redirect(new URL('/', req.url));
       }
     }

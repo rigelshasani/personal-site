@@ -131,12 +131,12 @@ export default async function PostPage({
         source={post.content} 
         components={{
           Figure,
-          img: (props: any) => (
+          img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
             <OptimizedImage
-              src={props.src}
-              alt={props.alt}
-              width={props.width || 800}
-              height={props.height || 600}
+              src={typeof props.src === 'string' ? props.src : ''}
+              alt={props.alt || ''}
+              width={typeof props.width === 'number' ? props.width : (typeof props.width === 'string' ? parseInt(props.width, 10) : 800)}
+              height={typeof props.height === 'number' ? props.height : (typeof props.height === 'string' ? parseInt(props.height, 10) : 600)}
               className="rounded-lg my-4"
             />
           ),

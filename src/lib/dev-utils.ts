@@ -28,7 +28,7 @@ export function watchContentChanges() {
         contentCache.clear();
         console.log('🔄 Content cache cleared due to file changes');
       }
-    } catch (error) {
+    } catch {
       console.warn('Could not check content directory for changes');
     }
   };
@@ -58,7 +58,7 @@ export function cacheContent<T>(key: string, factory: () => T): T {
 }
 
 // Development logging for content operations
-export function devLog(message: string, data?: any) {
+export function devLog(message: string, data?: unknown) {
   if (isDevelopment()) {
     console.log(`📝 [Content] ${message}`, data || '');
   }
@@ -84,7 +84,7 @@ export interface ValidationWarning {
 }
 
 // Comprehensive frontmatter validation
-export function validateFrontmatter(frontmatter: any, filename: string): ValidationResult {
+export function validateFrontmatter(frontmatter: Record<string, unknown>, filename: string): ValidationResult {
   const errors: ValidationError[] = [];
   const warnings: ValidationWarning[] = [];
 
@@ -107,7 +107,7 @@ export function validateFrontmatter(frontmatter: any, filename: string): Validat
   });
 
   // Title validation
-  if (frontmatter.title) {
+  if (frontmatter.title && typeof frontmatter.title === 'string') {
     if (frontmatter.title.length > 100) {
       warnings.push({
         field: 'title',
@@ -125,7 +125,7 @@ export function validateFrontmatter(frontmatter: any, filename: string): Validat
   }
 
   // Description validation
-  if (frontmatter.description) {
+  if (frontmatter.description && typeof frontmatter.description === 'string') {
     if (frontmatter.description.length > 160) {
       warnings.push({
         field: 'description',
@@ -143,7 +143,7 @@ export function validateFrontmatter(frontmatter: any, filename: string): Validat
   }
 
   // Date validation
-  if (frontmatter.date) {
+  if (frontmatter.date && typeof frontmatter.date === 'string') {
     const date = new Date(frontmatter.date);
     if (isNaN(date.getTime())) {
       errors.push({
@@ -184,7 +184,7 @@ export function validateFrontmatter(frontmatter: any, filename: string): Validat
       });
     } else {
       // Check individual tags
-      frontmatter.tags.forEach((tag: any, index: number) => {
+      frontmatter.tags.forEach((tag: unknown, index: number) => {
         if (typeof tag !== 'string') {
           errors.push({
             field: `tags[${index}]`,
@@ -239,8 +239,8 @@ export function validateFrontmatter(frontmatter: any, filename: string): Validat
   }
 
   // Order validation
-  if (frontmatter.order !== undefined) {
-    if (!Number.isInteger(frontmatter.order) || frontmatter.order < 1) {
+  if (frontmatter.order !== undefined && frontmatter.order !== null) {
+    if (typeof frontmatter.order === 'number' && (!Number.isInteger(frontmatter.order) || frontmatter.order < 1)) {
       errors.push({
         field: 'order',
         message: 'Order must be a positive integer',
@@ -258,7 +258,7 @@ export function validateFrontmatter(frontmatter: any, filename: string): Validat
         severity: 'error'
       });
     } else {
-      frontmatter.images.forEach((image: any, index: number) => {
+      frontmatter.images.forEach((image: unknown, index: number) => {
         if (typeof image !== 'string') {
           errors.push({
             field: `images[${index}]`,
@@ -376,7 +376,7 @@ export function validateContent(content: string, filename: string): ValidationRe
 }
 
 // Validate entire post (frontmatter + content)
-export function validatePost(frontmatter: any, content: string, filename: string): ValidationResult {
+export function validatePost(frontmatter: Record<string, unknown>, content: string, filename: string): ValidationResult {
   const frontmatterResult = validateFrontmatter(frontmatter, filename);
   const contentResult = validateContent(content, filename);
 

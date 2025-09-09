@@ -22,8 +22,6 @@ export default async function Home() {
     return post.content.match(/!\[.*?\]\(.*?\)/) || post.content.match(/<Figure[^>]+src="/);
   });
   
-  const featuredPost = postsWithImages[0];
-  const secondaryFeaturedPosts = postsWithImages.slice(1, 3);
   const regularPosts = standalonePosts.filter(post => !postsWithImages.includes(post));
 
   return (

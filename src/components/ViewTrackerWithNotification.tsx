@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import { useViewCounter } from '@/hooks/useViewCounter';
 import { ViewNotification } from './ViewNotification';
-import { formatViewCount } from '@/lib/view-counter';
 
 interface ViewTrackerWithNotificationProps {
   slug: string;

@@ -55,7 +55,7 @@ export function FeaturedPostsCarousel({
           className="flex transition-transform duration-700 ease-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
-          {posts.map((post, index) => (
+          {posts.map((post) => (
             <div key={post.slug} className="w-full flex-shrink-0">
               <FeaturedPostCard post={post} size="large" />
             </div>
