@@ -1,44 +1,38 @@
-import { authOptions } from '@/lib/auth-config'
-import GitHubProvider from 'next-auth/providers/github'
+// Environment variables are set in jest.setup.js
 
 // Mock GitHubProvider
-jest.mock('next-auth/providers/github')
+jest.mock('next-auth/providers/github', () => {
+  return jest.fn().mockImplementation((config) => ({
+    id: 'github',
+    name: 'GitHub',
+    type: 'oauth',
+    clientId: config.clientId,
+    clientSecret: config.clientSecret,
+  }))
+})
+
+import GitHubProvider from 'next-auth/providers/github'
+import { authOptions } from '@/lib/auth-config'
+
 const mockGitHubProvider = GitHubProvider as jest.MockedFunction<typeof GitHubProvider>
 
 describe('Auth Configuration', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-    process.env.GITHUB_ID = 'test-github-id'
-    process.env.GITHUB_SECRET = 'test-github-secret'
-    process.env.NEXTAUTH_SECRET = 'test-nextauth-secret'
-  })
-
-  afterEach(() => {
-    delete process.env.GITHUB_ID
-    delete process.env.GITHUB_SECRET
-    delete process.env.NEXTAUTH_SECRET
-  })
-
   it('should have correct basic configuration', () => {
     expect(authOptions).toBeDefined()
-    expect(authOptions.secret).toBe('test-nextauth-secret')
+    expect(authOptions.secret).toBe('test-secret') // Set by jest.setup.js
     expect(authOptions.pages?.signIn).toBe('/admin/login')
   })
 
   it('should configure GitHub provider correctly', () => {
-    mockGitHubProvider.mockReturnValue({
-      id: 'github',
-      name: 'GitHub',
-      type: 'oauth',
-    } as any)
-
-    // Access providers to trigger GitHub provider creation
-    const providers = authOptions.providers
-    expect(providers).toHaveLength(1)
+    // Check that the GitHub provider was called with correct config during module initialization
     expect(mockGitHubProvider).toHaveBeenCalledWith({
       clientId: 'test-github-id',
       clientSecret: 'test-github-secret',
     })
+
+    // Access providers to verify configuration
+    const providers = authOptions.providers
+    expect(providers).toHaveLength(1)
   })
 
   it('should have session callback that adds login to session', async () => {
@@ -189,12 +183,10 @@ describe('Auth Configuration', () => {
     }
   })
 
-  it('should handle missing environment variables gracefully', () => {
-    delete process.env.GITHUB_ID
-    delete process.env.GITHUB_SECRET
-
+  it('should handle environment variables correctly', () => {
     // Should not throw when accessing authOptions
     expect(authOptions).toBeDefined()
     expect(authOptions.providers).toHaveLength(1)
+    expect(authOptions.secret).toBeDefined()
   })
 })
