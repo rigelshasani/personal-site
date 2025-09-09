@@ -170,19 +170,7 @@ describe('Content Functions', () => {
       // Mock for posts directory (called by getAllPosts inside getAllProjects)  
       mockFs.readdirSync.mockReturnValueOnce(mockPostFiles as any)
       
-      // Mock project content
-      mockFs.readFileSync.mockReturnValueOnce('project content')
-      mockMatter.mockReturnValueOnce({
-        data: {
-          title: 'Project 1',
-          description: 'Project description',
-          date: '2023-12-01',
-          status: 'active',
-        },
-        content: '# Project content',
-      } as any)
-      
-      // Mock post 1 content
+      // Mock post 1 content (getAllPosts is called first)
       mockFs.readFileSync.mockReturnValueOnce('post1 content')
       mockMatter.mockReturnValueOnce({
         data: {
@@ -206,6 +194,18 @@ describe('Content Functions', () => {
           order: 2,
         },
         content: '# Post 2',
+      } as any)
+      
+      // Mock project content (processed after posts)
+      mockFs.readFileSync.mockReturnValueOnce('project content')
+      mockMatter.mockReturnValueOnce({
+        data: {
+          title: 'Project 1',
+          description: 'Project description',
+          date: '2023-12-01',
+          status: 'active',
+        },
+        content: '# Project content',
       } as any)
 
       const projects = getAllProjects()

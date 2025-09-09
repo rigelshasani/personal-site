@@ -17,6 +17,10 @@ import {
 jest.mock('fs')
 const mockFs = fs as jest.Mocked<typeof fs>
 
+// Mock process.cwd
+const mockProcessCwd = jest.spyOn(process, 'cwd')
+mockProcessCwd.mockReturnValue('/test')
+
 describe('Dev Utils', () => {
   let originalNodeEnv: string | undefined
   let consoleLogSpy: jest.SpyInstance
@@ -29,12 +33,15 @@ describe('Dev Utils', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.useFakeTimers()
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation()
     consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
   })
 
   afterEach(() => {
+    jest.clearAllTimers()
+    jest.useRealTimers()
     consoleLogSpy.mockRestore()
     consoleWarnSpy.mockRestore()
     consoleErrorSpy.mockRestore()
@@ -79,7 +86,11 @@ describe('Dev Utils', () => {
       const mockStats = { mtime: new Date(Date.now() + 1000) }
       mockFs.statSync.mockReturnValue(mockStats as any)
 
-      watchContentChanges()
+      const interval = watchContentChanges()
+      expect(interval).toBeDefined()
+      
+      // Fast-forward time to trigger the interval
+      jest.advanceTimersByTime(2000)
       
       expect(mockFs.statSync).toHaveBeenCalledWith('/test/src/content')
     })
@@ -91,7 +102,12 @@ describe('Dev Utils', () => {
         throw new Error('ENOENT')
       })
 
-      expect(() => watchContentChanges()).not.toThrow()
+      const interval = watchContentChanges()
+      expect(interval).toBeDefined()
+      
+      // Fast-forward time to trigger the error handling
+      jest.advanceTimersByTime(2000)
+      
       expect(consoleWarnSpy).toHaveBeenCalledWith('Could not check content directory for changes')
     })
   })
