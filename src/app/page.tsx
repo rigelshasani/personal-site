@@ -6,7 +6,7 @@ import { PostBox } from '@/components/PostBox';
 import { FeaturedPostCard } from '@/components/FeaturedPostCard';
 import { FeaturedPostsCarousel } from '@/components/FeaturedPostsCarousel';
 import { PopularPosts } from '@/components/PopularPosts';
-import { getFirstImageUrl, isValidImageUrl } from '@/lib/content-utils';
+import { getFirstImageUrl } from '@/lib/content-utils';
 
 export default async function Home() {
   const projects = getAllProjects();
@@ -16,10 +16,7 @@ export default async function Home() {
   const recentProjects = projects.slice(0, 3);
   
   // Filter posts with images for featured section
-  const postsWithImages = allPosts.filter(post => {
-    const url = getFirstImageUrl(post);
-    return !!(url && isValidImageUrl(url));
-  });
+  const postsWithImages = allPosts.filter(post => !!getFirstImageUrl(post));
   
   const regularPosts = standalonePosts.filter(post => !postsWithImages.includes(post));
 

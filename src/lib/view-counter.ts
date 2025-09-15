@@ -5,9 +5,11 @@ interface ViewData {
   slug: string;
   views: number;
   lastViewed: string;
+  sessionViewed: boolean;
 }
 
 const STORAGE_KEY = 'blog-view-counts';
+const SESSION_KEY = 'current-session-views';
 
 // Get all view data from localStorage
 function getViewData(): Record<string, ViewData> {
@@ -45,12 +47,14 @@ export function recordView(slug: string): number {
       slug,
       views: 0,
       lastViewed: new Date().toISOString(),
+      sessionViewed: false
     };
   }
   
   // Always increment view count (no session restriction)
   viewData[slug].views += 1;
   viewData[slug].lastViewed = new Date().toISOString();
+  viewData[slug].sessionViewed = true;
   
   // Save data
   saveViewData(viewData);
@@ -103,6 +107,7 @@ export function clearAllViews() {
   if (typeof window === 'undefined') return;
   
   localStorage.removeItem(STORAGE_KEY);
+  sessionStorage.removeItem(SESSION_KEY);
 }
 
 // Export view data (for backup/analysis)

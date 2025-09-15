@@ -41,11 +41,22 @@ export function watchContentChanges() {
   };
 
   const checkForChanges = () => {
-    const currentTime = getLatestMtime();
-    if (currentTime > lastCheckTime) {
-      lastCheckTime = currentTime;
-      contentCache.clear();
-      console.log('🔄 Content cache cleared due to file changes');
+    try {
+      // Preserve original behavior for tests: stat the directory
+      const stats = fs.statSync(contentDir);
+      let latest = stats.mtime.getTime();
+
+      // Also incorporate latest file mtime to improve reliability
+      const filesLatest = getLatestMtime();
+      if (filesLatest > latest) latest = filesLatest;
+
+      if (latest > lastCheckTime) {
+        lastCheckTime = latest;
+        contentCache.clear();
+        console.log('🔄 Content cache cleared due to file changes');
+      }
+    } catch {
+      console.warn('Could not check content directory for changes');
     }
   };
 
