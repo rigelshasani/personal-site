@@ -39,6 +39,7 @@ export interface Post {
   meta: PostMeta;
   content: string;
   readingTime: string; // Auto-calculated
+  firstImageUrl?: string; // Precomputed from content/meta
 }
 
 export interface Project {
@@ -74,11 +75,23 @@ export function getAllPosts(): Post[] {
         // Validate post in development (frontmatter + content)
         validatePost(data, content, filename);
         
+        // Compute first image URL from frontmatter or content
+        const firstImageUrl = (() => {
+          const meta = data as PostMeta;
+          if (meta.images && meta.images.length > 0) return meta.images[0];
+          const md = content.match(/!\[.*?\]\((.*?)\)/);
+          if (md?.[1]) return md[1].trim();
+          const fig = content.match(/<Figure[^>]+src=\"([^\"]+)\"/);
+          if (fig?.[1]) return fig[1].trim();
+          return undefined;
+        })();
+        
         return {
           slug,
           meta: data as PostMeta,
           content,
           readingTime: data.readingTime || calculateReadingTime(content),
+          firstImageUrl,
         };
       })
       .sort((a, b) => new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime());

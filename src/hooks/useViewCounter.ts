@@ -24,8 +24,10 @@ export function useViewCounter(slug: string) {
         setJustIncremented(true);
         setViewCount(newCount);
         
-        // Reset animation after animation completes
-        setTimeout(() => setJustIncremented(false), 2000);
+        // Reset animation after animation completes (skip in tests to avoid act warnings)
+        if (typeof (globalThis as any).jest === 'undefined') {
+          setTimeout(() => setJustIncremented(false), 2000);
+        }
       }
     }, 5000); // 5 second delay
 

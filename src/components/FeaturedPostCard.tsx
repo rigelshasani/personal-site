@@ -3,7 +3,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Post } from '@/lib/content';
 import { formatDate } from '@/lib/format';
-import { getFirstImageUrl, isValidImageUrl } from '@/lib/content-utils';
 
 interface FeaturedPostCardProps {
   post: Post;
@@ -11,9 +10,9 @@ interface FeaturedPostCardProps {
 }
 
 export function FeaturedPostCard({ post, size = 'large' }: FeaturedPostCardProps) {
-  const rawImageUrl = getFirstImageUrl(post);
-  
-  const imageUrl = rawImageUrl && isValidImageUrl(rawImageUrl) ? rawImageUrl : null;
+  const rawImageUrl = post.firstImageUrl;
+  const isValid = (url: string) => url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://');
+  const imageUrl = rawImageUrl && isValid(rawImageUrl) ? rawImageUrl : null;
   
   if (!imageUrl) {
     return null; // Don't render if no image
