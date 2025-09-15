@@ -6,20 +6,33 @@ import { PostMeta } from '@/lib/content';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
 
-interface EditPostPageProps {
-  params: Promise<{ slug: string }>;
-}
+type Params = Promise<{ slug: string }> | { slug: string };
 
-export default function EditPostPage({ params }: EditPostPageProps) {
-  const { slug } = use(params);
+export default function EditPostPage({ params }: { params: Params }) {
+  const [slug, setSlug] = useState<string>('');
   const router = useRouter();
   const [post, setPost] = useState<{ meta: PostMeta; content: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const p: any = params as any;
+        const value = typeof p?.then === 'function' ? await p : p;
+        if (!cancelled) setSlug(value?.slug || '');
+      } catch {
+        if (!cancelled) setSlug('');
+      }
+    })();
+    return () => { cancelled = true };
+  }, [params]);
+
+  useEffect(() => {
     const fetchPost = async () => {
       try {
+        if (!slug) return;
         const response = await fetch(`/api/admin/posts/${slug}/get`);
         if (!response.ok) {
           if (response.status === 404) {

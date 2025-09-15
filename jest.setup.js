@@ -48,18 +48,18 @@ const { TextEncoder, TextDecoder } = require('util')
 global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
 
-// Mock Request and Response for API tests
+// Mock Request and Response for API tests (compatible with WHATWG Fetch)
 global.Request = class MockRequest {
   constructor(url, options = {}) {
-    this.url = url
+    this._url = url
     this.method = options.method || 'GET'
-    this.body = options.body
-    this.headers = options.headers || {}
+    this._body = options.body
+    this.headers = new Headers(options.headers || {})
   }
-  
-  async json() {
-    return JSON.parse(this.body)
-  }
+  get url() { return this._url }
+  get body() { return this._body }
+  async json() { return JSON.parse(this._body) }
+  async text() { return String(this._body ?? '') }
 }
 
 global.Response = class MockResponse {
