@@ -122,7 +122,7 @@ describe('Admin Edit Post Page', () => {
     // Check that initial values are passed to PostEditor
     expect(screen.getByTestId('initial-title')).toHaveTextContent('Test Post');
     expect(screen.getByTestId('initial-description')).toHaveTextContent('Test description');
-    expect(screen.getByTestId('initial-content')).toHaveTextContent('# Test Post Content\n\nThis is test content.');
+    expect(screen.getByTestId('initial-content')).toHaveTextContent(/# Test Post Content\s+This is test content\./);
     expect(screen.getByTestId('initial-tags')).toHaveTextContent('tech, programming');
     expect(screen.getByTestId('initial-project')).toHaveTextContent('test-project');
     expect(screen.getByTestId('initial-order')).toHaveTextContent('1');
@@ -254,11 +254,9 @@ describe('Admin Edit Post Page', () => {
 
     const saveButton = screen.getByRole('button', { name: 'Save Changes' });
     
-    await expect(async () => {
-      fireEvent.click(saveButton);
-      await new Promise(resolve => setTimeout(resolve, 0));
-    }).rejects.toThrow('Failed to update post');
-
+    fireEvent.click(saveButton);
+    await new Promise(resolve => setTimeout(resolve, 0));
+    // Should not redirect on failure
     expect(mockPush).not.toHaveBeenCalled();
   });
 

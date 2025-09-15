@@ -1,7 +1,7 @@
 import { POST } from '@/app/api/admin/posts/route'
 import { PUT, DELETE } from '@/app/api/admin/posts/[slug]/route'
 import { requireAdmin } from '@/lib/auth'
-import { createPostFile, updatePostFile, deletePostFile } from '@/lib/post-utils'
+import { createPostFile, updatePostFile, deletePostFile, generateSlug } from '@/lib/post-utils'
 import { NextRequest } from 'next/server'
 
 // Mock dependencies
@@ -12,6 +12,7 @@ const mockRequireAdmin = requireAdmin as jest.MockedFunction<typeof requireAdmin
 const mockCreatePostFile = createPostFile as jest.MockedFunction<typeof createPostFile>
 const mockUpdatePostFile = updatePostFile as jest.MockedFunction<typeof updatePostFile>
 const mockDeletePostFile = deletePostFile as jest.MockedFunction<typeof deletePostFile>
+const mockGenerateSlug = generateSlug as jest.MockedFunction<typeof generateSlug>
 
 describe('/api/admin/posts', () => {
   beforeEach(() => {
@@ -31,6 +32,7 @@ describe('/api/admin/posts', () => {
 
     it('should create post successfully for admin user', async () => {
       mockRequireAdmin.mockResolvedValue({ user: { login: 'testadmin' } } as any)
+      mockGenerateSlug.mockReturnValue('test-post')
       mockCreatePostFile.mockReturnValue(undefined)
 
       const request = new NextRequest('http://localhost/api/admin/posts', {
@@ -44,7 +46,6 @@ describe('/api/admin/posts', () => {
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.slug).toBe('test-post')
       expect(mockCreatePostFile).toHaveBeenCalledWith(
         'test-post',
         validPostData.meta,

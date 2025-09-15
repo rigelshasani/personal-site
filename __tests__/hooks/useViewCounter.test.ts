@@ -138,7 +138,7 @@ describe('useViewCounter Hook', () => {
     
     // The viewCount might be 6 instead of 9 due to timing issues with mocks
     expect(result.current.viewCount).toBeGreaterThanOrEqual(6)
-    expect(result.current.justIncremented).toBe(true)
+    await waitFor(() => expect(result.current.justIncremented).toBe(true))
   })
 
   it('should handle empty slug', () => {
