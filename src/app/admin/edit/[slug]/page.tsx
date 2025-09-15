@@ -30,27 +30,32 @@ export default function EditPostPage({ params }: { params: Params }) {
   }, [params]);
 
   useEffect(() => {
+    if (!slug) {
+      // Still resolving params; keep loading state
+      return;
+    }
+    let cancelled = false;
     const fetchPost = async () => {
       try {
-        if (!slug) return;
         const response = await fetch(`/api/admin/posts/${slug}/get`);
         if (!response.ok) {
           if (response.status === 404) {
-            setError('Post not found');
+            if (!cancelled) setError('Post not found');
           } else {
-            setError('Failed to load post');
+            if (!cancelled) setError('Failed to load post');
           }
           return;
         }
         const data = await response.json();
-        setPost(data.post);
+        if (!cancelled) setPost(data.post);
       } catch {
-        setError('Failed to load post');
+        if (!cancelled) setError('Failed to load post');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     fetchPost();
+    return () => { cancelled = true };
   }, [slug]);
 
   const handleSave = async (meta: PostMeta, content: string) => {

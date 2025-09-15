@@ -15,7 +15,12 @@ export default async function Home() {
   const recentProjects = projects.slice(0, 3);
   
   // Filter posts with images for featured section
-  const postsWithImages = allPosts.filter(post => !!post.firstImageUrl);
+  const postsWithImages = allPosts.filter(post => {
+    if (post.firstImageUrl) return true;
+    if (post.meta.images && post.meta.images.length > 0) return true;
+    // Fallback: detect inline images in content for legacy/test fixtures
+    return /!\[.*?\]\(.*?\)/.test(post.content) || /<Figure[^>]+src=\"/.test(post.content);
+  });
   
   const regularPosts = standalonePosts.filter(post => !postsWithImages.includes(post));
 
