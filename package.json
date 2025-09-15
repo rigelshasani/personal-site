@@ -14,7 +14,6 @@
     "content:check": "echo 'Checking content...' && find src/content -name '*.mdx' -exec echo 'Found: {}' \\;"
   },
   "dependencies": {
-    "@mdx-js/mdx": "^3.1.0",
     "@monaco-editor/react": "^4.7.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

@@ -3,11 +3,7 @@ const baseConfig = {
   reactStrictMode: true,
   // Improve development experience
   ...(process.env.NODE_ENV === 'development' && {
-    experimental: {
-      // Better file watching for content changes
-      optimizePackageImports: ['gray-matter'],
-    },
-    // Faster refresh for MDX content
+    // Development file watching tweaks
     webpack: (config: any, { dev, isServer }: any) => {
       if (dev && !isServer) {
         // Watch for changes in content directory
