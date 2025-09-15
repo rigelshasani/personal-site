@@ -16,10 +16,8 @@ export default async function Home() {
   
   // Filter posts with images for featured section
   const postsWithImages = allPosts.filter(post => {
-    // Check frontmatter images
-    if (post.meta.images && post.meta.images.length > 0) return true;
-    // Check content for markdown images or Figure components
-    return post.content.match(/!\[.*?\]\(.*?\)/) || post.content.match(/<Figure[^>]+src="/);
+    const url = getFirstImageUrl(post);
+    return !!(url && isValidImageUrl(url));
   });
   
   const regularPosts = standalonePosts.filter(post => !postsWithImages.includes(post));

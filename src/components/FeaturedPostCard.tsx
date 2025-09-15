@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Post } from '@/lib/content';
 import { formatDate } from '@/lib/format';
+import { getFirstImageUrl, isValidImageUrl } from '@/lib/content-utils';
 
 interface FeaturedPostCardProps {
   post: Post;
@@ -10,37 +11,8 @@ interface FeaturedPostCardProps {
 }
 
 export function FeaturedPostCard({ post, size = 'large' }: FeaturedPostCardProps) {
-  // Extract first image from post content or frontmatter
-  const getPostImage = () => {
-    // Check frontmatter images first
-    if (post.meta.images && post.meta.images.length > 0) {
-      return post.meta.images[0];
-    }
-    
-    // Look for markdown images in content - improved regex
-    const imageMatch = post.content.match(/!\[.*?\]\((.*?)\)/);
-    if (imageMatch && imageMatch[1]) {
-      return imageMatch[1].trim();
-    }
-    
-    // Look for Figure components - improved regex
-    const figureMatch = post.content.match(/<Figure[^>]+src="([^"]+)"/);
-    if (figureMatch && figureMatch[1]) {
-      return figureMatch[1].trim();
-    }
-    
-    return null;
-  };
-
-  const rawImageUrl = getPostImage();
+  const rawImageUrl = getFirstImageUrl(post);
   
-  // Validate image URL - must be absolute path or valid URL
-  const isValidImageUrl = (url: string): boolean => {
-    if (url.startsWith('/')) return true; // Absolute path
-    if (url.startsWith('http://') || url.startsWith('https://')) return true; // External URL
-    return false;
-  };
-
   const imageUrl = rawImageUrl && isValidImageUrl(rawImageUrl) ? rawImageUrl : null;
   
   if (!imageUrl) {
