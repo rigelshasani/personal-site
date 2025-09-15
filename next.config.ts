@@ -5,7 +5,7 @@ const baseConfig = {
   ...(process.env.NODE_ENV === 'development' && {
     experimental: {
       // Better file watching for content changes
-      optimizePackageImports: ['gray-matter', '@mdx-js/react'],
+      optimizePackageImports: ['gray-matter'],
     },
     // Faster refresh for MDX content
     webpack: (config: any, { dev, isServer }: any) => {
