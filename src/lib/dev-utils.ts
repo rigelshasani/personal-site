@@ -16,20 +16,36 @@ export function watchContentChanges() {
 
   const contentDir = path.join(process.cwd(), 'src/content');
   
-  // Simple file modification time checking
-  const checkForChanges = () => {
-    try {
-      const stats = fs.statSync(contentDir);
-      const currentTime = stats.mtime.getTime();
-      
-      if (currentTime > lastCheckTime) {
-        lastCheckTime = currentTime;
-        // Clear cache when content changes
-        contentCache.clear();
-        console.log('🔄 Content cache cleared due to file changes');
+  // Check latest mtime across all content files (recursive)
+  const getLatestMtime = (): number => {
+    let latest = 0;
+    const walk = (dir: string) => {
+      try {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const full = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            walk(full);
+          } else {
+            const stat = fs.statSync(full);
+            const m = stat.mtime.getTime();
+            if (m > latest) latest = m;
+          }
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      console.warn('Could not check content directory for changes');
+    };
+    walk(contentDir);
+    return latest;
+  };
+
+  const checkForChanges = () => {
+    const currentTime = getLatestMtime();
+    if (currentTime > lastCheckTime) {
+      lastCheckTime = currentTime;
+      contentCache.clear();
+      console.log('🔄 Content cache cleared due to file changes');
     }
   };
 
