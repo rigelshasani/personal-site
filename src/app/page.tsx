@@ -6,6 +6,7 @@ import { PostBox } from '@/components/PostBox';
 import { FeaturedPostCard } from '@/components/FeaturedPostCard';
 import { FeaturedPostsCarousel } from '@/components/FeaturedPostsCarousel';
 import { PopularPosts } from '@/components/PopularPosts';
+import { getFirstImageUrl, isValidImageUrl } from '@/lib/content-utils';
 
 export default async function Home() {
   const projects = getAllProjects();
