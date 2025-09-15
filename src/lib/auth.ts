@@ -1,7 +1,8 @@
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-config";
 
 export async function getAdminSession() {
+  // Lazy-import next-auth server API to avoid loading ESM deps during Jest module init
+  const { getServerSession } = await import("next-auth/next");
   const session = await getServerSession(authOptions);
   
   if (!session?.user?.login) {
