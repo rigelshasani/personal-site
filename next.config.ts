@@ -38,18 +38,4 @@ const baseConfig = {
   },
 };
 
-const withMDX = require("@next/mdx")({
-  extension: /\.mdx?$/,
-  options: {
-    remarkPlugins: [require("remark-gfm")],
-    rehypePlugins: [require("rehype-slug"), require("rehype-autolink-headings")],
-    // Improve development experience
-    development: process.env.NODE_ENV === 'development',
-    providerImportSource: "@mdx-js/react"
-  }
-});
-
-export default withMDX({
-  ...baseConfig,
-  pageExtensions: ["ts","tsx","mdx"]
-});
+export default baseConfig;
