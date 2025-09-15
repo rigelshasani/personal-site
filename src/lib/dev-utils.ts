@@ -14,6 +14,11 @@ export function isDevelopment() {
 export function watchContentChanges() {
   if (!isDevelopment()) return;
 
+  // Prevent multiple intervals under HMR in development
+  if ((globalThis as any).__contentWatcherStarted) {
+    return (globalThis as any).__contentWatcherHandle;
+  }
+
   const contentDir = path.join(process.cwd(), 'src/content');
   
   // Check latest mtime across all content files (recursive)
@@ -62,6 +67,8 @@ export function watchContentChanges() {
 
   // Check every 2 seconds in development
   const interval = setInterval(checkForChanges, 2000);
+  (globalThis as any).__contentWatcherStarted = true;
+  (globalThis as any).__contentWatcherHandle = interval;
   
   // Cleanup on process exit
   process.on('exit', () => clearInterval(interval));

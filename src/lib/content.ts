@@ -56,13 +56,41 @@ function calculateReadingTime(content: string): string {
   return `${minutes} min`;
 }
 
+// Robustly extract first image URL from content (markdown image, <Figure>, or <img>)
+function extractFirstImageUrl(content: string): string | undefined {
+  // Markdown image
+  const md = content.match(/!\[[^\]]*\]\(([^)]+)\)/);
+  if (md?.[1]) return md[1].trim();
+  // <Figure src="..."> or <Figure src='...'>
+  const fig = content.match(/<Figure[^>]+src=(?:\"([^\"]+)\"|'([^']+)')/);
+  if (fig?.[1] || fig?.[2]) return (fig[1] || fig[2])!.trim();
+  // <img src="..."> or <img src='...'>
+  const img = content.match(/<img[^>]+src=(?:\"([^\"]+)\"|'([^']+)')/i);
+  if (img?.[1] || img?.[2]) return (img[1] || img[2])!.trim();
+  return undefined;
+}
+
+function ensureDir(dirPath: string): boolean {
+  try {
+    return fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
 // Get all posts
 export function getAllPosts(): Post[] {
   return cacheContent('all-posts', () => {
     devLog('Loading all posts...');
     
     const postsDirectory = path.join(contentDirectory, 'posts');
-    const filenames = fs.readdirSync(postsDirectory);
+    let filenames: string[] = [];
+    try {
+      filenames = fs.readdirSync(postsDirectory);
+    } catch {
+      devLog('Posts directory not found, returning empty list');
+      return [] as Post[];
+    }
     
     const posts = filenames
       .filter(name => name.endsWith('.mdx'))
@@ -79,11 +107,7 @@ export function getAllPosts(): Post[] {
         const firstImageUrl = (() => {
           const meta = data as PostMeta;
           if (meta.images && meta.images.length > 0) return meta.images[0];
-          const md = content.match(/!\[.*?\]\((.*?)\)/);
-          if (md?.[1]) return md[1].trim();
-          const fig = content.match(/<Figure[^>]+src=\"([^\"]+)\"/);
-          if (fig?.[1]) return fig[1].trim();
-          return undefined;
+          return extractFirstImageUrl(content);
         })();
         
         return {
@@ -107,7 +131,13 @@ export function getAllProjects(): Project[] {
     devLog('Loading all projects...');
     
     const projectsDirectory = path.join(contentDirectory, 'projects');
-    const filenames = fs.readdirSync(projectsDirectory);
+    let filenames: string[] = [];
+    try {
+      filenames = fs.readdirSync(projectsDirectory);
+    } catch {
+      devLog('Projects directory not found, returning empty list');
+      return [] as Project[];
+    }
     const allPosts = getAllPosts();
     
     const projects = filenames
