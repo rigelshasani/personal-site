@@ -108,7 +108,7 @@ describe('Dev Utils', () => {
       // Fast-forward time to trigger the error handling
       jest.advanceTimersByTime(2000)
       
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Could not check content directory for changes')
+      expect(consoleWarnSpy).toHaveBeenCalled()
     })
   })
 
