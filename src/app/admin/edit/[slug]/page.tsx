@@ -59,19 +59,23 @@ export default function EditPostPage({ params }: { params: Params }) {
   }, [slug]);
 
   const handleSave = async (meta: PostMeta, content: string) => {
-    const response = await fetch(`/api/admin/posts/${slug}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ meta, content }),
-    });
+    try {
+      const response = await fetch(`/api/admin/posts/${slug}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ meta, content }),
+      });
 
-    if (!response.ok) {
-      throw new Error('Failed to update post');
+      if (!response.ok) {
+        throw new Error('Failed to update post');
+      }
+
+      router.push('/admin');
+    } catch (error) {
+      alert('Failed to update post');
     }
-
-    router.push('/admin');
   };
 
   const handleCancel = () => {

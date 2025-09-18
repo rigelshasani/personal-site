@@ -9,22 +9,27 @@ export async function POST(request: NextRequest) {
     await requireAdmin();
     
     const body = await request.json();
-    const { meta, content } = body as { meta: PostMeta; content: string };
+    const { meta, content } = (body || {}) as { meta?: PostMeta; content?: string };
     
-    // Validate input data
+    // Defensive validation for test/runtime differences
+    if (!meta || typeof meta.title !== 'string' || !meta.title.trim() ||
+        typeof meta.description !== 'string' || !meta.description.trim() ||
+        typeof meta.date !== 'string' || !meta.date.trim() ||
+        typeof content !== 'string' || !content.trim()) {
+      return NextResponse.json({ error: 'Invalid post data: missing required fields' }, { status: 400 });
+    }
+    
+    // Validate input data (strict)
     validatePostData(meta, content);
     
     // Generate slug from title
     const slug = generateSlug(meta.title);
     
     // Create the post file
+    // console.log('computed slug:', slug);
     createPostFile(slug, meta, content);
     
-    return NextResponse.json({ 
-      success: true, 
-      slug,
-      message: 'Post created successfully' 
-    });
+    return NextResponse.json({ success: true, slug, message: 'Post created successfully' });
     
   } catch (error) {
     console.error('Failed to create post:', error);
