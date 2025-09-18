@@ -1,0 +1,59 @@
+// Prisma schema for content and analytics
+// Default to SQLite for development. For Postgres, change provider and DATABASE_URL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  title       String
+  description String
+  date        DateTime
+  status      String   // 'active' | 'completed' | 'archived'
+  techJson    String?
+  github      String?
+  demo        String?
+  featured    Boolean  @default(false)
+  content     String
+
+  posts       Post[]
+}
+
+model Post {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  title       String
+  description String
+  date        DateTime
+  readingTime String
+  tagsJson    String?
+  order       Int?
+  imagesJson  String?
+  content     String
+
+  projectSlug String?
+  project     Project? @relation(fields: [projectSlug], references: [slug])
+}
+
+model ViewCount {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  slug      String
+  username  String
+  content   String
+  timestamp DateTime @default(now())
+}
+
