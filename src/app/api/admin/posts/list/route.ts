@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { getAllPosts } from '@/lib/content';
+import { getAllPosts } from '@/lib/content-gateway';
 
 export async function GET() {
   try {
@@ -8,7 +8,7 @@ export async function GET() {
     await requireAdmin();
     
     // Get all posts but return meta payload only (avoid sending full content)
-    const posts = getAllPosts().map(p => ({
+    const posts = (await getAllPosts()).map(p => ({
       slug: p.slug,
       meta: p.meta,
       readingTime: p.readingTime,

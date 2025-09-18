@@ -2,14 +2,14 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getProject, getAllProjects } from "@/lib/content";
+import { getProject, getAllProjects } from "@/lib/content-gateway";
 import { formatDate } from "@/lib/format";
 import { PostBox } from "@/components/PostBox";
 import { statusColors } from '@/lib/constants';
 import { Figure } from "@/components/mdx/Figure";
 
 export async function generateStaticParams() {
-  const projects = getAllProjects();
+  const projects = await getAllProjects();
   return projects.map((project) => ({ slug: project.slug }));
 }
 
@@ -21,7 +21,7 @@ export async function generateMetadata({
   params: Promise<ProjectParams>;
 }) {
   const { slug } = await params;
-  const project = getProject(slug);
+  const project = await getProject(slug);
   
   if (!project) {
     return { title: "Project Not Found" };
@@ -49,7 +49,7 @@ export default async function ProjectPage({
   params: Promise<ProjectParams>;
 }) {
   const { slug } = await params;
-  const project = getProject(slug);
+  const project = await getProject(slug);
   
   if (!project) {
     notFound();

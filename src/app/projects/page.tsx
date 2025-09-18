@@ -1,5 +1,5 @@
 // src/app/projects/page.tsx
-import { getAllProjects } from '@/lib/content';
+import { getAllProjects } from '@/lib/content-gateway';
 import { ProjectBox } from '@/components/ProjectBox';
 import Link from 'next/link';
 
@@ -8,8 +8,8 @@ export const metadata = {
   description: 'Data analytics projects and technical explorations',
 };
 
-export default function ProjectsPage() {
-  const projects = getAllProjects();
+export default async function ProjectsPage() {
+  const projects = await getAllProjects();
   const featuredProjects = projects.filter(p => p.meta.featured);
   const otherProjects = projects.filter(p => !p.meta.featured);
 

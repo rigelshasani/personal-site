@@ -2,7 +2,7 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getPost, getAllPosts, getProject } from "@/lib/content";
+import { getPost, getAllPosts, getProject } from "@/lib/content-gateway";
 import { formatDate } from "@/lib/format";
 import { Figure } from "@/components/mdx/Figure";
 import { OptimizedImage } from "@/components/mdx/OptimizedImage";
@@ -10,7 +10,7 @@ import { ViewTrackerWithNotification } from "@/components/ViewTrackerWithNotific
 import { Comments } from "@/components/Comments";
 
 export async function generateStaticParams() {
-  const posts = getAllPosts();
+  const posts = await getAllPosts();
   return posts.map((post) => ({ slug: post.slug }));
 }
 
@@ -22,7 +22,7 @@ export async function generateMetadata({
   params: Promise<PostParams>;
 }) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
   
   if (!post) {
     return { title: "Post Not Found" };
@@ -50,14 +50,14 @@ export default async function PostPage({
   params: Promise<PostParams>;
 }) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
   
   if (!post) {
     notFound();
   }
 
   // Get project info if this post belongs to one
-  const project = post.meta.project ? getProject(post.meta.project) : null;
+  const project = post.meta.project ? await getProject(post.meta.project) : null;
 
   return (
     <article className="prose prose-invert max-w-none py-16">

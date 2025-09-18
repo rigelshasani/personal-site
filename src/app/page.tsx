@@ -1,6 +1,6 @@
 // src/app/page.tsx
 import Link from 'next/link';
-import { getAllProjects, getStandalonePosts, getAllPosts } from '@/lib/content';
+import { getAllProjects, getStandalonePosts, getAllPosts } from '@/lib/content-gateway';
 import { ProjectBox } from '@/components/ProjectBox';
 import { PostBox } from '@/components/PostBox';
 import { FeaturedPostCard } from '@/components/FeaturedPostCard';
@@ -8,9 +8,9 @@ import { FeaturedPostsCarousel } from '@/components/FeaturedPostsCarousel';
 import { PopularPosts } from '@/components/PopularPosts';
 
 export default async function Home() {
-  const projects = getAllProjects();
-  const allPosts = getAllPosts();
-  const standalonePosts = getStandalonePosts();
+  const projects = await getAllProjects();
+  const allPosts = await getAllPosts();
+  const standalonePosts = await getStandalonePosts();
   const featuredProjects = projects.filter(p => p.meta.featured);
   const recentProjects = projects.slice(0, 3);
   

@@ -1,5 +1,5 @@
 // src/app/posts/page.tsx
-import { getAllPosts } from '@/lib/content';
+import { getAllPosts } from '@/lib/content-gateway';
 import { PostBox } from '@/components/PostBox';
 
 export const metadata = {
@@ -7,8 +7,8 @@ export const metadata = {
   description: 'All blog posts and essays',
 };
 
-export default function PostsPage() {
-  const posts = getAllPosts();
+export default async function PostsPage() {
+  const posts = await getAllPosts();
   
   // Group posts by category if they have tags
   const philosophyPosts = posts.filter(post => 
