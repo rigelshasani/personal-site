@@ -14,7 +14,8 @@
     "content:check": "echo 'Checking content...' && find src/content -name '*.mdx' -exec echo 'Found: {}' \\;",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:import-mdx": "node scripts/import-mdx-to-db.cjs"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
