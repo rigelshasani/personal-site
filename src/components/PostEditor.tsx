@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Editor from '@monaco-editor/react';
+import dynamic from 'next/dynamic';
+const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 import { PostMeta } from '@/lib/content';
 
 interface PostEditorProps {
@@ -41,8 +42,8 @@ export function PostEditor({
   const [isLoading, setIsLoading] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
 
-  const handleMetaChange = (field: keyof PostMeta, value: string | number) => {
-    setMeta(prev => ({ ...prev, [field]: value }));
+  const handleMetaChange = (field: keyof PostMeta, value: string | number | undefined) => {
+    setMeta(prev => ({ ...prev, [field]: value as any }));
   };
 
   const handleTagsChange = (value: string) => {
@@ -150,8 +151,16 @@ export function PostEditor({
             </label>
             <input
               type="number"
-              value={meta.order || ''}
-              onChange={(e) => handleMetaChange('order', e.target.value ? parseInt(e.target.value) : '')}
+              value={typeof meta.order === 'number' ? String(meta.order) : ''}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (!v) {
+                  handleMetaChange('order', undefined);
+                } else {
+                  const parsed = parseInt(v, 10);
+                  handleMetaChange('order', Number.isNaN(parsed) ? undefined : parsed);
+                }
+              }}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
               placeholder="1"
               min="1"
