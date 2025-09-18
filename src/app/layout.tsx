@@ -24,6 +24,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={bellota.variable}>
+      <head>
+        {/* Prevent theme flicker by applying saved theme before hydration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => {try {var t=localStorage.getItem('theme');var d=t==='dark';var r=document.documentElement;if(d){r.classList.add('dark');r.style.setProperty('--background','#0d0d0d');r.style.setProperty('--foreground','#fafafa');r.style.setProperty('--text-mid','#999999');r.style.setProperty('--color-accent','#10a37f');}else{r.classList.remove('dark');r.style.setProperty('--background','#ffffff');r.style.setProperty('--foreground','#171717');r.style.setProperty('--text-mid','#666666');r.style.setProperty('--color-accent','#1e40af');}}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="font-sans antialiased bg-bg text-foreground min-h-screen">
         <SessionProvider>
           <ToastProvider>
