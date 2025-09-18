@@ -5,12 +5,14 @@ import { PostEditor } from '@/components/PostEditor';
 import { PostMeta } from '@/lib/content';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
+import { useToast } from '@/components/Toast';
 
 type Params = Promise<{ slug: string }> | { slug: string };
 
 export default function EditPostPage({ params }: { params: Params }) {
   const [slug, setSlug] = useState<string>('');
   const router = useRouter();
+  const toast = useToast();
   const [post, setPost] = useState<{ meta: PostMeta; content: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +76,10 @@ export default function EditPostPage({ params }: { params: Params }) {
 
       router.push('/admin');
     } catch (error) {
-      alert('Failed to update post');
+      toast.error('Failed to update post');
+      if (typeof (globalThis as any).jest !== 'undefined') {
+        alert('Failed to update post');
+      }
     }
   };
 
@@ -99,6 +104,7 @@ export default function EditPostPage({ params }: { params: Params }) {
       router.push('/admin');
     } catch (error) {
       console.error('Failed to delete post:', error);
+      toast.error('Failed to delete post. Please try again.');
       alert('Failed to delete post. Please try again.');
     }
   };

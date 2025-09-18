@@ -7,6 +7,7 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { DevToolbar } from "@/components/DevToolbar";
 import { SessionProvider } from "@/components/SessionProvider";
 import { AdminLoginButton } from "@/components/AdminLoginButton";
+import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
   title: {
@@ -25,12 +26,14 @@ export default function RootLayout({
     <html lang="en" className={bellota.variable}>
       <body className="font-sans antialiased bg-bg text-foreground min-h-screen">
         <SessionProvider>
-          <SidebarLayout>
-            {children}
-          </SidebarLayout>
-          <ProgressBar />
-          <DevToolbar />
-          <AdminLoginButton />
+          <ToastProvider>
+            <SidebarLayout>
+              {children}
+            </SidebarLayout>
+            <ProgressBar />
+            <DevToolbar />
+            <AdminLoginButton />
+          </ToastProvider>
         </SessionProvider>
       </body>
     </html>

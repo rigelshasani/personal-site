@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { formatDate } from '@/lib/format';
 import Link from 'next/link';
 import { Post } from '@/lib/content';
+import { useToast } from '@/components/Toast';
 
 export default function AdminDashboard() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     // Fetch posts on client side to avoid hydration issues
@@ -100,9 +102,11 @@ export default function AdminDashboard() {
                         if (response.ok) {
                           setPosts((prev) => prev.filter((p) => p.slug !== post.slug));
                         } else {
+                          toast.error('Failed to delete post');
                           alert('Failed to delete post');
                         }
                       } catch {
+                        toast.error('Failed to delete post');
                         alert('Failed to delete post');
                       }
                     }}

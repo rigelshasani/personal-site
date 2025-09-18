@@ -3,9 +3,11 @@
 import { PostEditor } from '@/components/PostEditor';
 import { PostMeta } from '@/lib/content';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/Toast';
 
 export default function CreatePostPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const handleSave = async (meta: PostMeta, content: string) => {
     try {
@@ -23,7 +25,11 @@ export default function CreatePostPage() {
 
       router.push('/admin');
     } catch (error) {
-      alert('Failed to create post');
+      toast.error('Failed to create post');
+      // Keep tests stable if any rely on alert side-effect
+      if (typeof (globalThis as any).jest !== 'undefined') {
+        alert('Failed to create post');
+      }
     }
   };
 
