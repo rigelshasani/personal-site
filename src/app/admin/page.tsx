@@ -98,7 +98,7 @@ export default function AdminDashboard() {
                           method: 'DELETE',
                         });
                         if (response.ok) {
-                          window.location.reload();
+                          setPosts((prev) => prev.filter((p) => p.slug !== post.slug));
                         } else {
                           alert('Failed to delete post');
                         }

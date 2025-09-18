@@ -86,3 +86,24 @@ global.Response = class MockResponse {
     return this.body
   }
 }
+
+// Silence jsdom "not implemented" errors for browser-only APIs used in UI
+// These are behaviorally tested elsewhere; here we avoid noisy console outputs.
+// Note: individual tests can override these as needed.
+// Provide both global and window-bound versions for reliability
+if (typeof global.alert === 'undefined') global.alert = jest.fn()
+if (typeof global.confirm === 'undefined') global.confirm = jest.fn(() => true)
+try {
+  if (global.window) {
+    if (typeof global.window.alert === 'undefined') global.window.alert = global.alert
+    if (typeof global.window.confirm === 'undefined') global.window.confirm = global.confirm
+  }
+} catch (_) {}
+try {
+  if (global.window && global.window.location) {
+    // Override only the reload function; keep other properties intact
+    global.window.location.reload = jest.fn()
+  }
+} catch (_) {
+  // Best-effort; if jsdom blocks overriding location, ignore
+}
