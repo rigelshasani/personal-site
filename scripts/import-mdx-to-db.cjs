@@ -72,7 +72,7 @@ async function importProjects(contentDir) {
       })
     }
     count++
-    console.log(`[projects] upserted: ${slug}`)
+    if (!DRY_RUN) console.log(`[projects] upserted: ${slug}`)
   }
   return count
 }
@@ -127,7 +127,7 @@ async function importPosts(contentDir) {
       })
     }
     count++
-    console.log(`[posts] upserted: ${slug}`)
+    if (!DRY_RUN) console.log(`[posts] upserted: ${slug}`)
   }
   return count
 }
