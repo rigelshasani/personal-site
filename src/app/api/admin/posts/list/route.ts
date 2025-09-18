@@ -7,8 +7,12 @@ export async function GET() {
     // Verify admin authentication
     await requireAdmin();
     
-    // Get all posts
-    const posts = getAllPosts();
+    // Get all posts but return meta payload only (avoid sending full content)
+    const posts = getAllPosts().map(p => ({
+      slug: p.slug,
+      meta: p.meta,
+      readingTime: p.readingTime,
+    }));
     
     return NextResponse.json({ 
       success: true,
