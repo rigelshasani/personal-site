@@ -14,10 +14,15 @@ export function isDevelopment() {
 export function watchContentChanges() {
   if (!isDevelopment()) return;
 
-  const isTest = typeof (globalThis as any).jest !== 'undefined';
+  const globalObj = globalThis as {
+    jest?: unknown;
+    __contentWatcherStarted?: boolean;
+    __contentWatcherHandle?: NodeJS.Timeout;
+  };
+  const isTest = typeof globalObj.jest !== 'undefined';
   // Prevent multiple intervals under HMR in development (but not during tests)
-  if (!isTest && (globalThis as any).__contentWatcherStarted) {
-    return (globalThis as any).__contentWatcherHandle;
+  if (!isTest && globalObj.__contentWatcherStarted) {
+    return globalObj.__contentWatcherHandle;
   }
 
   const contentDir = path.join(process.cwd(), 'src/content');
@@ -86,8 +91,8 @@ export function watchContentChanges() {
     console.warn('Could not check content directory for changes');
   }
   if (!isTest) {
-    (globalThis as any).__contentWatcherStarted = true;
-    (globalThis as any).__contentWatcherHandle = interval;
+    globalObj.__contentWatcherStarted = true;
+    globalObj.__contentWatcherHandle = interval;
   }
   
   // Cleanup on process exit

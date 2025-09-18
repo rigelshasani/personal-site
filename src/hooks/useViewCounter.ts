@@ -25,7 +25,7 @@ export function useViewCounter(slug: string) {
         setViewCount(newCount);
         
         // Reset animation after animation completes (skip in tests to avoid act warnings)
-        if (typeof (globalThis as any).jest === 'undefined') {
+        if (typeof (globalThis as { jest?: unknown }).jest === 'undefined') {
           setTimeout(() => setJustIncremented(false), 2000);
         }
       }

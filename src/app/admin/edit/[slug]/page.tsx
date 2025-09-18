@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { PostEditor } from '@/components/PostEditor';
 import { PostMeta } from '@/lib/content';
 import { useRouter } from 'next/navigation';
-import { use } from 'react';
 import { useToast } from '@/components/Toast';
 
 type Params = Promise<{ slug: string }> | { slug: string };
@@ -21,8 +20,11 @@ export default function EditPostPage({ params }: { params: Params }) {
     let cancelled = false;
     (async () => {
       try {
-        const p: any = params as any;
-        const value = typeof p?.then === 'function' ? await p : p;
+        const p = params;
+        const isPromise = (val: unknown): val is Promise<{ slug: string }> => {
+          return typeof val === 'object' && val !== null && typeof (val as { then?: unknown }).then === 'function';
+        };
+        const value = isPromise(p) ? await p : (p as { slug: string });
         if (!cancelled) setSlug(value?.slug || '');
       } catch {
         if (!cancelled) setSlug('');
@@ -75,9 +77,10 @@ export default function EditPostPage({ params }: { params: Params }) {
       }
 
       router.push('/admin');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update post');
-      if (typeof (globalThis as any).jest !== 'undefined') {
+      const g = globalThis as { jest?: unknown };
+      if (typeof g.jest !== 'undefined') {
         alert('Failed to update post');
       }
     }

@@ -24,10 +24,11 @@ export default function CreatePostPage() {
       }
 
       router.push('/admin');
-    } catch (error) {
+    } catch {
       toast.error('Failed to create post');
       // Keep tests stable if any rely on alert side-effect
-      if (typeof (globalThis as any).jest !== 'undefined') {
+      const g = globalThis as { jest?: unknown };
+      if (typeof g.jest !== 'undefined') {
         alert('Failed to create post');
       }
     }

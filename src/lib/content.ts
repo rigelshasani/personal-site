@@ -70,14 +70,6 @@ function extractFirstImageUrl(content: string): string | undefined {
   return undefined;
 }
 
-function ensureDir(dirPath: string): boolean {
-  try {
-    return fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory();
-  } catch {
-    return false;
-  }
-}
-
 // Get all posts
 export function getAllPosts(): Post[] {
   return cacheContent('all-posts', () => {
