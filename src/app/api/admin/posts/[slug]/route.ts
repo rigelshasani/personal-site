@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { PostMeta } from '@/lib/content';
 import { updatePostFile, deletePostFile, validatePostData } from '@/lib/post-utils';
+import { shouldUseDb, updatePost as updatePostDb, deletePost as deletePostDb } from '@/lib/content-service';
 
 interface RouteContext {
   params: Promise<{ slug: string }>;
@@ -19,8 +20,12 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     // Validate input data
     validatePostData(meta, content);
     
-    // Update the post file
-    updatePostFile(slug, meta, content);
+    if (shouldUseDb()) {
+      await updatePostDb(slug, meta, content);
+    } else {
+      // Update the post file
+      updatePostFile(slug, meta, content);
+    }
     
     return NextResponse.json({ 
       success: true, 
@@ -51,8 +56,12 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     
     const { slug } = await context.params;
     
-    // Delete the post file
-    deletePostFile(slug);
+    if (shouldUseDb()) {
+      await deletePostDb(slug);
+    } else {
+      // Delete the post file
+      deletePostFile(slug);
+    }
     
     return NextResponse.json({ 
       success: true, 

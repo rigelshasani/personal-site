@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { getPost } from '@/lib/content';
+import { getPost } from '@/lib/content-gateway';
 
 interface RouteContext {
   params: Promise<{ slug: string }>;
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     await requireAdmin();
     
     const { slug } = await context.params;
-    const post = getPost(slug);
+    const post = await getPost(slug);
     
     if (!post) {
       return NextResponse.json(

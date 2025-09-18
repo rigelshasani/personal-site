@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { PostMeta } from '@/lib/content';
 import { createPostFile, generateSlug, validatePostData } from '@/lib/post-utils';
+import { shouldUseDb, createPost as createPostDb } from '@/lib/content-service';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,11 +25,13 @@ export async function POST(request: NextRequest) {
     
     // Generate slug from title
     const slug = generateSlug(meta.title);
-    
-    // Create the post file
-    // console.log('computed slug:', slug);
-    createPostFile(slug, meta, content);
-    
+
+    if (shouldUseDb()) {
+      await createPostDb(meta, content);
+    } else {
+      // Create the post file
+      createPostFile(slug, meta, content);
+    }
     return NextResponse.json({ success: true, slug, message: 'Post created successfully' });
     
   } catch (error) {
