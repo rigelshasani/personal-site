@@ -10,8 +10,11 @@ const fs = require('fs')
 const path = require('path')
 const matter = require('gray-matter')
 const { PrismaClient } = require('@prisma/client')
-
-const prisma = new PrismaClient()
+const DRY_RUN = process.env.DRY_RUN === '1' || process.argv.includes('--dry-run')
+let prisma = null
+if (!DRY_RUN) {
+  prisma = new PrismaClient()
+}
 
 function calculateReadingTime(content) {
   const words = String(content).split(/\s+/).filter(Boolean).length
@@ -38,32 +41,36 @@ async function importProjects(contentDir) {
     const demo = data.demo || null
     const featured = !!data.featured
 
-    await prisma.project.upsert({
-      where: { slug },
-      update: {
-        title,
-        description,
-        date: new Date(dateStr),
-        status,
-        techJson: tech.length ? JSON.stringify(tech) : null,
-        github,
-        demo,
-        featured,
-        content,
-      },
-      create: {
-        slug,
-        title,
-        description,
-        date: new Date(dateStr),
-        status,
-        techJson: tech.length ? JSON.stringify(tech) : null,
-        github,
-        demo,
-        featured,
-        content,
-      },
-    })
+    if (DRY_RUN) {
+      console.log(`[projects] would upsert: ${slug}`)
+    } else {
+      await prisma.project.upsert({
+        where: { slug },
+        update: {
+          title,
+          description,
+          date: new Date(dateStr),
+          status,
+          techJson: tech.length ? JSON.stringify(tech) : null,
+          github,
+          demo,
+          featured,
+          content,
+        },
+        create: {
+          slug,
+          title,
+          description,
+          date: new Date(dateStr),
+          status,
+          techJson: tech.length ? JSON.stringify(tech) : null,
+          github,
+          demo,
+          featured,
+          content,
+        },
+      })
+    }
     count++
     console.log(`[projects] upserted: ${slug}`)
   }
@@ -89,32 +96,36 @@ async function importPosts(contentDir) {
     const images = Array.isArray(data.images) ? data.images : []
     const readingTime = data.readingTime || calculateReadingTime(content)
 
-    await prisma.post.upsert({
-      where: { slug },
-      update: {
-        title,
-        description,
-        date: new Date(dateStr),
-        readingTime,
-        tagsJson: tags.length ? JSON.stringify(tags) : null,
-        projectSlug,
-        order,
-        imagesJson: images.length ? JSON.stringify(images) : null,
-        content,
-      },
-      create: {
-        slug,
-        title,
-        description,
-        date: new Date(dateStr),
-        readingTime,
-        tagsJson: tags.length ? JSON.stringify(tags) : null,
-        projectSlug,
-        order,
-        imagesJson: images.length ? JSON.stringify(images) : null,
-        content,
-      },
-    })
+    if (DRY_RUN) {
+      console.log(`[posts] would upsert: ${slug}`)
+    } else {
+      await prisma.post.upsert({
+        where: { slug },
+        update: {
+          title,
+          description,
+          date: new Date(dateStr),
+          readingTime,
+          tagsJson: tags.length ? JSON.stringify(tags) : null,
+          projectSlug,
+          order,
+          imagesJson: images.length ? JSON.stringify(images) : null,
+          content,
+        },
+        create: {
+          slug,
+          title,
+          description,
+          date: new Date(dateStr),
+          readingTime,
+          tagsJson: tags.length ? JSON.stringify(tags) : null,
+          projectSlug,
+          order,
+          imagesJson: images.length ? JSON.stringify(images) : null,
+          content,
+        },
+      })
+    }
     count++
     console.log(`[posts] upserted: ${slug}`)
   }
@@ -127,7 +138,7 @@ async function main() {
   // Import projects first so post relations are valid
   const pCount = await importProjects(contentDir)
   const sCount = await importPosts(contentDir)
-  console.log(`[import] completed. projects=${pCount}, posts=${sCount}`)
+  console.log(`[import] ${DRY_RUN ? 'dry-run ' : ''}completed. projects=${pCount}, posts=${sCount}`)
 }
 
 main()
@@ -136,6 +147,5 @@ main()
     process.exitCode = 1
   })
   .finally(async () => {
-    await prisma.$disconnect()
+    if (prisma) await prisma.$disconnect()
   })
-
