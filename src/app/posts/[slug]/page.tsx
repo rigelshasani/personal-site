@@ -8,6 +8,7 @@ import { Figure } from "@/components/mdx/Figure";
 import { OptimizedImage } from "@/components/mdx/OptimizedImage";
 import { ViewTrackerWithNotification } from "@/components/ViewTrackerWithNotification";
 import { Comments } from "@/components/Comments";
+import ViewHit from "@/components/ViewHit";
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -23,7 +24,7 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const post = await getPost(slug);
-  
+
   if (!post) {
     return { title: "Post Not Found" };
   }
@@ -51,21 +52,24 @@ export default async function PostPage({
 }) {
   const { slug } = await params;
   const post = await getPost(slug);
-  
+
   if (!post) {
     notFound();
   }
 
   // Get project info if this post belongs to one
-  const project = post.meta.project ? await getProject(post.meta.project) : null;
+  const project = post!.meta.project ? await getProject(post!.meta.project) : null;
 
   return (
     <article className="prose prose-invert max-w-none py-16">
+      {/* once-per-session increment, no UI */}
+      <ViewHit slug={slug} />
+
       <header className="mb-8">
         {/* Project breadcrumb */}
         {project && (
           <div className="mb-4">
-            <Link 
+            <Link
               href={`/projects/${project.slug}`}
               className="text-sm text-accent hover:underline no-underline"
             >
@@ -73,19 +77,19 @@ export default async function PostPage({
             </Link>
           </div>
         )}
-        
-        <h1 className="text-4xl font-bold mb-4">{post.meta.title}</h1>
-        
+
+        <h1 className="text-4xl font-bold mb-4">{post!.meta.title}</h1>
+
         <div className="flex items-center gap-4 text-sm text-mid not-prose">
-          <span>{formatDate(post.meta.date)}</span>
-          <span>• {post.readingTime}</span>
-          <ViewTrackerWithNotification slug={post.slug} />
-          {post.meta.tags && (
+          <span>{formatDate(post!.meta.date)}</span>
+          <span>• {post!.readingTime}</span>
+          <ViewTrackerWithNotification slug={post!.slug} />
+          {post!.meta.tags && (
             <>
               <span>•</span>
               <div className="flex gap-2">
-                {post.meta.tags.map(tag => (
-                  <span 
+                {post!.meta.tags.map((tag) => (
+                  <span
                     key={tag}
                     className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 rounded-md"
                   >
@@ -96,7 +100,7 @@ export default async function PostPage({
             </>
           )}
         </div>
-        
+
         {/* Project context */}
         {project && (
           <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg not-prose">
@@ -108,14 +112,11 @@ export default async function PostPage({
                 <span className="text-mid">Other posts in this series:</span>
                 <ul className="mt-2 space-y-1">
                   {project.posts
-                    .filter(p => p.slug !== slug)
+                    .filter((p) => p.slug !== slug)
                     .slice(0, 3)
-                    .map(p => (
+                    .map((p) => (
                       <li key={p.slug}>
-                        <Link 
-                          href={`/posts/${p.slug}`}
-                          className="text-accent hover:underline"
-                        >
+                        <Link href={`/posts/${p.slug}`} className="text-accent hover:underline">
                           {p.meta.title}
                         </Link>
                       </li>
@@ -126,58 +127,68 @@ export default async function PostPage({
           </div>
         )}
       </header>
-      
-      <MDXRemote 
-        source={post.content} 
+
+      <MDXRemote
+        source={post!.content}
         components={{
           Figure,
           img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
             <OptimizedImage
-              src={typeof props.src === 'string' ? props.src : ''}
-              alt={props.alt || ''}
-              width={typeof props.width === 'number' ? props.width : (typeof props.width === 'string' ? parseInt(props.width, 10) : 800)}
-              height={typeof props.height === 'number' ? props.height : (typeof props.height === 'string' ? parseInt(props.height, 10) : 600)}
+              src={typeof props.src === "string" ? props.src : ""}
+              alt={props.alt || ""}
+              width={
+                typeof props.width === "number"
+                  ? props.width
+                  : typeof props.width === "string"
+                  ? parseInt(props.width, 10)
+                  : 800
+              }
+              height={
+                typeof props.height === "number"
+                  ? props.height
+                  : typeof props.height === "string"
+                  ? parseInt(props.height, 10)
+                  : 600
+              }
               className="rounded-lg my-4"
             />
           ),
         }}
       />
-      
+
       {/* Navigation to next/prev posts in project */}
       {project && project.posts.length > 1 && (
         <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 not-prose">
           <div className="flex justify-between">
             {/* Previous post */}
             {(() => {
-              const currentIndex = project.posts.findIndex(p => p.slug === slug);
+              const currentIndex = project.posts.findIndex((p) => p.slug === slug);
               const prevPost = project.posts[currentIndex - 1];
               return prevPost ? (
-                <Link 
-                  href={`/posts/${prevPost.slug}`}
-                  className="text-accent hover:underline"
-                >
+                <Link href={`/posts/${prevPost.slug}`} className="text-accent hover:underline">
                   ← {prevPost.meta.title}
                 </Link>
-              ) : <div />;
+              ) : (
+                <div />
+              );
             })()}
-            
+
             {/* Next post */}
             {(() => {
-              const currentIndex = project.posts.findIndex(p => p.slug === slug);
+              const currentIndex = project.posts.findIndex((p) => p.slug === slug);
               const nextPost = project.posts[currentIndex + 1];
               return nextPost ? (
-                <Link 
-                  href={`/posts/${nextPost.slug}`}
-                  className="text-accent hover:underline"
-                >
+                <Link href={`/posts/${nextPost.slug}`} className="text-accent hover:underline">
                   {nextPost.meta.title} →
                 </Link>
-              ) : <div />;
+              ) : (
+                <div />
+              );
             })()}
           </div>
         </footer>
       )}
-      
+
       {/* Comments section */}
       <Comments slug={slug} />
     </article>

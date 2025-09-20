@@ -81,9 +81,17 @@ export function watchContentChanges() {
     }
   };
 
-  // Check every 2 seconds in development
-  const interval = setInterval(checkForChanges, 2000);
-  console.log('[watch] interval set');
+  // Check every 2 seconds in development (only in file-backed mode)
+  if (process.env.NEXT_PUBLIC_CONTENT_BACKEND !== 'db') {
+    const interval = setInterval(checkForChanges, 2000);
+    console.log('[watch] interval set');
+    // HMR cleanup
+    // @ts-ignore
+    if (typeof module !== 'undefined' && (module as any)?.hot) {
+      // @ts-ignore
+      (module as any).hot.dispose(() => clearInterval(interval));
+    }
+  }
   // Run an immediate check once
   try { checkForChanges(); } catch { /* ignore */ }
   // In test environments, force at least one warning call for error-path coverage

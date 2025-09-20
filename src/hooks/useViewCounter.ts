@@ -1,70 +1,34 @@
-// src/hooks/useViewCounter.ts - React hook for view counting
-'use client';
-
-import { useState, useEffect } from 'react';
-import { recordView, getViewCount, formatViewCount } from '@/lib/view-counter';
+// src/hooks/useViewCounter.ts
+'use client'
+import { useEffect, useRef, useState } from 'react'
+import { getViewCount, formatViewCount } from '@/lib/view-counter'
 
 export function useViewCounter(slug: string) {
-  const [viewCount, setViewCount] = useState(0);
-  const [justIncremented, setJustIncremented] = useState(false);
+  const [viewCount, setViewCount] = useState(() => getViewCount(slug))
+  const [justIncremented, setJustIncremented] = useState(false)
+  const last = useRef<number>(viewCount)
 
   useEffect(() => {
-    if (!slug) return;
+    const c = getViewCount(slug)
+    setViewCount(c)
+    last.current = c
 
-    // Get initial count
-    const initialCount = getViewCount(slug);
-    setViewCount(initialCount);
-
-    // Record view after a delay to ensure user actually viewed the content
-    const timer = setTimeout(() => {
-      const newCount = recordView(slug);
-      
-      // Only animate if count actually increased
-      if (newCount > initialCount) {
-        setJustIncremented(true);
-        setViewCount(newCount);
-        
-        // Reset animation after animation completes (skip in tests to avoid act warnings)
-        if (typeof (globalThis as { jest?: unknown }).jest === 'undefined') {
-          setTimeout(() => setJustIncremented(false), 2000);
-        }
+    const onStorage = (e: StorageEvent) => {
+      if (e.key && e.key !== 'blog-view-counts') return
+      const next = getViewCount(slug)
+      if (next > last.current) {
+        setJustIncremented(true)
+        setTimeout(() => setJustIncremented(false), 1500)
       }
-    }, 5000); // 5 second delay
+      last.current = next
+      setViewCount(next)
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [slug])
 
-    return () => clearTimeout(timer);
-  }, [slug]); // Removed isRecorded dependency to allow re-recording on revisits
-
-  return {
-    viewCount,
-    formattedViewCount: formatViewCount(viewCount),
-    justIncremented
-  };
+  return { viewCount, formattedViewCount: formatViewCount(viewCount), justIncremented }
 }
 
-// Hook for getting view counts without recording a view
-export function useViewCountDisplay(slug: string) {
-  const [viewCount, setViewCount] = useState(0);
-
-  useEffect(() => {
-    if (!slug) return;
-
-    const count = getViewCount(slug);
-    setViewCount(count);
-
-    // Listen for storage changes to update counts in real-time
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'blog-view-counts') {
-        const newCount = getViewCount(slug);
-        setViewCount(newCount);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [slug]);
-
-  return {
-    viewCount,
-    formattedViewCount: formatViewCount(viewCount)
-  };
-}
+// Read-only version (alias for compatibility with ViewCounter component)
+export const useViewCountDisplay = useViewCounter
