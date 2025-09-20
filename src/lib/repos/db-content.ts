@@ -46,7 +46,10 @@ export async function dbGetPost(slug: string): Promise<Post | null> {
 
 export async function dbGetAllProjects(): Promise<Project[]> {
   const projects = await prisma.project.findMany({ orderBy: { date: 'desc' } })
-  const posts = await prisma.post.findMany({})
+  const posts = await prisma.post.findMany({
+  orderBy: { date: 'desc' }
+})
+
   const postsBySlug = new Map<string, Post[]>(
     projects.map((p) => [p.slug, []])
   )
