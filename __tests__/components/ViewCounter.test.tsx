@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
-import { ViewCount, ViewCounter, ViewTracker } from '@/components/ViewCounter'
+import ViewCounter from '@/components/ViewCounter'
 import * as viewCounterModule from '@/lib/view-counter'
 
 // Mock the view counter module
