@@ -6,7 +6,7 @@ import { PostMeta } from '@/lib/content';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 
-type Params = Promise<{ slug: string }> | { slug: string };
+type Params = Promise<{ slug: string }>;
 
 export default function EditPostPage({ params }: { params: Params }) {
   const [slug, setSlug] = useState<string>('');
@@ -20,11 +20,7 @@ export default function EditPostPage({ params }: { params: Params }) {
     let cancelled = false;
     (async () => {
       try {
-        const p = params;
-        const isPromise = (val: unknown): val is Promise<{ slug: string }> => {
-          return typeof val === 'object' && val !== null && typeof (val as { then?: unknown }).then === 'function';
-        };
-        const value = isPromise(p) ? await p : (p as { slug: string });
+        const value = await params;
         if (!cancelled) setSlug(value?.slug || '');
       } catch {
         if (!cancelled) setSlug('');

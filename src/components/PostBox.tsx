@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Post } from '@/lib/content';
 import { formatDate } from '@/lib/format';
-import { ViewCount } from '@/components/ViewCounter';
+import ViewCount from '@/components/ViewCounter';
 
 interface PostBoxProps {
   post: Post;

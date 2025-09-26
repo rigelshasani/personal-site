@@ -82,15 +82,16 @@ export function watchContentChanges() {
   };
 
   // Check every 2 seconds in development (only in file-backed mode)
+  let interval: NodeJS.Timeout | undefined
   if (process.env.NEXT_PUBLIC_CONTENT_BACKEND !== 'db') {
-    const interval = setInterval(checkForChanges, 2000);
+    interval = setInterval(checkForChanges, 2000);
     console.log('[watch] interval set');
     // HMR cleanup (best-effort without relying on Node's module typings)
     try {
       const maybeModule = (globalThis as unknown as {
         module?: { hot?: { dispose(cb: () => void): void } }
       }).module;
-      maybeModule?.hot?.dispose(() => clearInterval(interval));
+      maybeModule?.hot?.dispose(() => { if (interval) clearInterval(interval) });
     } catch {
       // ignore if HMR runtime shape isn't available
     }
@@ -103,11 +104,11 @@ export function watchContentChanges() {
   }
   if (!isTest) {
     globalObj.__contentWatcherStarted = true;
-    globalObj.__contentWatcherHandle = interval;
+    if (interval) globalObj.__contentWatcherHandle = interval;
   }
   
   // Cleanup on process exit
-  process.on('exit', () => clearInterval(interval));
+  process.on('exit', () => { if (interval) clearInterval(interval) });
   
   return interval;
 }
