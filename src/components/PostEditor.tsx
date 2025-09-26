@@ -42,8 +42,8 @@ export function PostEditor({
   const [isLoading, setIsLoading] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
 
-  const handleMetaChange = (field: keyof PostMeta, value: string | number | undefined) => {
-    setMeta(prev => ({ ...prev, [field]: value as any }));
+  const handleMetaChange = <K extends keyof PostMeta>(field: K, value: PostMeta[K]) => {
+    setMeta(prev => ({ ...prev, [field]: value } as PostMeta));
   };
 
   const handleTagsChange = (value: string) => {

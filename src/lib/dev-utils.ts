@@ -85,11 +85,14 @@ export function watchContentChanges() {
   if (process.env.NEXT_PUBLIC_CONTENT_BACKEND !== 'db') {
     const interval = setInterval(checkForChanges, 2000);
     console.log('[watch] interval set');
-    // HMR cleanup
-    // @ts-ignore
-    if (typeof module !== 'undefined' && (module as any)?.hot) {
-      // @ts-ignore
-      (module as any).hot.dispose(() => clearInterval(interval));
+    // HMR cleanup (best-effort without relying on Node's module typings)
+    try {
+      const maybeModule = (globalThis as unknown as {
+        module?: { hot?: { dispose(cb: () => void): void } }
+      }).module;
+      maybeModule?.hot?.dispose(() => clearInterval(interval));
+    } catch {
+      // ignore if HMR runtime shape isn't available
     }
   }
   // Run an immediate check once
