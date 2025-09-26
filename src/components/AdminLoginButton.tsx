@@ -15,19 +15,28 @@ export function AdminLoginButton() {
   
   if (session && userIsAdmin) {
     return (
-      <div className="fixed bottom-4 right-4 flex gap-2 z-50">
-        <Link 
-          href="/admin"
-          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors"
+      <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
+        <Link
+          href="/admin/create"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm transition-colors font-medium shadow-lg"
+          title="Create New Post"
         >
-          Admin
+          ➕ New Post
         </Link>
-        <button
-          onClick={() => signOut()}
-          className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-xs transition-colors"
-        >
-          Logout
-        </button>
+        <div className="flex gap-2">
+          <Link
+            href="/admin"
+            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors"
+          >
+            Admin
+          </Link>
+          <button
+            onClick={() => signOut()}
+            className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-xs transition-colors"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     );
   }
