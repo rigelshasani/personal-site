@@ -4,11 +4,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import PostsPage from '@/app/posts/page';
-import * as contentModule from '@/lib/content';
+import * as contentGateway from '@/lib/content-gateway';
 
 // Mock content functions
-jest.mock('@/lib/content');
-const mockContent = contentModule as jest.Mocked<typeof contentModule>;
+jest.mock('@/lib/content-gateway');
+const mockContent = contentGateway as jest.Mocked<typeof contentGateway>;
 
 // Mock PostBox component
 jest.mock('@/components/PostBox', () => ({
@@ -24,24 +24,26 @@ describe('Posts Page', () => {
     jest.clearAllMocks();
   });
 
-  it('should render page header with title and description', () => {
-    mockContent.getAllPosts.mockReturnValue([]);
+  it('should render page header with title and description', async () => {
+    mockContent.getAllPosts.mockResolvedValue([]);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     expect(screen.getByRole('heading', { level: 1, name: 'All Posts' })).toBeInTheDocument();
     expect(screen.getByText('Essays, thoughts, and technical writing')).toBeInTheDocument();
   });
 
-  it('should display empty state when no posts exist', () => {
-    mockContent.getAllPosts.mockReturnValue([]);
+  it('should display empty state when no posts exist', async () => {
+    mockContent.getAllPosts.mockResolvedValue([]);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     expect(screen.getByText('No posts yet. Check back soon!')).toBeInTheDocument();
   });
 
-  it('should categorize and display philosophy posts', () => {
+  it('should categorize and display philosophy posts', async () => {
     const mockPosts = [
       {
         slug: 'philosophy-post1',
@@ -65,9 +67,10 @@ describe('Posts Page', () => {
       }
     ];
 
-    mockContent.getAllPosts.mockReturnValue(mockPosts);
+    mockContent.getAllPosts.mockResolvedValue(mockPosts);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Philosophy & Thoughts' })).toBeInTheDocument();
     
@@ -82,7 +85,7 @@ describe('Posts Page', () => {
     expect(screen.getByText('Post: Thoughts Post')).toBeInTheDocument();
   });
 
-  it('should categorize and display tech posts', () => {
+  it('should categorize and display tech posts', async () => {
     const mockPosts = [
       {
         slug: 'tech-post1',
@@ -116,9 +119,10 @@ describe('Posts Page', () => {
       }
     ];
 
-    mockContent.getAllPosts.mockReturnValue(mockPosts);
+    mockContent.getAllPosts.mockResolvedValue(mockPosts);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Tech & Programming' })).toBeInTheDocument();
     
@@ -127,7 +131,7 @@ describe('Posts Page', () => {
     expect(screen.getByText('Post: Tutorial Post')).toBeInTheDocument();
   });
 
-  it('should categorize and display analytics posts', () => {
+  it('should categorize and display analytics posts', async () => {
     const mockPosts = [
       {
         slug: 'analytics-post1',
@@ -151,9 +155,10 @@ describe('Posts Page', () => {
       }
     ];
 
-    mockContent.getAllPosts.mockReturnValue(mockPosts);
+    mockContent.getAllPosts.mockResolvedValue(mockPosts);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Data Analytics' })).toBeInTheDocument();
     
@@ -161,7 +166,7 @@ describe('Posts Page', () => {
     expect(screen.getByText('Post: Analytics Post 2')).toBeInTheDocument();
   });
 
-  it('should categorize and display other posts', () => {
+  it('should categorize and display other posts', async () => {
     const mockPosts = [
       {
         slug: 'random-post1',
@@ -184,9 +189,10 @@ describe('Posts Page', () => {
       }
     ];
 
-    mockContent.getAllPosts.mockReturnValue(mockPosts);
+    mockContent.getAllPosts.mockResolvedValue(mockPosts);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Other Posts' })).toBeInTheDocument();
     
@@ -194,7 +200,7 @@ describe('Posts Page', () => {
     expect(screen.getByText('Post: Untagged Post')).toBeInTheDocument();
   });
 
-  it('should handle posts with multiple relevant tags correctly', () => {
+  it('should handle posts with multiple relevant tags correctly', async () => {
     const mockPosts = [
       {
         slug: 'multi-tag-post',
@@ -208,9 +214,10 @@ describe('Posts Page', () => {
       }
     ];
 
-    mockContent.getAllPosts.mockReturnValue(mockPosts);
+    mockContent.getAllPosts.mockResolvedValue(mockPosts);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     // Should appear in all relevant sections
     expect(screen.getByRole('heading', { level: 2, name: 'Philosophy & Thoughts' })).toBeInTheDocument();
@@ -221,7 +228,7 @@ describe('Posts Page', () => {
     expect(screen.getAllByText('Post: Multi Tag Post')).toHaveLength(3);
   });
 
-  it('should display all categories when posts exist for each', () => {
+  it('should display all categories when posts exist for each', async () => {
     const mockPosts = [
       {
         slug: 'philosophy-post',
@@ -265,9 +272,10 @@ describe('Posts Page', () => {
       }
     ];
 
-    mockContent.getAllPosts.mockReturnValue(mockPosts);
+    mockContent.getAllPosts.mockResolvedValue(mockPosts);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Philosophy & Thoughts' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'Tech & Programming' })).toBeInTheDocument();
@@ -277,7 +285,7 @@ describe('Posts Page', () => {
     expect(screen.getAllByTestId('post-box')).toHaveLength(4);
   });
 
-  it('should hide categories that have no posts', () => {
+  it('should hide categories that have no posts', async () => {
     const mockPosts = [
       {
         slug: 'tech-post',
@@ -291,9 +299,10 @@ describe('Posts Page', () => {
       }
     ];
 
-    mockContent.getAllPosts.mockReturnValue(mockPosts);
+    mockContent.getAllPosts.mockResolvedValue(mockPosts);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     // Should only show tech section
     expect(screen.getByRole('heading', { level: 2, name: 'Tech & Programming' })).toBeInTheDocument();
@@ -307,7 +316,7 @@ describe('Posts Page', () => {
     expect(screen.queryByText('No posts yet. Check back soon!')).not.toBeInTheDocument();
   });
 
-  it('should handle posts without tags', () => {
+  it('should handle posts without tags', async () => {
     const mockPosts = [
       {
         slug: 'no-tags-post1',
@@ -330,16 +339,17 @@ describe('Posts Page', () => {
       }
     ];
 
-    mockContent.getAllPosts.mockReturnValue(mockPosts);
+    mockContent.getAllPosts.mockResolvedValue(mockPosts);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Other Posts' })).toBeInTheDocument();
     expect(screen.getByText('Post: No Tags Post 1')).toBeInTheDocument();
     expect(screen.getByText('Post: No Tags Post 2')).toBeInTheDocument();
   });
 
-  it('should render correct PostBox components with proper props', () => {
+  it('should render correct PostBox components with proper props', async () => {
     const mockPosts = [
       {
         slug: 'test-post',
@@ -353,16 +363,17 @@ describe('Posts Page', () => {
       }
     ];
 
-    mockContent.getAllPosts.mockReturnValue(mockPosts);
+    mockContent.getAllPosts.mockResolvedValue(mockPosts);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     const postBox = screen.getByTestId('post-box');
     expect(postBox).toHaveAttribute('data-post-slug', 'test-post');
     expect(postBox).toHaveAttribute('data-post-tags', 'tech');
   });
 
-  it('should handle case-sensitive tag matching correctly', () => {
+  it('should handle case-sensitive tag matching correctly', async () => {
     const mockPosts = [
       {
         slug: 'case-test-post',
@@ -376,9 +387,10 @@ describe('Posts Page', () => {
       }
     ];
 
-    mockContent.getAllPosts.mockReturnValue(mockPosts);
+    mockContent.getAllPosts.mockResolvedValue(mockPosts);
 
-    render(<PostsPage />);
+    const PostsPageElement = await PostsPage();
+    render(PostsPageElement);
 
     // Should only appear in Other Posts since tags are case-sensitive
     expect(screen.getByRole('heading', { level: 2, name: 'Other Posts' })).toBeInTheDocument();

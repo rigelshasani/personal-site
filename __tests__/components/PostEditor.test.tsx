@@ -4,6 +4,37 @@ import userEvent from '@testing-library/user-event'
 import { PostEditor } from '@/components/PostEditor'
 import { PostMeta } from '@/lib/content'
 
+// Mock Monaco editor
+jest.mock('@monaco-editor/react', () => {
+  return ({ value, onChange, 'data-testid': testId, ...props }: any) => {
+    return (
+      <textarea
+        value={value || ''}
+        onChange={(e) => onChange && onChange(e.target.value)}
+        data-testid={testId || 'monaco-editor'}
+        style={{ width: '100%', height: '100%', resize: 'none' }}
+      />
+    )
+  }
+})
+
+// Mock Next.js dynamic import
+jest.mock('next/dynamic', () => {
+  return (fn: any) => {
+    // Return the mocked Monaco editor component directly
+    return ({ value, onChange, 'data-testid': testId, ...props }: any) => {
+      return (
+        <textarea
+          value={value || ''}
+          onChange={(e) => onChange && onChange(e.target.value)}
+          data-testid={testId || 'monaco-editor'}
+          style={{ width: '100%', height: '100%', resize: 'none' }}
+        />
+      )
+    }
+  }
+})
+
 describe('PostEditor', () => {
   const defaultProps = {
     onSave: jest.fn(),
@@ -16,7 +47,7 @@ describe('PostEditor', () => {
 
   it('should render with empty form by default', () => {
     render(<PostEditor {...defaultProps} />)
-    
+
     expect(screen.getByPlaceholderText('Enter post title')).toHaveValue('')
     expect(screen.getByPlaceholderText('Enter post description')).toHaveValue('')
     expect(screen.getByTestId('monaco-editor')).toHaveValue('')

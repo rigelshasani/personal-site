@@ -210,6 +210,7 @@ export function PostEditor({
               defaultLanguage="markdown"
               value={content}
               onChange={(value) => setContent(value || '')}
+              data-testid="monaco-editor"
               theme="vs-dark"
               options={{
                 minimap: { enabled: false },

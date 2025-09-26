@@ -63,10 +63,24 @@ async function serverGet(slug: string): Promise<number | null> {
 function serverPostOnce(slug: string) {
   if (typeof window === 'undefined') return
   const key = `viewed:${slug}`
-  if (sessionStorage.getItem(key)) return
-  sessionStorage.setItem(key, '1')
-  // fire-and-forget
-  void fetch(`/api/views/${encodeURIComponent(slug)}`, { method: 'POST' }).catch(() => {})
+  try {
+    if (sessionStorage.getItem(key)) return
+  } catch {
+    // ignore session storage read errors
+  }
+  try {
+    sessionStorage.setItem(key, '1')
+  } catch {
+    // ignore session storage write errors (e.g., quota exceeded)
+  }
+  // fire-and-forget (only if fetch is available)
+  try {
+    if (typeof (globalThis as unknown as { fetch?: unknown }).fetch === 'function') {
+      void fetch(`/api/views/${encodeURIComponent(slug)}`, { method: 'POST' }).catch(() => {})
+    }
+  } catch {
+    // ignore network unavailability in non-browser environments/tests
+  }
 }
 
 // --- public API ---------------------------------------------------------------

@@ -4,11 +4,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import ProjectsPage from '@/app/projects/page';
-import * as contentModule from '@/lib/content';
+import * as contentGateway from '@/lib/content-gateway';
 
 // Mock content functions
-jest.mock('@/lib/content');
-const mockContent = contentModule as jest.Mocked<typeof contentModule>;
+jest.mock('@/lib/content-gateway');
+const mockContent = contentGateway as jest.Mocked<typeof contentGateway>;
 
 // Mock Next.js Link
 jest.mock('next/link', () => {
@@ -30,39 +30,43 @@ jest.mock('@/components/ProjectBox', () => ({
   ),
 }));
 
+
 describe('Projects Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should render page header with title and description', () => {
-    mockContent.getAllProjects.mockReturnValue([]);
+  it('should render page header with title and description', async () => {
+    mockContent.getAllProjects.mockResolvedValue([]);
 
-    render(<ProjectsPage />);
+    const ProjectsPageElement = await ProjectsPage();
+    render(ProjectsPageElement);
 
     expect(screen.getByRole('heading', { level: 1, name: 'Projects' })).toBeInTheDocument();
     expect(screen.getByText('Data analytics projects and technical explorations')).toBeInTheDocument();
   });
 
-  it('should render home navigation link', () => {
-    mockContent.getAllProjects.mockReturnValue([]);
+  it('should render home navigation link', async () => {
+    mockContent.getAllProjects.mockResolvedValue([]);
 
-    render(<ProjectsPage />);
+    const ProjectsPageElement = await ProjectsPage();
+    render(ProjectsPageElement);
 
     const homeLink = screen.getByRole('link', { name: '← Home' });
     expect(homeLink).toBeInTheDocument();
     expect(homeLink).toHaveAttribute('href', '/');
   });
 
-  it('should display empty state when no projects exist', () => {
-    mockContent.getAllProjects.mockReturnValue([]);
+  it('should display empty state when no projects exist', async () => {
+    mockContent.getAllProjects.mockResolvedValue([]);
 
-    render(<ProjectsPage />);
+    const ProjectsPageElement = await ProjectsPage();
+    render(ProjectsPageElement);
 
     expect(screen.getByText('No projects yet. Check back soon!')).toBeInTheDocument();
   });
 
-  it('should display featured projects section', () => {
+  it('should display featured projects section', async () => {
     const mockProjects = [
       {
         slug: 'featured-project1',
@@ -90,9 +94,10 @@ describe('Projects Page', () => {
       }
     ];
 
-    mockContent.getAllProjects.mockReturnValue(mockProjects);
+    mockContent.getAllProjects.mockResolvedValue(mockProjects);
 
-    render(<ProjectsPage />);
+    const ProjectsPageElement = await ProjectsPage();
+    render(ProjectsPageElement);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Featured' })).toBeInTheDocument();
     
@@ -107,7 +112,7 @@ describe('Projects Page', () => {
     });
   });
 
-  it('should display other projects section when featured projects exist', () => {
+  it('should display other projects section when featured projects exist', async () => {
     const mockProjects = [
       {
         slug: 'featured-project',
@@ -146,9 +151,10 @@ describe('Projects Page', () => {
       }
     ];
 
-    mockContent.getAllProjects.mockReturnValue(mockProjects);
+    mockContent.getAllProjects.mockResolvedValue(mockProjects);
 
-    render(<ProjectsPage />);
+    const ProjectsPageElement = await ProjectsPage();
+    render(ProjectsPageElement);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Featured' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'Other Projects' })).toBeInTheDocument();
@@ -161,7 +167,7 @@ describe('Projects Page', () => {
     expect(screen.getByText('Project: Regular Project 2')).toBeInTheDocument();
   });
 
-  it('should display "All Projects" heading when no featured projects exist', () => {
+  it('should display "All Projects" heading when no featured projects exist', async () => {
     const mockProjects = [
       {
         slug: 'regular-project1',
@@ -188,9 +194,10 @@ describe('Projects Page', () => {
       }
     ];
 
-    mockContent.getAllProjects.mockReturnValue(mockProjects);
+    mockContent.getAllProjects.mockResolvedValue(mockProjects);
 
-    render(<ProjectsPage />);
+    const ProjectsPageElement = await ProjectsPage();
+    render(ProjectsPageElement);
 
     expect(screen.queryByRole('heading', { level: 2, name: 'Featured' })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'All Projects' })).toBeInTheDocument();
@@ -199,7 +206,7 @@ describe('Projects Page', () => {
     expect(projectBoxes).toHaveLength(2);
   });
 
-  it('should handle projects without featured property', () => {
+  it('should handle projects without featured property', async () => {
     const mockProjects = [
       {
         slug: 'project-no-featured',
@@ -214,16 +221,17 @@ describe('Projects Page', () => {
       }
     ];
 
-    mockContent.getAllProjects.mockReturnValue(mockProjects);
+    mockContent.getAllProjects.mockResolvedValue(mockProjects);
 
-    render(<ProjectsPage />);
+    const ProjectsPageElement = await ProjectsPage();
+    render(ProjectsPageElement);
 
     expect(screen.queryByRole('heading', { level: 2, name: 'Featured' })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'All Projects' })).toBeInTheDocument();
     expect(screen.getByText('Project: Project Without Featured')).toBeInTheDocument();
   });
 
-  it('should render correct ProjectBox components with proper props', () => {
+  it('should render correct ProjectBox components with proper props', async () => {
     const mockProjects = [
       {
         slug: 'test-project',
@@ -239,16 +247,17 @@ describe('Projects Page', () => {
       }
     ];
 
-    mockContent.getAllProjects.mockReturnValue(mockProjects);
+    mockContent.getAllProjects.mockResolvedValue(mockProjects);
 
-    render(<ProjectsPage />);
+    const ProjectsPageElement = await ProjectsPage();
+    render(ProjectsPageElement);
 
     const projectBox = screen.getByTestId('project-box');
     expect(projectBox).toHaveAttribute('data-project-slug', 'test-project');
     expect(projectBox).toHaveAttribute('data-show-posts', 'true');
   });
 
-  it('should handle mixed featured and non-featured projects correctly', () => {
+  it('should handle mixed featured and non-featured projects correctly', async () => {
     const mockProjects = [
       {
         slug: 'featured1',
@@ -288,9 +297,10 @@ describe('Projects Page', () => {
       }
     ];
 
-    mockContent.getAllProjects.mockReturnValue(mockProjects);
+    mockContent.getAllProjects.mockResolvedValue(mockProjects);
 
-    render(<ProjectsPage />);
+    const ProjectsPageElement = await ProjectsPage();
+    render(ProjectsPageElement);
 
     // Should have both sections
     expect(screen.getByRole('heading', { level: 2, name: 'Featured' })).toBeInTheDocument();
@@ -303,7 +313,7 @@ describe('Projects Page', () => {
     expect(screen.getByText('Project: Regular 1')).toBeInTheDocument();
   });
 
-  it('should not show empty state when projects exist', () => {
+  it('should not show empty state when projects exist', async () => {
     const mockProjects = [
       {
         slug: 'single-project',
@@ -318,9 +328,10 @@ describe('Projects Page', () => {
       }
     ];
 
-    mockContent.getAllProjects.mockReturnValue(mockProjects);
+    mockContent.getAllProjects.mockResolvedValue(mockProjects);
 
-    render(<ProjectsPage />);
+    const ProjectsPageElement = await ProjectsPage();
+    render(ProjectsPageElement);
 
     expect(screen.queryByText('No projects yet. Check back soon!')).not.toBeInTheDocument();
     expect(screen.getByText('Project: Single Project')).toBeInTheDocument();

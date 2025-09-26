@@ -95,8 +95,10 @@ describe('useViewCounter Hook', () => {
 
   it('should handle different slugs independently', () => {
     mockViewCounter.getViewCount
-      .mockReturnValueOnce(5)
-      .mockReturnValueOnce(10)
+      .mockReturnValueOnce(5)  // First call for post-1 (state init)
+      .mockReturnValueOnce(5)  // Second call for post-1 (useEffect)
+      .mockReturnValueOnce(10) // First call for post-2 (state init)
+      .mockReturnValueOnce(10) // Second call for post-2 (useEffect)
 
     const { result: result1 } = renderHook(() => useViewCounter('post-1'))
     const { result: result2 } = renderHook(() => useViewCounter('post-2'))
@@ -109,8 +111,10 @@ describe('useViewCounter Hook', () => {
 
   it('should handle slug changes correctly', async () => {
     mockViewCounter.getViewCount
-      .mockReturnValueOnce(5)
-      .mockReturnValueOnce(8)
+      .mockReturnValueOnce(5)  // First call for post-1 (state init)
+      .mockReturnValueOnce(5)  // Second call for post-1 (useEffect)
+      .mockReturnValueOnce(8)  // First call for post-2 (state init on rerender)
+      .mockReturnValueOnce(8)  // Second call for post-2 (useEffect on rerender)
     mockViewCounter.recordView
       .mockReturnValueOnce(6)
       .mockReturnValueOnce(9)
@@ -334,8 +338,10 @@ describe('useViewCountDisplay Hook', () => {
 
   it('should handle slug changes correctly', () => {
     mockViewCounter.getViewCount
-      .mockReturnValueOnce(5) // For post-1
-      .mockReturnValueOnce(15) // For post-2
+      .mockReturnValueOnce(5) // For post-1 (state init)
+      .mockReturnValueOnce(5) // For post-1 (useEffect)
+      .mockReturnValueOnce(15) // For post-2 (state init on rerender)
+      .mockReturnValueOnce(15) // For post-2 (useEffect on rerender)
     mockViewCounter.formatViewCount.mockImplementation(count => `${count} views`)
 
     const { result, rerender } = renderHook(
