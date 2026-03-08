@@ -78,9 +78,8 @@ describe('ViewCounter Component', () => {
       </div>
     )
 
-    // Since the mock is returning different values for each call,
-    // and both components are using the display hook which would get 4 views each due to hook behavior
-    expect(container.textContent).toContain('4 views')
+    expect(container.textContent).toContain('10 views')
+    expect(container.textContent).toContain('25 views')
     expect(mockViewCounter.getViewCount).toHaveBeenCalledWith('post-1')
     expect(mockViewCounter.getViewCount).toHaveBeenCalledWith('post-2')
   })

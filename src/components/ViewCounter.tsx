@@ -5,8 +5,8 @@ import { getViewCount, formatViewCount, recordView } from '@/lib/view-counter'
 type BaseProps = { slug: string; className?: string }
 
 export function ViewCount({ slug, className = '' }: BaseProps) {
-  const [count, setCount] = useState(() => (slug ? getViewCount(slug) : 0))
-  const last = useRef<number>(count)
+  const [count, setCount] = useState(0)
+  const last = useRef<number>(0)
 
   useEffect(() => {
     if (!slug) return
@@ -37,9 +37,9 @@ export function ViewCount({ slug, className = '' }: BaseProps) {
 }
 
 export function ViewTracker({ slug, className = '' }: BaseProps) {
-  const [count, setCount] = useState(() => (slug ? getViewCount(slug) : 0))
+  const [count, setCount] = useState(0)
   const timer = useRef<number | null>(null)
-  const last = useRef<number>(count)
+  const last = useRef<number>(0)
 
   useEffect(() => {
     if (!slug) return
@@ -98,8 +98,8 @@ export default function ViewCounter({
   showIcon = true,
   shouldRecord = false,
 }: BaseProps & { showIcon?: boolean; shouldRecord?: boolean }) {
-  const [count, setCount] = useState(() => (slug ? getViewCount(slug) : 0))
-  const last = useRef<number>(count)
+  const [count, setCount] = useState(0)
+  const last = useRef<number>(0)
   const timer = useRef<number | null>(null)
 
   useEffect(() => {
