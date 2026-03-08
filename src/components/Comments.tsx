@@ -1,4 +1,3 @@
-// src/components/Comments.tsx - Anonymous comments system
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,105 +8,79 @@ interface Comment {
   username: string;
   content: string;
   timestamp: string;
-  postSlug: string;
 }
 
 interface CommentsProps {
   slug: string;
 }
 
-// Generate random anonymous usernames
-const generateRandomUsername = (): string => {
-  const adjectives = [
-    'Anonymous', 'Mysterious', 'Silent', 'Curious', 'Thoughtful', 'Wandering',
-    'Hidden', 'Secret', 'Quiet', 'Wise', 'Swift', 'Gentle', 'Bold', 'Clever',
-    'Bright', 'Shadow', 'Midnight', 'Dawn', 'Twilight', 'Cosmic', 'Digital',
-    'Neon', 'Electric', 'Crystal', 'Silver', 'Golden', 'Arctic', 'Desert'
-  ];
-  
-  const nouns = [
-    'Reader', 'Visitor', 'Thinker', 'Observer', 'Explorer', 'Dreamer',
-    'Philosopher', 'Scholar', 'Wanderer', 'Seeker', 'Sage', 'Mind', 'Soul',
-    'Spirit', 'Ghost', 'Phantom', 'Voice', 'Echo', 'Whisper', 'Traveler',
-    'Coder', 'Hacker', 'User', 'Guest', 'Stranger', 'Friend', 'Being'
-  ];
+const adjectives = [
+  'Anonymous', 'Mysterious', 'Silent', 'Curious', 'Thoughtful', 'Wandering',
+  'Hidden', 'Secret', 'Quiet', 'Wise', 'Swift', 'Gentle', 'Bold', 'Clever',
+  'Bright', 'Shadow', 'Midnight', 'Dawn', 'Twilight', 'Cosmic', 'Digital',
+  'Neon', 'Electric', 'Crystal', 'Silver', 'Golden', 'Arctic', 'Desert',
+];
 
+const nouns = [
+  'Reader', 'Visitor', 'Thinker', 'Observer', 'Explorer', 'Dreamer',
+  'Philosopher', 'Scholar', 'Wanderer', 'Seeker', 'Sage', 'Mind', 'Soul',
+  'Spirit', 'Ghost', 'Phantom', 'Voice', 'Echo', 'Whisper', 'Traveler',
+  'Coder', 'Hacker', 'User', 'Guest', 'Stranger', 'Friend', 'Being',
+];
+
+function generateRandomUsername(): string {
   const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
   const noun = nouns[Math.floor(Math.random() * nouns.length)];
   const number = Math.floor(Math.random() * 999) + 1;
-  
   return `${adjective}${noun}${number}`;
-};
+}
 
 export function Comments({ slug }: CommentsProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load comments from localStorage and check theme on mount
   useEffect(() => {
-    const savedComments = localStorage.getItem('blog-comments');
-    if (savedComments) {
-      try {
-        const allComments = JSON.parse(savedComments) as Comment[];
-        const postComments = allComments.filter(comment => comment.postSlug === slug);
-        setComments(postComments.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()));
-      } catch (error) {
-        console.warn('Failed to load comments:', error);
-      }
-    }
-
-    // Check initial theme
-    setIsDark(document.documentElement.classList.contains('dark'));
-
-    // Listen for theme changes
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          setIsDark(document.documentElement.classList.contains('dark'));
-        }
-      });
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
-    });
-
-    return () => observer.disconnect();
+    setIsLoading(true);
+    fetch(`/api/comments/${slug}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setComments(data.comments);
+      })
+      .catch(() => setError('Failed to load comments'))
+      .finally(() => setIsLoading(false));
   }, [slug]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!newComment.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
-
-    const comment: Comment = {
-      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-      username: generateRandomUsername(),
-      content: newComment.trim(),
-      timestamp: new Date().toISOString(),
-      postSlug: slug
-    };
+    setError(null);
 
     try {
-      // Save to localStorage
-      const savedComments = localStorage.getItem('blog-comments');
-      const allComments = savedComments ? JSON.parse(savedComments) : [];
-      allComments.push(comment);
-      localStorage.setItem('blog-comments', JSON.stringify(allComments));
-
-      // Update local state
-      setComments(prev => [...prev, comment]);
-      setNewComment('');
-    } catch (error) {
-      console.warn('Failed to save comment:', error);
+      const res = await fetch(`/api/comments/${slug}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: generateRandomUsername(),
+          content: newComment.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setComments((prev) => [...prev, data.comment]);
+        setNewComment('');
+      } else {
+        setError(data.error ?? 'Failed to post comment');
+      }
+    } catch {
+      setError('Failed to post comment');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   };
 
   return (
@@ -115,7 +88,7 @@ export function Comments({ slug }: CommentsProps) {
       <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">
         Comments {comments.length > 0 && `(${comments.length})`}
       </h3>
-      
+
       {/* Comment Form */}
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="mb-4">
@@ -136,20 +109,15 @@ export function Comments({ slug }: CommentsProps) {
             <span>{newComment.length}/1000</span>
           </div>
         </div>
-        
+
+        {error && (
+          <p className="mb-3 text-sm text-red-500 dark:text-red-400">{error}</p>
+        )}
+
         <button
           type="submit"
           disabled={!newComment.trim() || isSubmitting}
-          className="px-4 py-2 text-white rounded-lg focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          style={{
-            backgroundColor: isDark ? '#059669' : '#2563eb',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = isDark ? '#047857' : '#1d4ed8';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = isDark ? '#059669' : '#2563eb';
-          }}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white rounded-lg focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isSubmitting ? 'Posting...' : 'Post Comment'}
         </button>
@@ -157,7 +125,9 @@ export function Comments({ slug }: CommentsProps) {
 
       {/* Comments List */}
       <div className="space-y-6">
-        {comments.length === 0 ? (
+        {isLoading ? (
+          <p className="text-gray-500 dark:text-gray-400 text-center py-8">Loading comments...</p>
+        ) : comments.length === 0 ? (
           <p className="text-gray-500 dark:text-gray-400 text-center py-8">
             No comments yet. Be the first to share your thoughts!
           </p>
@@ -165,20 +135,14 @@ export function Comments({ slug }: CommentsProps) {
           comments.map((comment) => (
             <div key={comment.id} className="border-l-2 border-gray-200 dark:border-gray-700 pl-4 py-2">
               <div className="flex items-center gap-2 mb-2">
-                <span 
-                  className="font-medium text-sm"
-                  style={{ color: isDark ? '#10b981' : '#2563eb' }}
-                >
+                <span className="font-medium text-sm text-blue-600 dark:text-emerald-400">
                   {comment.username}
                 </span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   {formatDate(comment.timestamp)}
                 </span>
               </div>
-              <p 
-                className="whitespace-pre-wrap"
-                style={{ color: isDark ? '#ffffff' : '#111827' }}
-              >
+              <p className="text-gray-900 dark:text-white whitespace-pre-wrap">
                 {comment.content}
               </p>
             </div>
