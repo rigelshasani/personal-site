@@ -23,7 +23,7 @@ export function DevToolbar() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 bg-black/80 text-white text-xs rounded-lg p-2 backdrop-blur-sm border border-gray-600">
+    <div className="fixed bottom-4 left-4 z-50 bg-black/80 text-white text-xs rounded-lg p-2 backdrop-blur-sm border border-gray-600">
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
