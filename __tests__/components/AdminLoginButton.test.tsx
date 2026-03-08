@@ -21,7 +21,6 @@ jest.mock('next/link', () => {
 describe('AdminLoginButton', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env.NEXT_PUBLIC_ADMIN_GITHUB_LOGINS = 'testadmin'
   })
 
   it('should not render anything while loading', () => {
@@ -86,6 +85,7 @@ describe('AdminLoginButton', () => {
       data: {
         user: {
           login: 'testadmin',
+          isAdmin: true,
           name: 'Test Admin',
           email: 'admin@example.com',
         },
@@ -108,6 +108,7 @@ describe('AdminLoginButton', () => {
       data: {
         user: {
           login: 'testadmin',
+          isAdmin: true,
           name: 'Test Admin',
           email: 'admin@example.com',
         },
