@@ -30,7 +30,7 @@ export function AdminLoginButton() {
             Admin
           </Link>
           <button
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: '/' })}
             className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-xs transition-colors"
           >
             Logout
