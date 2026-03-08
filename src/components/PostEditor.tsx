@@ -16,6 +16,7 @@ interface PostEditorProps {
   initialProject?: string;
   initialOrder?: number;
   initialDate?: string;
+  initialFeatured?: boolean;
   onSave: (meta: PostMeta, content: string) => Promise<void>;
   onCancel: () => void;
   isEditing?: boolean;
@@ -29,6 +30,7 @@ export function PostEditor({
   initialProject = '',
   initialOrder,
   initialDate,
+  initialFeatured,
   onSave,
   onCancel,
   isEditing = false,
@@ -40,6 +42,7 @@ export function PostEditor({
     tags: initialTags,
     project: initialProject || undefined,
     order: initialOrder,
+    featured: initialFeatured,
   });
   
   const [content, setContent] = useState(initialContent);
@@ -180,6 +183,19 @@ export function PostEditor({
             </select>
           </div>
           
+          <div className="flex items-center gap-3 pt-6">
+            <input
+              type="checkbox"
+              id="featured"
+              checked={meta.featured ?? false}
+              onChange={(e) => handleMetaChange('featured', e.target.checked || undefined)}
+              className="w-4 h-4 accent-blue-600"
+            />
+            <label htmlFor="featured" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+              Featured post
+            </label>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Order (optional)
