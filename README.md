@@ -1,125 +1,120 @@
-# Personal Site - Rigels
+# Personal Site — Rigels
 
-A modern, feature-rich personal blog built with Next.js 15, TypeScript, and MDX. Designed for optimal performance, developer experience, and user engagement.
+A personal blog and portfolio built with Next.js 15, TypeScript, MDX, and PostgreSQL.
+
+## Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 15 + React 19, App Router, Turbopack |
+| Styling | Tailwind CSS 4 + Typography plugin |
+| Content | MDX Remote, Gray Matter |
+| Auth | NextAuth 4 (GitHub OAuth) |
+| Database | PostgreSQL via Neon + Prisma 5 |
+| Testing | Jest 30 + Testing Library |
+| Runtime | pnpm |
 
 ## Features
 
-### Content Management
-- **MDX Support** - Write posts with React components embedded in Markdown
-- **Tag-based Categorization** - Automatic grouping by Philosophy, Tech, Analytics, and more
-- **Project Series** - Link related posts together in project collections
-- **Image Optimization** - Automatic WebP/AVIF conversion with blur placeholders
-- **Hot Reload** - Enhanced development experience with real-time content updates
-
-### User Experience
-- **OpenAI-Style Homepage** - Beautiful featured post cards with image overlays
-- **Minimalist Carousel** - Auto-playing featured posts with smooth navigation
-- **Visual Analytics** - Anonymous view tracking with animated feedback
-- **Theme Toggle** - Light/dark mode with system preference detection
-- **Responsive Design** - Optimized for all screen sizes
-
-### Performance
-- **Next.js 15** - Latest features with Turbopack for fast development
-- **Smart Images** - Optimized loading with responsive sizing
-- **Intelligent Caching** - Development content caching with auto-invalidation
-- **Real-time Updates** - Live view count updates across tabs
-
-## Project Structure
-
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── posts/[slug]/      # Dynamic post routes
-│   ├── projects/[slug]/   # Dynamic project routes
-│   └── layout.tsx         # Root layout with progress bar
-├── components/            # React components
-│   ├── FeaturedPostCard.tsx      # Hero post cards
-│   ├── FeaturedPostsCarousel.tsx # Auto-playing carousel
-│   ├── ViewCounter.tsx           # Anonymous analytics
-│   ├── PopularPosts.tsx          # Most viewed posts
-│   ├── DevToolbar.tsx            # Development utilities
-│   └── mdx/                      # MDX components
-│       ├── Figure.tsx            # Optimized images
-│       └── OptimizedImage.tsx    # General images
-├── content/               # Content files
-│   ├── posts/            # Blog posts (.mdx)
-│   └── projects/         # Project pages (.mdx)
-├── lib/                  # Core utilities
-│   ├── content.ts        # Content parsing & caching
-│   ├── view-counter.ts   # Anonymous analytics
-│   └── dev-utils.ts      # Development helpers
-├── hooks/                # React hooks
-│   └── useViewCounter.ts # View tracking logic
-└── styles/               # Global styles
-    └── global.css        # Tailwind + custom CSS
-```
+- **Blog posts** with MDX, reading time, tag categories, and project series
+- **View counting** — per-post analytics tracked in the DB
+- **Comments** — anonymous, shared across all visitors, stored in DB
+- **Admin panel** at `/admin` — create and edit posts with Monaco editor
+- **Dark/light theme** with system preference detection
+- **Featured posts carousel** and popular posts ranking
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- pnpm (recommended) or npm
+
+- Node.js 18+
+- pnpm
+- A [Neon](https://neon.tech) PostgreSQL database
+- A GitHub OAuth app (for admin auth)
 
 ### Installation
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd personal-site
-
-# Install dependencies
 pnpm install
-
-# Start development server
-pnpm dev
-
-# For enhanced content development
-pnpm dev:content
 ```
 
-### Development Commands
+### Environment Variables
+
+Create a `.env.local` file:
 
 ```bash
-pnpm dev          # Start dev server with Turbopack
-pnpm dev:content  # Dev server with HTTPS for enhanced features
-pnpm build        # Production build
-pnpm start        # Production server
-pnpm lint         # ESLint checking
-pnpm content:check # Validate content files
+# NextAuth
+NEXTAUTH_SECRET=<random-secret>
+NEXTAUTH_URL=http://localhost:3000
+
+# GitHub OAuth (create at github.com/settings/developers)
+GITHUB_ID=<oauth-app-client-id>
+GITHUB_SECRET=<oauth-app-client-secret>
+
+# Admin access — comma-separated GitHub usernames
+ADMIN_GITHUB_LOGINS=yourusername
+
+# Neon PostgreSQL
+DATABASE_URL=postgresql://<pooled-connection-string>
+MIGRATE_DATABASE_URL=postgresql://<direct-connection-string>
+
+# Content backend: "db" or "fs"
+CONTENT_BACKEND=db
+```
+
+### Database Setup
+
+Run migrations to create tables (first time or after schema changes):
+
+```bash
+pnpm prisma:migrate
+```
+
+### Development
+
+```bash
+pnpm dev          # localhost:3000 with Turbopack
+pnpm dev:content  # same but with HTTPS (needed for some OAuth flows)
+```
+
+## Commands
+
+```bash
+# Development
+pnpm dev                  # Start dev server
+pnpm build                # Production build
+pnpm start                # Run production server
+pnpm lint                 # ESLint
+
+# Testing
+pnpm test                 # Run all tests
+pnpm test:watch           # Watch mode
+pnpm test:coverage        # Coverage report
+
+# Database
+pnpm prisma:migrate       # Run migrations
+pnpm db:studio            # Open Prisma Studio (DB GUI)
+pnpm db:import-mdx        # Import MDX files into DB
+
+# Content
+pnpm content:check        # List MDX files
 ```
 
 ## Writing Content
 
-### Creating Posts
+### Creating a Post
 
-Create `.mdx` files in `src/content/posts/`:
+Add a `.mdx` file to `src/content/posts/`:
 
 ```mdx
 ---
 title: "Your Post Title"
 description: "SEO-friendly description"
 date: "2025-01-18"
-tags: ["tech", "analytics", "philosophy"]
-project: "optional-project-slug"  # Links to project series
-order: 1                          # Order within project
-images: ["/images/posts/slug/image.png"]  # Optional images array
+tags: ["tech", "philosophy"]
 ---
 
-# Your Post Content
-
-Regular Markdown content with React components:
-
-![Standard Image](https://example.com/image.jpg)
-
-<Figure 
-  src="/images/posts/your-slug/hero.jpg" 
-  alt="Descriptive text" 
-  caption="Optional caption"
-  align="center"
-  priority={true}  // For above-the-fold images
-/>
-
-More content here...
+Your content here...
 ```
 
 ### Frontmatter Fields
@@ -127,192 +122,72 @@ More content here...
 | Field | Required | Description |
 |-------|----------|-------------|
 | `title` | Yes | Post title |
-| `description` | Yes | SEO meta description |
-| `date` | Yes | Publication date (YYYY-MM-DD) |
+| `description` | Yes | Meta description |
+| `date` | Yes | `YYYY-MM-DD` |
 | `tags` | No | Array for categorization |
-| `project` | No | Links to project series |
-| `order` | No | Order within project series |
-| `images` | No | Array of image URLs |
+| `project` | No | Slug of a project this post belongs to |
+| `order` | No | Order within a project series |
+| `images` | No | Array of image paths for the carousel |
 
 ### Tag Categories
 
-Posts are automatically categorized:
-
-- **Philosophy & Thoughts**: `philosophy`, `thoughts`
-- **Tech & Programming**: `tech`, `programming`, `tutorial` 
-- **Data Analytics**: `analytics`
-- **Other Posts**: Everything else
-
-### Adding Images
-
-1. **Create directory**: `public/images/posts/your-post-slug/`
-2. **Add images**: Place your images in this folder
-3. **Reference in post**: `/images/posts/your-post-slug/image.jpg`
-
-**Recommended**: Use the `<Figure>` component for optimized images with captions.
+| Category | Tags |
+|----------|------|
+| Philosophy & Thoughts | `philosophy`, `thoughts` |
+| Tech & Programming | `tech`, `programming`, `tutorial` |
+| Data Analytics | `analytics` |
 
 ### Project Series
 
-Create related posts by:
+1. Create a project page at `src/content/projects/my-project.mdx`
+2. Add `project: "my-project"` to posts that belong to it
+3. Use `order: 1`, `order: 2` etc. to set reading order
 
-1. **Create project page**: `src/content/projects/my-project.mdx`
-2. **Link posts**: Add `project: "my-project"` to post frontmatter
-3. **Set order**: Use `order: 1, 2, 3...` for sequence
+### Adding Images
 
-## Components
-
-### Figure Component
-
-Enhanced image component with optimization:
+1. Place images in `public/images/posts/your-post-slug/`
+2. Reference them as `/images/posts/your-post-slug/image.jpg`
+3. Use the `<Figure>` component for optimized images with captions:
 
 ```jsx
-<Figure 
-  src="/path/to/image.jpg"
-  alt="Alternative text"
+<Figure
+  src="/images/posts/your-slug/hero.jpg"
+  alt="Description"
   caption="Optional caption"
-  align="left|center|right"
-  width={800}
-  height={600}
-  priority={false}
-  quality={85}
+  priority={true}
 />
 ```
 
-### View Counter
+## Admin Panel
 
-Anonymous view tracking with visual feedback:
+Visit `/admin` (requires GitHub login with an account in `ADMIN_GITHUB_LOGINS`).
 
-- **5-second engagement** threshold
-- **Visual animations** when views increment  
-- **Privacy-focused** using localStorage
-- **No session restrictions** - every visit counts
+- **Dashboard** — list, edit, delete posts
+- **Create** — write posts with Monaco editor and live preview
+- **Edit** — update existing posts
 
-## Analytics
+## Database Schema
 
-### View Counting System
-
-- **Anonymous tracking** - no personal data collected
-- **Local storage** - all data stays on user's device
-- **Visual feedback** - users see their engagement recognized
-- **Popular posts** - automatic ranking by view counts
-
-### Development Analytics
-
-In development mode, you get:
-- **Content validation** warnings
-- **Hot reload** with cache invalidation
-- **Debug logging** for content operations
-- **Development toolbar** with refresh controls
-
-## Performance Features
-
-### Image Optimization
-- **WebP/AVIF** format conversion
-- **Blur placeholders** while loading
-- **Responsive sizing** based on viewport
-- **Lazy loading** for better performance
-
-### Development Experience
-- **Hot reload** for MDX content changes
-- **Content caching** with smart invalidation
-- **Frontmatter validation** in development
-- **Enhanced file watching** for faster updates
-
-### Production Optimizations
-- **Static generation** for all posts/projects
-- **Image optimization** with Next.js
-- **Bundle optimization** with Turbopack
-- **SEO-friendly** meta tags and structure
+| Model | Purpose |
+|-------|---------|
+| `Post` | Blog posts |
+| `Project` | Project pages with linked posts |
+| `ViewCount` | Per-post view analytics |
+| `Comment` | Anonymous comments per post |
 
 ## Deployment
 
-### Vercel (Recommended)
+Deployed on Vercel. Set all environment variables from `.env.local` in the Vercel dashboard under Project → Settings → Environment Variables.
 
-```bash
-# Build and deploy
-pnpm build
-# Deploy to Vercel
-vercel --prod
-```
-
-### Environment Variables
-
-No environment variables required for basic functionality. All features work client-side or with static generation.
-
-### Build Optimization
-
-The site is optimized for static generation:
-- All posts/projects are pre-rendered
-- Images are optimized at build time
-- Analytics work entirely client-side
-- No server-side dependencies
-
-## Customization
-
-### Styling
-- **Tailwind CSS 4** for utility-first styling
-- **CSS Custom Properties** for theme variables
-- **Dark/Light mode** with automatic detection
-- **Responsive design** with mobile-first approach
-
-### Theme Customization
-
-Edit `src/styles/global.css` for theme colors:
-
-```css
-:root {
-  --color-accent: #1e40af;  /* Primary accent color */
-  --background: #ffffff;     /* Background color */
-  --foreground: #1a1a1a;     /* Text color */
-  /* ... more variables */
-}
-```
-
-### Adding New Tag Categories
-
-Edit `src/app/posts/page.tsx` to add new categories:
-
-```typescript
-const newCategoryPosts = posts.filter(post => 
-  post.meta.tags?.includes('your-new-tag')
-);
-```
+The `postinstall` script runs `prisma generate` automatically during Vercel builds.
 
 ## Troubleshooting
 
-### Common Issues
+**Prisma Studio shows `DATABASE_URL not found`**
+The `pnpm db:studio` script handles this automatically by loading `.env.local`. If running `prisma studio` directly, use:
+```bash
+sh -c 'set -a && . .env.local && set +a && prisma studio'
+```
 
-**Hydration Errors**
-- Ensure client components don't import server-side code
-- Use `'use client'` directive for interactive components
-
-**Image Loading Issues**  
-- Verify image paths start with `/` for public folder
-- Add external domains to `next.config.ts` if needed
-
-**View Counts Not Showing**
-- Views only appear after someone visits the post
-- Requires 5 seconds of engagement to count
-- Check browser localStorage for `blog-view-counts`
-
-**Development Hot Reload Issues**
-- Clear browser cache and restart dev server
-- Check console for development warnings
-- Use `pnpm content:check` to validate content files
-
-## Contributing
-
-This is a personal site, but the architecture can be adapted for other projects. Key patterns:
-
-1. **Server/Client Separation** - Keep Node.js code on server side
-2. **Progressive Enhancement** - Features work without JavaScript
-3. **Developer Experience** - Rich development tools and validation
-4. **Performance First** - Optimize for Core Web Vitals
-
-## License
-
-This project is for personal use. Feel free to use the patterns and components as inspiration for your own projects.
-
----
-
-Built with Next.js, TypeScript, MDX, and Tailwind CSS.
+**`NEXT_PUBLIC_ADMIN_GITHUB_LOGINS` is not needed**
+Admin status is resolved server-side. Only `ADMIN_GITHUB_LOGINS` (no `NEXT_PUBLIC_` prefix) is required.
