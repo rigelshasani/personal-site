@@ -9,6 +9,7 @@ import { OptimizedImage } from "@/components/mdx/OptimizedImage";
 import { ViewTrackerWithNotification } from "@/components/ViewTrackerWithNotification";
 import { Comments } from "@/components/Comments";
 import ViewHit from "@/components/ViewHit";
+import { ProgressBar } from "@/components/ProgressBar";
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -62,6 +63,7 @@ export default async function PostPage({
 
   return (
     <article className="prose dark:prose-invert max-w-none py-16">
+      <ProgressBar />
       {/* once-per-session increment, no UI */}
       <ViewHit slug={slug} />
 
