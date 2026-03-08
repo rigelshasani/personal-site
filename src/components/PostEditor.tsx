@@ -4,6 +4,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 import { PostMeta } from '@/lib/content';
+import { useToast } from '@/components/Toast';
 
 interface PostEditorProps {
   initialTitle?: string;
@@ -12,6 +13,7 @@ interface PostEditorProps {
   initialTags?: string[];
   initialProject?: string;
   initialOrder?: number;
+  initialDate?: string;
   onSave: (meta: PostMeta, content: string) => Promise<void>;
   onCancel: () => void;
   isEditing?: boolean;
@@ -24,6 +26,7 @@ export function PostEditor({
   initialTags = [],
   initialProject = '',
   initialOrder,
+  initialDate,
   onSave,
   onCancel,
   isEditing = false,
@@ -31,7 +34,7 @@ export function PostEditor({
   const [meta, setMeta] = useState<PostMeta>({
     title: initialTitle,
     description: initialDescription,
-    date: new Date().toISOString().split('T')[0],
+    date: initialDate ?? new Date().toISOString().split('T')[0],
     tags: initialTags,
     project: initialProject || undefined,
     order: initialOrder,
@@ -41,6 +44,7 @@ export function PostEditor({
   const [tagsInput, setTagsInput] = useState(initialTags.join(', '));
   const [isLoading, setIsLoading] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const toast = useToast();
 
   const handleMetaChange = <K extends keyof PostMeta>(field: K, value: PostMeta[K]) => {
     setMeta(prev => ({ ...prev, [field]: value } as PostMeta));
@@ -57,7 +61,7 @@ export function PostEditor({
 
   const handleSave = async () => {
     if (!meta.title.trim() || !meta.description.trim() || !content.trim()) {
-      alert('Please fill in all required fields');
+      toast.error('Please fill in all required fields');
       return;
     }
 
@@ -66,7 +70,7 @@ export function PostEditor({
       await onSave(meta, content);
     } catch (error) {
       console.error('Failed to save post:', error);
-      alert('Failed to save post. Please try again.');
+      toast.error('Failed to save post. Please try again.');
     } finally {
       setIsLoading(false);
     }

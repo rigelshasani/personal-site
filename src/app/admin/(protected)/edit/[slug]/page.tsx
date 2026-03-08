@@ -158,6 +158,7 @@ export default function EditPostPage({ params }: { params: Params }) {
         initialTags={post.meta.tags || []}
         initialProject={post.meta.project}
         initialOrder={post.meta.order}
+        initialDate={post.meta.date}
         onSave={handleSave}
         onCancel={handleCancel}
         isEditing={true}
