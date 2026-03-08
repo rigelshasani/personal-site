@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { requireAdmin } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const metadata: Metadata = {
   title: {
@@ -45,7 +46,8 @@ export default async function AdminLayout({
                 </Link>
               </div>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Link
                 href="/"
                 className="text-mid hover:text-foreground px-3 py-1.5 text-sm font-medium rounded-md hover:bg-surface transition-colors"
