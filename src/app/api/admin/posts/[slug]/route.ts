@@ -4,6 +4,8 @@ import { PostMeta } from '@/lib/content';
 import { updatePostFile, deletePostFile, validatePostData } from '@/lib/post-utils';
 import { shouldUseDb, updatePost as updatePostDb, deletePost as deletePostDb } from '@/lib/content-service';
 
+const SLUG_RE = /^[a-z0-9-]+$/
+
 interface RouteContext {
   params: Promise<{ slug: string }>;
 }
@@ -12,8 +14,11 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   try {
     // Verify admin authentication
     await requireAdmin();
-    
+
     const { slug } = await context.params;
+    if (!SLUG_RE.test(slug)) {
+      return NextResponse.json({ error: 'Invalid slug' }, { status: 400 });
+    }
     const body = await request.json();
     const { meta, content } = body as { meta: PostMeta; content: string };
     
@@ -53,8 +58,11 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
     // Verify admin authentication
     await requireAdmin();
-    
+
     const { slug } = await context.params;
+    if (!SLUG_RE.test(slug)) {
+      return NextResponse.json({ error: 'Invalid slug' }, { status: 400 });
+    }
     
     if (shouldUseDb()) {
       await deletePostDb(slug);
