@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 import { PostMeta } from '@/lib/content';
 import { useToast } from '@/components/Toast';
+import ReactMarkdown from 'react-markdown';
 
 interface PostEditorProps {
   initialTitle?: string;
@@ -217,7 +218,7 @@ export function PostEditor({
         <div className="h-96">
           {previewMode ? (
             <div className="h-full overflow-auto p-6 prose dark:prose-invert max-w-none">
-              <div className="whitespace-pre-wrap">{content}</div>
+              <ReactMarkdown>{content}</ReactMarkdown>
             </div>
           ) : (
             <Editor
