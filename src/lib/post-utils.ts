@@ -2,18 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { PostMeta } from './content';
+export { generateSlug } from './slug';
 
 const contentDirectory = path.join(process.cwd(), 'src/content/posts');
-
-export function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/--+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .trim();
-}
 
 export function createPostFile(slug: string, meta: PostMeta, content: string): void {
   const filePath = path.join(contentDirectory, `${slug}.mdx`);

@@ -6,7 +6,7 @@ const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 import { PostMeta } from '@/lib/content';
 import { useToast } from '@/components/Toast';
 import ReactMarkdown from 'react-markdown';
-import { generateSlug } from '@/lib/post-utils';
+import { generateSlug } from '@/lib/slug';
 
 interface PostEditorProps {
   initialTitle?: string;
