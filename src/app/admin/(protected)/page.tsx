@@ -32,7 +32,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-64">
-        <div className="text-lg text-gray-600 dark:text-gray-400">Loading posts...</div>
+        <div className="text-lg text-mid">Loading posts...</div>
       </div>
     );
   }
@@ -40,33 +40,33 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-foreground">
           Posts ({posts.length})
         </h1>
         <Link
           href="/admin/create"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          className="bg-accent hover:opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium transition-opacity"
         >
           Create New Post
         </Link>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white">All Posts</h2>
+      <div className="border border-border-light rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-border-light bg-surface">
+          <h2 className="text-lg font-medium text-foreground">All Posts</h2>
         </div>
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+        <div className="divide-y divide-border-light">
           {posts.map((post) => (
-            <div key={post.slug} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <div key={post.slug} className="px-6 py-4 hover:bg-surface transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  <h3 className="text-sm font-medium text-foreground truncate">
                     {post.meta.title}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                  <p className="text-sm text-mid truncate">
                     {post.meta.description}
                   </p>
-                  <div className="flex items-center space-x-4 text-xs text-gray-400 dark:text-gray-500 mt-2">
+                  <div className="flex items-center space-x-4 text-xs text-mid mt-2">
                     <span>{formatDate(post.meta.date)}</span>
                     <span>•</span>
                     <span>{post.readingTime}</span>
@@ -82,13 +82,13 @@ export default function AdminDashboard() {
                   <Link
                     href={`/posts/${post.slug}`}
                     target="_blank"
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    className="text-accent hover:underline text-sm font-medium"
                   >
-                    View
+                    View ↗
                   </Link>
                   <Link
                     href={`/admin/edit/${post.slug}`}
-                    className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 text-sm font-medium"
+                    className="text-mid hover:text-foreground text-sm font-medium"
                   >
                     Edit
                   </Link>
@@ -103,14 +103,12 @@ export default function AdminDashboard() {
                           setPosts((prev) => prev.filter((p) => p.slug !== post.slug));
                         } else {
                           toast.error('Failed to delete post');
-                          alert('Failed to delete post');
                         }
                       } catch {
                         toast.error('Failed to delete post');
-                        alert('Failed to delete post');
                       }
                     }}
-                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 text-sm font-medium"
+                    className="text-red-500 hover:text-red-700 text-sm font-medium"
                   >
                     Delete
                   </button>
@@ -120,10 +118,10 @@ export default function AdminDashboard() {
           ))}
           {posts.length === 0 && (
             <div className="px-6 py-12 text-center">
-              <p className="text-gray-500 dark:text-gray-400">No posts yet.</p>
+              <p className="text-mid">No posts yet.</p>
               <Link
                 href="/admin/create"
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block"
+                className="text-accent hover:underline text-sm font-medium mt-2 inline-block"
               >
                 Create your first post
               </Link>

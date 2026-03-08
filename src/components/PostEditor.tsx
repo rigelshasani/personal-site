@@ -116,14 +116,14 @@ export function PostEditor({
   return (
     <div className="space-y-6">
       {/* Metadata Form */}
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-        <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+      <div className="border border-border-light rounded-lg p-6">
+        <h2 className="text-lg font-medium text-foreground mb-4">
           Post Metadata
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Title *
             </label>
             <input
@@ -141,7 +141,7 @@ export function PostEditor({
           </div>
           
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Description *
             </label>
             <textarea
@@ -154,7 +154,7 @@ export function PostEditor({
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Date *
             </label>
             <input
@@ -166,7 +166,7 @@ export function PostEditor({
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Tags
             </label>
             <input
@@ -179,7 +179,7 @@ export function PostEditor({
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Project (optional)
             </label>
             <select
@@ -210,7 +210,7 @@ export function PostEditor({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Order (optional)
             </label>
             <input
@@ -234,28 +234,24 @@ export function PostEditor({
       </div>
 
       {/* Content Editor */}
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white">
+      <div className="border border-border-light rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-border-light bg-surface flex justify-between items-center">
+          <h2 className="text-lg font-medium text-foreground">
             Content *
           </h2>
           <div className="flex space-x-2">
             <button
               onClick={() => setPreviewMode(false)}
-              className={`px-3 py-1 text-sm rounded ${
-                !previewMode 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
+              className={`px-3 py-1 text-sm rounded transition-colors ${
+                !previewMode ? 'bg-accent text-white' : 'bg-surface text-mid hover:text-foreground'
               }`}
             >
               Edit
             </button>
             <button
               onClick={() => setPreviewMode(true)}
-              className={`px-3 py-1 text-sm rounded ${
-                previewMode 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
+              className={`px-3 py-1 text-sm rounded transition-colors ${
+                previewMode ? 'bg-accent text-white' : 'bg-surface text-mid hover:text-foreground'
               }`}
             >
               Preview
@@ -292,7 +288,7 @@ export function PostEditor({
       <div className="flex justify-end space-x-4">
         <button
           onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700"
+          className="px-4 py-2 text-sm font-medium text-mid border border-border-light rounded-md hover:bg-surface transition-colors"
           disabled={isLoading}
         >
           Cancel
@@ -300,7 +296,7 @@ export function PostEditor({
         <button
           onClick={handleSave}
           disabled={isLoading}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-md shadow-sm"
+          className="px-4 py-2 text-sm font-medium text-white bg-accent hover:opacity-90 disabled:opacity-50 rounded-md transition-opacity"
         >
           {isLoading ? 'Saving...' : (isEditing ? 'Update Post' : 'Create Post')}
         </button>

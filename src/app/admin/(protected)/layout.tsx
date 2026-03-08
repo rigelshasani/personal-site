@@ -1,6 +1,14 @@
+import type { Metadata } from 'next';
 import { requireAdmin } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Rigels Admin',
+    template: '%s · Rigels Admin',
+  },
+};
 
 export default async function AdminLayout({
   children,
@@ -14,27 +22,24 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <div className="min-h-screen bg-bg text-foreground">
+      <nav className="border-b border-border-light bg-bg sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center space-x-8">
-              <Link
-                href="/admin"
-                className="text-xl font-semibold text-gray-900 dark:text-white"
-              >
-                Admin Dashboard
+          <div className="flex justify-between h-14">
+            <div className="flex items-center space-x-6">
+              <Link href="/admin" className="text-lg font-semibold text-foreground hover:text-accent transition-colors">
+                Rigels Admin
               </Link>
-              <div className="flex space-x-4">
+              <div className="flex space-x-2">
                 <Link
                   href="/admin"
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 text-sm font-medium"
+                  className="text-mid hover:text-foreground px-3 py-1.5 text-sm font-medium rounded-md hover:bg-surface transition-colors"
                 >
                   Posts
                 </Link>
                 <Link
                   href="/admin/create"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="bg-accent hover:opacity-90 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-opacity"
                 >
                   New Post
                 </Link>
@@ -43,7 +48,7 @@ export default async function AdminLayout({
             <div className="flex items-center">
               <Link
                 href="/"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 text-sm font-medium"
+                className="text-mid hover:text-foreground px-3 py-1.5 text-sm font-medium rounded-md hover:bg-surface transition-colors"
               >
                 ← Back to Site
               </Link>
@@ -52,7 +57,7 @@ export default async function AdminLayout({
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {children}
       </main>
     </div>

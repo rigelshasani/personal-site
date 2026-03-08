@@ -2,8 +2,6 @@
 import "@/styles/global.css";
 import { bellota } from "@/fonts";
 import type { Metadata } from "next";
-import { SidebarLayout } from "@/components/SidebarLayout";
-import { ProgressBar } from "@/components/ProgressBar";
 import { DevToolbar } from "@/components/DevToolbar";
 import { SessionProvider } from "@/components/SessionProvider";
 import { AdminLoginButton } from "@/components/AdminLoginButton";
@@ -36,10 +34,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-bg text-foreground min-h-screen">
         <SessionProvider>
           <ToastProvider>
-            <SidebarLayout>
-              {children}
-            </SidebarLayout>
-            <ProgressBar />
+            {children}
             <DevToolbar />
             <AdminLoginButton />
           </ToastProvider>
