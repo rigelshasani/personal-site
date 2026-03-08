@@ -91,7 +91,7 @@ export default async function PostPage({
                 {post!.meta.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 rounded-md"
+                    className="px-2 py-1 text-xs bg-surface border border-border-light text-foreground rounded-md"
                   >
                     {tag}
                   </span>

@@ -155,7 +155,7 @@ describe('PostBox Component', () => {
     render(<PostBox post={mockPost} />);
     
     const container = screen.getByText('Test Post Title').closest('div').parentElement;
-    expect(container).toHaveClass('border', 'border-gray-200', 'dark:border-gray-800', 'rounded-2xl');
+    expect(container).toHaveClass('border', 'border-border-light', 'rounded-2xl');
     expect(container).toHaveClass('p-4', 'md:p-6', 'hover:shadow-lg', 'transition-shadow');
   });
 

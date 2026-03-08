@@ -12,7 +12,7 @@ interface ProjectBoxProps {
 export function ProjectBox({ project, showPosts = true }: ProjectBoxProps) {
 
   return (
-    <div className="border border-gray-200 dark:border-gray-800 rounded-2xl p-4 md:p-6 hover:shadow-lg transition-shadow">
+    <div className="border border-border-light rounded-2xl p-4 md:p-6 hover:shadow-lg transition-shadow">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 space-y-2 sm:space-y-0">
         <div className="flex-1 min-w-0">
           <Link 
@@ -39,7 +39,7 @@ export function ProjectBox({ project, showPosts = true }: ProjectBoxProps) {
           {project.meta.tech.map(tech => (
             <span 
               key={tech} 
-              className="px-2 py-1 text-xs bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md"
+              className="px-2 py-1 text-xs bg-surface border border-border-light text-foreground rounded-md"
             >
               {tech}
             </span>
@@ -48,7 +48,7 @@ export function ProjectBox({ project, showPosts = true }: ProjectBoxProps) {
       )}
       
       {showPosts && project.posts.length > 0 && (
-        <div className="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4">
+        <div className="border-t border-border-light pt-4 mt-4">
           <h4 className="text-sm font-medium text-mid mb-2">
             Related Posts ({project.posts.length})
           </h4>

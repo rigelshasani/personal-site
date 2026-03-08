@@ -11,7 +11,7 @@ interface PostBoxProps {
 
 export function PostBox({ post, showProject = true }: PostBoxProps) {
   return (
-    <div className="border border-gray-200 dark:border-gray-800 rounded-2xl p-4 md:p-6 hover:shadow-lg transition-shadow">
+    <div className="border border-border-light rounded-2xl p-4 md:p-6 hover:shadow-lg transition-shadow">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 space-y-2 sm:space-y-0">
         <Link 
           href={`/posts/${post.slug}`}

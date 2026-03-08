@@ -96,7 +96,7 @@ export default async function ProjectPage({
             {project.meta.tech.map((tech) => (
               <span
                 key={tech}
-                className="px-3 py-1 text-sm bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md"
+                className="px-3 py-1 text-sm bg-surface border border-border-light text-foreground rounded-md"
               >
                 {tech}
               </span>
@@ -132,7 +132,7 @@ export default async function ProjectPage({
       </header>
 
       {/* Project Content */}
-      <article className="prose prose-invert max-w-none mb-16">
+      <article className="prose dark:prose-invert max-w-none mb-16">
         <MDXRemote
           source={project.content}
           components={{
