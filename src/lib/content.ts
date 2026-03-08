@@ -21,6 +21,7 @@ export interface PostMeta {
   project?: string; // Links post to a project
   order?: number;   // Order within project
   images?: string[]; // Array of image URLs
+  featured?: boolean;
 }
 
 export interface ProjectMeta {
