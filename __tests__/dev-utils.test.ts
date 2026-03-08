@@ -226,7 +226,7 @@ describe('Dev Utils', () => {
     it('should validate date format', () => {
       const invalidDate = { ...validFrontmatter, date: 'invalid-date' }
       const wrongFormat = { ...validFrontmatter, date: '12/01/2023' }
-      const futureDate = { ...validFrontmatter, date: '2025-12-31' }
+      const futureDate = { ...validFrontmatter, date: '2099-12-31' }
       
       const invalidResult = validateFrontmatter(invalidDate, 'test.mdx')
       const formatResult = validateFrontmatter(wrongFormat, 'test.mdx')
