@@ -114,7 +114,7 @@ export default async function ProjectPage({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                View on GitHub →
+                View on GitHub ↗
               </a>
             )}
             {project.meta.demo && (
@@ -124,7 +124,7 @@ export default async function ProjectPage({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Live Demo →
+                Live Demo ↗
               </a>
             )}
           </div>

@@ -109,7 +109,7 @@ export default function AboutPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  GitHub
+                  GitHub ↗
                 </a>
                 <a
                   href="https://linkedin.com/in/rigelshasani"
@@ -117,7 +117,7 @@ export default function AboutPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  LinkedIn
+                  LinkedIn ↗
                 </a>
               </div>
             </div>

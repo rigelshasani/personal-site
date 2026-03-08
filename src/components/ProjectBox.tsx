@@ -82,17 +82,17 @@ export function ProjectBox({ project, showPosts = true }: ProjectBoxProps) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            GitHub
+            GitHub ↗
           </a>
         )}
         {project.meta.demo && (
-          <a 
+          <a
             href={project.meta.demo}
             className="text-sm text-accent hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Live Demo
+            Live Demo ↗
           </a>
         )}
       </div>
