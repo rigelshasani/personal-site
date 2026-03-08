@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 import { PostMeta } from '@/lib/content';
@@ -44,7 +44,18 @@ export function PostEditor({
   const [tagsInput, setTagsInput] = useState(initialTags.join(', '));
   const [isLoading, setIsLoading] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const toast = useToast();
+
+  useEffect(() => {
+    const root = document.documentElement;
+    setIsDark(root.classList.contains('dark'));
+    const observer = new MutationObserver(() => {
+      setIsDark(root.classList.contains('dark'));
+    });
+    observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   const handleMetaChange = <K extends keyof PostMeta>(field: K, value: PostMeta[K]) => {
     setMeta(prev => ({ ...prev, [field]: value } as PostMeta));
@@ -215,7 +226,7 @@ export function PostEditor({
               value={content}
               onChange={(value) => setContent(value || '')}
               data-testid="monaco-editor"
-              theme="vs-dark"
+              theme={isDark ? 'vs-dark' : 'light'}
               options={{
                 minimap: { enabled: false },
                 fontSize: 14,
