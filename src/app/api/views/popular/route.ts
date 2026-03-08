@@ -12,7 +12,9 @@ const NO_STORE: HeadersInit = {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const limit = Math.max(1, Math.min(50, Number(searchParams.get('limit') ?? '5')))
+    const raw = searchParams.get('limit') ?? '5'
+    const parsed = parseInt(raw, 10)
+    const limit = isNaN(parsed) ? 5 : Math.max(1, Math.min(50, parsed))
     const popular = await getPopularPostsDb(limit)
     return NextResponse.json({ success: true, popular }, { headers: NO_STORE })
   } catch {
