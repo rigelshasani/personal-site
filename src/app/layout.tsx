@@ -23,12 +23,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={bellota.variable}>
+    <html lang="en" className={bellota.variable} suppressHydrationWarning>
       <head>
-        {/* Prevent theme flicker by applying saved theme before hydration */}
+        {/* Prevent theme flicker — only toggles .dark class, CSS handles variables */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(() => {try {var t=localStorage.getItem('theme');var d=t==='dark';var r=document.documentElement;if(d){r.classList.add('dark');r.style.setProperty('--background','#0d0d0d');r.style.setProperty('--foreground','#fafafa');r.style.setProperty('--text-mid','#999999');r.style.setProperty('--color-accent','#10a37f');}else{r.classList.remove('dark');r.style.setProperty('--background','#ffffff');r.style.setProperty('--foreground','#171717');r.style.setProperty('--text-mid','#666666');r.style.setProperty('--color-accent','#1e40af');}}catch(e){}})();`,
+            __html: `(() => {try {var t=localStorage.getItem('theme');var r=document.documentElement;if(t==='dark'){r.classList.add('dark');}else if(t==='light'){r.classList.remove('dark');}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){r.classList.add('dark');}}catch(e){}})();`,
           }}
         />
       </head>

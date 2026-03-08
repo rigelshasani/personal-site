@@ -19,17 +19,32 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
+/* Dark mode via .dark class (toggled by theme script) */
+.dark {
+  --background: #0d0d0d;
+  --foreground: #fafafa;
+  --color-accent: #10a37f;
+  --text-mid: #999999;
+  --border-light: #374151;
+  --surface: #1f2937;
+  --surface-hover: #374151;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+}
+
+/* Fallback for system dark preference when no explicit theme is saved */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f0f0f;
-    --foreground: #f5f5f5;
-    --color-accent: #10a37f; /* Green for dark mode */
-    --text-mid: #9ca3af;
+  :root:not(.dark):not(.light) {
+    --background: #0d0d0d;
+    --foreground: #fafafa;
+    --color-accent: #10a37f;
+    --text-mid: #999999;
     --border-light: #374151;
     --surface: #1f2937;
     --surface-hover: #374151;
-    
-    /* Dark shadows */
+
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
