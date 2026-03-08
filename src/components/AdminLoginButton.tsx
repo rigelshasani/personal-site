@@ -40,13 +40,34 @@ export function AdminLoginButton() {
     );
   }
   
+  // Signed in but not admin — show subtle diagnostic
+  if (session && !userIsAdmin) {
+    return (
+      <div
+        className="fixed bottom-2 right-2 z-50"
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+      >
+        <div className={`transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-10'}`}>
+          <a
+            href="/admin/login"
+            className="bg-gray-800 hover:bg-gray-900 text-white px-2 py-1 rounded text-xs transition-all hover:scale-105 block"
+            title={`Signed in as @${session.user?.login ?? session.user?.name} — not an admin`}
+          >
+            @{session.user?.login ?? session.user?.name}
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div 
+    <div
       className="fixed bottom-2 right-2 z-50"
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
     >
-      <div 
+      <div
         className={`transition-opacity duration-300 ${
           isVisible ? 'opacity-100' : 'opacity-10'
         }`}
