@@ -103,7 +103,7 @@ export function PopularPosts({
           <Link
             key={post.slug}
             href={`/posts/${post.slug}`}
-            className="block group hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg p-3 -m-3 transition-colors"
+            className="block group hover:bg-surface rounded-lg p-3 -m-3 transition-colors"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">

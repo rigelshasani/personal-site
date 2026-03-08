@@ -84,8 +84,8 @@ export function Comments({ slug }: CommentsProps) {
   };
 
   return (
-    <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
-      <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">
+    <div className="not-prose mt-12 pt-8 border-t border-border-light">
+      <h3 className="text-xl font-semibold mb-6 text-foreground">
         Comments {comments.length > 0 && `(${comments.length})`}
       </h3>
 
@@ -100,24 +100,24 @@ export function Comments({ slug }: CommentsProps) {
             rows={4}
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-accent focus:border-transparent resize-none"
+            className="w-full px-3 py-2 border border-border-light rounded-lg bg-bg text-foreground placeholder-mid focus:ring-2 focus:ring-accent focus:border-transparent resize-none"
             placeholder="Share your thoughts anonymously... (You'll get a random username)"
             maxLength={1000}
           />
-          <div className="flex justify-between items-center mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex justify-between items-center mt-2 text-sm text-mid">
             <span>Anonymous posting • New random username each time</span>
             <span>{newComment.length}/1000</span>
           </div>
         </div>
 
         {error && (
-          <p className="mb-3 text-sm text-red-500 dark:text-red-400">{error}</p>
+          <p className="mb-3 text-sm text-red-500">{error}</p>
         )}
 
         <button
           type="submit"
           disabled={!newComment.trim() || isSubmitting}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white rounded-lg focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-4 py-2 bg-accent hover:opacity-90 text-white rounded-lg focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
         >
           {isSubmitting ? 'Posting...' : 'Post Comment'}
         </button>
@@ -126,23 +126,23 @@ export function Comments({ slug }: CommentsProps) {
       {/* Comments List */}
       <div className="space-y-6">
         {isLoading ? (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-8">Loading comments...</p>
+          <p className="text-mid text-center py-8">Loading comments...</p>
         ) : comments.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+          <p className="text-mid text-center py-8">
             No comments yet. Be the first to share your thoughts!
           </p>
         ) : (
           comments.map((comment) => (
-            <div key={comment.id} className="border-l-2 border-gray-200 dark:border-gray-700 pl-4 py-2">
+            <div key={comment.id} className="border-l-2 border-border-light pl-4 py-2">
               <div className="flex items-center gap-2 mb-2">
-                <span className="font-medium text-sm text-blue-600 dark:text-emerald-400">
+                <span className="font-medium text-sm text-accent">
                   {comment.username}
                 </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-xs text-mid">
                   {formatDate(comment.timestamp)}
                 </span>
               </div>
-              <p className="text-gray-900 dark:text-white whitespace-pre-wrap">
+              <p className="text-foreground whitespace-pre-wrap">
                 {comment.content}
               </p>
             </div>
