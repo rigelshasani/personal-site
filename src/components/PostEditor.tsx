@@ -6,6 +6,7 @@ const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 import { PostMeta } from '@/lib/content';
 import { useToast } from '@/components/Toast';
 import ReactMarkdown from 'react-markdown';
+import { generateSlug } from '@/lib/post-utils';
 
 interface PostEditorProps {
   initialTitle?: string;
@@ -108,6 +109,11 @@ export function PostEditor({
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
               placeholder="Enter post title"
             />
+            {!isEditing && meta.title && (
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                URL: <span className="font-mono">/posts/{generateSlug(meta.title)}</span>
+              </p>
+            )}
           </div>
           
           <div className="md:col-span-2">
