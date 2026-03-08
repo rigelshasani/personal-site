@@ -3,11 +3,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { SideNavigation } from '@/components/SideNavigation';
 
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/posts', label: 'Posts' },
+  { href: '/about', label: 'About' },
+];
+
 export function SidebarLayout({ children }: { children: React.ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const pathname = usePathname();
 
   return (
     <>
@@ -40,6 +49,26 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
+      {/* Mobile Navigation - Only render on mobile */}
+      <nav className="md:hidden border-b border-border-light bg-bg">
+        <div className="flex justify-around py-2 px-4">
+          {navItems.map(item => {
+            const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`text-sm font-medium py-1 transition-colors ${
+                  isActive ? 'text-accent border-b-2 border-accent' : 'text-foreground/70 hover:text-foreground'
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+
       <div className="flex">
         {/* Side Navigation - Only render on desktop */}
         <div className="hidden md:block">
@@ -50,7 +79,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
         <main className={`flex-1 transition-all duration-300 ${
           isCollapsed ? 'ml-0' : 'ml-0 md:ml-36'
         }`}>
-          <div className="max-w-4xl mx-auto px-8 py-12">
+          <div className="max-w-4xl mx-auto px-4 md:px-8 py-6 md:py-12">
             {children}
           </div>
         </main>

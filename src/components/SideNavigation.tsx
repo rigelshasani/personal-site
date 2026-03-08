@@ -32,10 +32,10 @@ export function SideNavigation({ isCollapsed }: SideNavigationProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`block text-center text-2xl md:text-xl font-bold transition-colors ${
+                className={`block text-center text-2xl md:text-xl font-bold transition-colors border-l-2 pl-2 ${
                   isActive
-                    ? 'text-accent'
-                    : 'text-black/80 dark:text-white/80 hover:text-black dark:hover:text-white'
+                    ? 'text-accent border-accent'
+                    : 'text-black/80 dark:text-white/80 hover:text-black dark:hover:text-white border-transparent'
                 }`}
               >
                 {item.label}

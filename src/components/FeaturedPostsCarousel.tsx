@@ -98,7 +98,7 @@ export function FeaturedPostsCarousel({
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 index === currentIndex
                   ? 'bg-accent w-8'
-                  : 'bg-gray-400 hover:bg-gray-300'
+                  : 'bg-foreground/30 hover:bg-foreground/50'
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />

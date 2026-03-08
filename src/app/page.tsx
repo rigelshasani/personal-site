@@ -40,7 +40,7 @@ export default async function Home() {
       {/* Featured Posts with Images */}
       {postsWithImages.length > 0 && (
         <section>
-          <h2 className="text-2xl font-bold mb-8">Featured Posts</h2>
+          <h2 className="text-2xl font-bold mb-6">Featured Posts</h2>
           <FeaturedPostsCarousel posts={postsWithImages} />
           
           {/* Secondary featured posts grid */}
