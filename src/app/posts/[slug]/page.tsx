@@ -61,7 +61,7 @@ export default async function PostPage({
   const project = post!.meta.project ? await getProject(post!.meta.project) : null;
 
   return (
-    <article className="prose prose-invert max-w-none py-16">
+    <article className="prose dark:prose-invert max-w-none py-16">
       {/* once-per-session increment, no UI */}
       <ViewHit slug={slug} />
 

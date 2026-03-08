@@ -64,9 +64,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Remove focus outlines */
+/* Focus only visible for keyboard navigation, not mouse clicks */
 *:focus {
   outline: none;
+}
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* Better default link styles */
