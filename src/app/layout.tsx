@@ -10,6 +10,7 @@ import { AdminLoginButton } from "@/components/AdminLoginButton";
 import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://rigels.dev'),
   title: {
     default: "Rigels · Thoughts & Analytics",
     template: "%s · Rigels",
