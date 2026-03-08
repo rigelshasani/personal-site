@@ -51,6 +51,7 @@ export function PostEditor({
   const [previewMode, setPreviewMode] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [projects, setProjects] = useState<{ slug: string; title: string }[]>([]);
+  const [isDirty, setIsDirty] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
@@ -70,8 +71,18 @@ export function PostEditor({
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isDirty]);
+
   const handleMetaChange = <K extends keyof PostMeta>(field: K, value: PostMeta[K]) => {
     setMeta(prev => ({ ...prev, [field]: value } as PostMeta));
+    setIsDirty(true);
   };
 
   const handleTagsChange = (value: string) => {
@@ -81,6 +92,7 @@ export function PostEditor({
       .map(tag => tag.trim())
       .filter(tag => tag.length > 0);
     setMeta(prev => ({ ...prev, tags }));
+    setIsDirty(true);
   };
 
   const handleSave = async () => {
@@ -92,6 +104,7 @@ export function PostEditor({
     setIsLoading(true);
     try {
       await onSave(meta, content);
+      setIsDirty(false);
     } catch (error) {
       console.error('Failed to save post:', error);
       toast.error('Failed to save post. Please try again.');
@@ -260,7 +273,7 @@ export function PostEditor({
               height="100%"
               defaultLanguage="markdown"
               value={content}
-              onChange={(value) => setContent(value || '')}
+              onChange={(value) => { setContent(value || ''); setIsDirty(true); }}
               data-testid="monaco-editor"
               theme={isDark ? 'vs-dark' : 'light'}
               options={{
