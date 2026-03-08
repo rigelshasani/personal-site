@@ -47,6 +47,7 @@ export function PostEditor({
   const [isLoading, setIsLoading] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [projects, setProjects] = useState<{ slug: string; title: string }[]>([]);
   const toast = useToast();
 
   useEffect(() => {
@@ -57,6 +58,13 @@ export function PostEditor({
     });
     observer.observe(root, { attributes: true, attributeFilter: ['class'] });
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/admin/projects/list')
+      .then((r) => r.json())
+      .then((d) => { if (d.projects) setProjects(d.projects); })
+      .catch(() => {});
   }, []);
 
   const handleMetaChange = <K extends keyof PostMeta>(field: K, value: PostMeta[K]) => {
@@ -158,13 +166,18 @@ export function PostEditor({
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Project (optional)
             </label>
-            <input
-              type="text"
+            <select
               value={meta.project || ''}
-              onChange={(e) => handleMetaChange('project', e.target.value)}
+              onChange={(e) => handleMetaChange('project', e.target.value || undefined)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-              placeholder="project-slug"
-            />
+            >
+              <option value="">— None —</option>
+              {projects.map((p) => (
+                <option key={p.slug} value={p.slug}>
+                  {p.title}
+                </option>
+              ))}
+            </select>
           </div>
           
           <div>
