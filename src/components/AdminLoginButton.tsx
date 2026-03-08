@@ -10,8 +10,7 @@ export function AdminLoginButton() {
   
   if (status === 'loading') return null;
   
-  const userIsAdmin = session?.user?.login && 
-    process.env.NEXT_PUBLIC_ADMIN_GITHUB_LOGINS?.split(',').includes(session.user.login);
+  const userIsAdmin = session?.user?.isAdmin
   
   if (session && userIsAdmin) {
     return (

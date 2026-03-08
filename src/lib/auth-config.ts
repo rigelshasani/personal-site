@@ -10,9 +10,10 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async session({ session, token }) {
-      // Add GitHub login to session
       if (token.login) {
         session.user.login = token.login as string;
+        const adminLogins = process.env.ADMIN_GITHUB_LOGINS?.split(',') ?? []
+        session.user.isAdmin = adminLogins.includes(token.login as string)
       }
       return session;
     },
