@@ -13,9 +13,9 @@ export default withAuth(
       const adminLogins = process.env.ADMIN_GITHUB_LOGINS?.split(',') || [];
       const userLogin = req.nextauth.token?.login;
       
-      // If not an admin, redirect to home
+      // If not an admin, redirect to the login page
       if (!adminLogins.includes(typeof userLogin === 'string' ? userLogin : '')) {
-        return NextResponse.redirect(new URL('/', req.url));
+        return NextResponse.redirect(new URL('/admin/login', req.url));
       }
     }
     

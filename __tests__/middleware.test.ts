@@ -93,7 +93,7 @@ describe('Middleware', () => {
     // Call the middleware function
     const result = middlewareFunction(mockRequest)
 
-    expect(mockRedirect).toHaveBeenCalledWith(new URL('/', mockRequest.url))
+    expect(mockRedirect).toHaveBeenCalledWith(new URL('/admin/login', mockRequest.url))
   })
 
   it('should allow admin users to access admin routes', async () => {
@@ -141,7 +141,7 @@ describe('Middleware', () => {
     // Should redirect since no admin logins are configured
     const result = middlewareFunction(mockRequest)
 
-    expect(mockRedirect).toHaveBeenCalledWith(new URL('/', mockRequest.url))
+    expect(mockRedirect).toHaveBeenCalledWith(new URL('/admin/login', mockRequest.url))
   })
 
   it('should handle non-admin paths correctly', async () => {
@@ -193,6 +193,6 @@ describe('Middleware', () => {
     // Should redirect non-admin users from API routes
     const result = middlewareFunction(mockRequest)
 
-    expect(mockRedirect).toHaveBeenCalledWith(new URL('/', mockRequest.url))
+    expect(mockRedirect).toHaveBeenCalledWith(new URL('/admin/login', mockRequest.url))
   })
 })
