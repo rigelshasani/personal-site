@@ -35,6 +35,19 @@ jest.mock('next/dynamic', () => {
   }
 })
 
+// PostEditor fetches the projects list on mount
+global.fetch = jest.fn().mockResolvedValue({
+  ok: true,
+  json: () => Promise.resolve({ projects: [] }),
+}) as jest.Mock
+
+// Mock Toast so we can assert on toast.error calls
+const mockToastError = jest.fn();
+jest.mock('@/components/Toast', () => ({
+  useToast: () => ({ error: mockToastError, success: jest.fn(), info: jest.fn() }),
+  ToastProvider: ({ children }: any) => children,
+}));
+
 describe('PostEditor', () => {
   const defaultProps = {
     onSave: jest.fn(),
@@ -42,7 +55,12 @@ describe('PostEditor', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.clearAllMocks();
+    mockToastError.mockClear();
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ projects: [] }),
+    })
   })
 
   it('should render with empty form by default', () => {
@@ -53,7 +71,12 @@ describe('PostEditor', () => {
     expect(screen.getByTestId('monaco-editor')).toHaveValue('')
   })
 
-  it('should render with initial values when provided', () => {
+  it('should render with initial values when provided', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ projects: [{ slug: 'test-project', title: 'Test Project' }] }),
+    })
+
     render(
       <PostEditor
         {...defaultProps}
@@ -65,12 +88,15 @@ describe('PostEditor', () => {
         initialOrder={1}
       />
     )
-    
+
     expect(screen.getByDisplayValue('Test Post')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Test description')).toBeInTheDocument()
     expect(screen.getByDisplayValue('test, jest')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('test-project')).toBeInTheDocument()
     expect(screen.getByDisplayValue('1')).toBeInTheDocument()
+    // Project select loads async — verify the option renders and is selected
+    const projectOption = await screen.findByRole('option', { name: 'Test Project' })
+    expect(projectOption).toBeInTheDocument()
+    expect((projectOption as HTMLOptionElement).selected).toBe(true)
   })
 
   it('should update form fields when user types', async () => {
@@ -146,19 +172,14 @@ describe('PostEditor', () => {
   it('should show validation error for empty required fields', async () => {
     const user = userEvent.setup()
     const mockSave = jest.fn()
-    
-    // Mock window.alert
-    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {})
-    
+
     render(<PostEditor {...defaultProps} onSave={mockSave} />)
-    
+
     const saveButton = screen.getByRole('button', { name: 'Create Post' })
     await user.click(saveButton)
-    
-    expect(alertSpy).toHaveBeenCalledWith('Please fill in all required fields')
+
+    expect(mockToastError).toHaveBeenCalledWith('Please fill in all required fields')
     expect(mockSave).not.toHaveBeenCalled()
-    
-    alertSpy.mockRestore()
   })
 
   it('should call onCancel when cancel button clicked', async () => {

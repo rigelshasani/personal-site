@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import ProjectsPage from '@/app/projects/page';
+import ProjectsPage from '@/app/(site)/projects/page';
 import * as contentGateway from '@/lib/content-gateway';
 
 // Mock content functions

@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import AdminDashboard from '@/app/admin/page';
+import AdminDashboard from '@/app/admin/(protected)/page';
 import * as formatModule from '@/lib/format';
 
 // Mock format functions
@@ -25,25 +25,26 @@ jest.mock('next/link', () => {
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
-// Mock window methods
+// Mock window.confirm
 const mockConfirm = jest.fn();
-const mockAlert = jest.fn();
-
 Object.defineProperty(window, 'confirm', {
   value: mockConfirm,
   writable: true,
 });
 
-Object.defineProperty(window, 'alert', {
-  value: mockAlert,
-  writable: true,
-});
+// Mock Toast so we can assert on toast.error calls
+const mockToastError = jest.fn();
+jest.mock('@/components/Toast', () => ({
+  useToast: () => ({ error: mockToastError, success: jest.fn(), info: jest.fn() }),
+  ToastProvider: ({ children }: any) => children,
+}));
 
 // Note: JSDOM doesn't support mocking location.reload properly, so we'll test the API call instead
 
 describe('Admin Dashboard Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockToastError.mockClear();
     mockFormat.formatDate.mockImplementation((date) => `Formatted: ${date}`);
   });
 
@@ -200,7 +201,7 @@ describe('Admin Dashboard Page', () => {
       expect(screen.getByText('Test Post')).toBeInTheDocument();
     });
 
-    const viewLink = screen.getByRole('link', { name: 'View' });
+    const viewLink = screen.getByRole('link', { name: 'View ↗' });
     const editLink = screen.getByRole('link', { name: 'Edit' });
 
     expect(viewLink).toBeInTheDocument();
@@ -325,10 +326,8 @@ describe('Admin Dashboard Page', () => {
     fireEvent.click(deleteButton);
 
     await waitFor(() => {
-      expect(mockAlert).toHaveBeenCalledWith('Failed to delete post');
+      expect(mockToastError).toHaveBeenCalledWith('Failed to delete post');
     });
-
-    // API failure handled, no reload should happen
   });
 
   it('should handle delete network error', async () => {
@@ -363,7 +362,7 @@ describe('Admin Dashboard Page', () => {
     fireEvent.click(deleteButton);
 
     await waitFor(() => {
-      expect(mockAlert).toHaveBeenCalledWith('Failed to delete post');
+      expect(mockToastError).toHaveBeenCalledWith('Failed to delete post');
     });
   });
 

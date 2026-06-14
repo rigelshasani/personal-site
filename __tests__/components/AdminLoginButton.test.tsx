@@ -139,11 +139,12 @@ describe('AdminLoginButton', () => {
     })
 
     render(<AdminLoginButton />)
-    
-    // Should render login button since user is not admin
-    const button = screen.getByRole('button', { name: '•' })
-    expect(button).toBeInTheDocument()
-    
+
+    // Authenticated but non-admin: shows a subtle @handle link (not an admin button)
+    const link = screen.getByRole('link', { name: '@regularuser' })
+    expect(link).toBeInTheDocument()
+    expect(link).toHaveAttribute('href', '/admin/login')
+
     expect(screen.queryByText('Admin')).not.toBeInTheDocument()
     expect(screen.queryByText('Logout')).not.toBeInTheDocument()
   })

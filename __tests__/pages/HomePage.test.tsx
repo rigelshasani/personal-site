@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import Home from '@/app/page';
+import Home from '@/app/(site)/page';
 import * as contentModule from '@/lib/content';
 
 // Mock all content functions

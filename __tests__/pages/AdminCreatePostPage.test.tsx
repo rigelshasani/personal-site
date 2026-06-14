@@ -4,7 +4,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
-import CreatePostPage from '@/app/admin/create/page';
+import CreatePostPage from '@/app/admin/(protected)/create/page';
 
 // Mock Next.js useRouter
 const mockPush = jest.fn();

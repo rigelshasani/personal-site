@@ -4,7 +4,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { redirect } from 'next/navigation';
-import AdminLayout from '@/app/admin/layout';
+import AdminLayout from '@/app/admin/(protected)/layout';
 import * as authModule from '@/lib/auth';
 
 // Mock auth functions
@@ -30,6 +30,11 @@ jest.mock('next/link', () => {
   };
 });
 
+// Mock ThemeToggle (uses client hooks not available in test env)
+jest.mock('@/components/ThemeToggle', () => ({
+  ThemeToggle: () => null,
+}));
+
 describe('Admin Layout', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -39,38 +44,37 @@ describe('Admin Layout', () => {
     mockAuth.requireAdmin.mockResolvedValueOnce(undefined);
 
     const TestChildren = () => <div data-testid="test-children">Test Content</div>;
-    
+
     const component = await AdminLayout({ children: <TestChildren /> });
     render(component);
 
-    expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Rigels Admin')).toBeInTheDocument();
     expect(screen.getByTestId('test-children')).toBeInTheDocument();
     expect(mockRedirect).not.toHaveBeenCalled();
   });
 
-  it('should redirect to home when user is not authorized', async () => {
+  it('should redirect to login when user is not authorized', async () => {
     mockAuth.requireAdmin.mockRejectedValueOnce(new Error('Unauthorized'));
 
     const TestChildren = () => <div data-testid="test-children">Test Content</div>;
-    
+
     await AdminLayout({ children: <TestChildren /> });
 
     expect(mockAuth.requireAdmin).toHaveBeenCalledTimes(1);
-    expect(mockRedirect).toHaveBeenCalledWith('/');
+    expect(mockRedirect).toHaveBeenCalledWith('/admin/login');
   });
 
   it('should render navigation with correct links', async () => {
     mockAuth.requireAdmin.mockResolvedValueOnce(undefined);
 
     const TestChildren = () => <div>Test Content</div>;
-    
+
     const component = await AdminLayout({ children: <TestChildren /> });
     render(component);
 
-    // Check main navigation links
-    const dashboardLink = screen.getByRole('link', { name: 'Admin Dashboard' });
-    expect(dashboardLink).toBeInTheDocument();
-    expect(dashboardLink).toHaveAttribute('href', '/admin');
+    const brandLink = screen.getByRole('link', { name: 'Rigels Admin' });
+    expect(brandLink).toBeInTheDocument();
+    expect(brandLink).toHaveAttribute('href', '/admin');
 
     const postsLink = screen.getByRole('link', { name: 'Posts' });
     expect(postsLink).toBeInTheDocument();
@@ -94,7 +98,7 @@ describe('Admin Layout', () => {
         <p>This is the admin content</p>
       </div>
     );
-    
+
     const component = await AdminLayout({ children: <TestChildren /> });
     render(component);
 
@@ -108,11 +112,10 @@ describe('Admin Layout', () => {
     mockAuth.requireAdmin.mockResolvedValueOnce(undefined);
 
     const TestChildren = () => <div>Content</div>;
-    
+
     const component = await AdminLayout({ children: <TestChildren /> });
     render(component);
 
-    // Check for proper layout structure
     expect(screen.getByRole('navigation')).toBeInTheDocument();
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
@@ -121,36 +124,32 @@ describe('Admin Layout', () => {
     mockAuth.requireAdmin.mockResolvedValueOnce(undefined);
 
     const TestChildren = () => <div>Content</div>;
-    
+
     const component = await AdminLayout({ children: <TestChildren /> });
     const { container } = render(component);
 
-    // Check that the main container has the expected class
     const mainContainer = container.firstChild as HTMLElement;
-    expect(mainContainer).toHaveClass('min-h-screen', 'bg-gray-50', 'dark:bg-gray-900');
+    expect(mainContainer).toHaveClass('min-h-screen', 'bg-bg', 'text-foreground');
 
-    // Check navigation styling
     const nav = screen.getByRole('navigation');
-    expect(nav).toHaveClass('bg-white', 'dark:bg-gray-800', 'shadow-sm', 'border-b', 'border-gray-200', 'dark:border-gray-700');
+    expect(nav).toHaveClass('border-b', 'border-border-light', 'sticky');
 
-    // Check main content area styling
     const main = screen.getByRole('main');
-    expect(main).toHaveClass('max-w-7xl', 'mx-auto', 'py-6', 'px-4', 'sm:px-6', 'lg:px-8');
+    expect(main).toHaveClass('max-w-7xl', 'mx-auto', 'py-8');
   });
 
   it('should handle requireAdmin rejection without error', async () => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-    
+
     mockAuth.requireAdmin.mockRejectedValueOnce(new Error('Access denied'));
 
     const TestChildren = () => <div>Content</div>;
-    
+
     await AdminLayout({ children: <TestChildren /> });
 
-    expect(mockRedirect).toHaveBeenCalledWith('/');
-    // Should not log errors since we catch the rejection
+    expect(mockRedirect).toHaveBeenCalledWith('/admin/login');
     expect(consoleError).not.toHaveBeenCalled();
-    
+
     consoleError.mockRestore();
   });
 
@@ -158,71 +157,46 @@ describe('Admin Layout', () => {
     mockAuth.requireAdmin.mockResolvedValueOnce(undefined);
 
     const TestChildren = () => <div>Content</div>;
-    
+
     const component = await AdminLayout({ children: <TestChildren /> });
     render(component);
 
     const newPostButton = screen.getByRole('link', { name: 'New Post' });
     expect(newPostButton).toHaveClass(
-      'bg-blue-600',
-      'hover:bg-blue-700',
+      'bg-accent',
       'text-white',
-      'px-4',
-      'py-2',
+      'px-3',
+      'py-1.5',
       'rounded-md',
       'text-sm',
       'font-medium',
-      'transition-colors'
     );
   });
 
-  it('should render dashboard title with correct styling', async () => {
+  it('should render brand title with correct styling', async () => {
     mockAuth.requireAdmin.mockResolvedValueOnce(undefined);
 
     const TestChildren = () => <div>Content</div>;
-    
+
     const component = await AdminLayout({ children: <TestChildren /> });
     render(component);
 
-    const dashboardTitle = screen.getByRole('link', { name: 'Admin Dashboard' });
-    expect(dashboardTitle).toHaveClass(
-      'text-xl',
-      'font-semibold',
-      'text-gray-900',
-      'dark:text-white'
-    );
+    const brandTitle = screen.getByRole('link', { name: 'Rigels Admin' });
+    expect(brandTitle).toHaveClass('text-lg', 'font-semibold', 'text-foreground');
   });
 
   it('should render navigation links with hover effects', async () => {
     mockAuth.requireAdmin.mockResolvedValueOnce(undefined);
 
     const TestChildren = () => <div>Content</div>;
-    
+
     const component = await AdminLayout({ children: <TestChildren /> });
     render(component);
 
     const postsLink = screen.getByRole('link', { name: 'Posts' });
-    expect(postsLink).toHaveClass(
-      'text-gray-600',
-      'dark:text-gray-300',
-      'hover:text-gray-900',
-      'dark:hover:text-white',
-      'px-3',
-      'py-2',
-      'text-sm',
-      'font-medium'
-    );
+    expect(postsLink).toHaveClass('text-mid', 'hover:text-foreground', 'text-sm', 'font-medium');
 
     const backToSiteLink = screen.getByRole('link', { name: '← Back to Site' });
-    expect(backToSiteLink).toHaveClass(
-      'text-gray-600',
-      'dark:text-gray-300',
-      'hover:text-gray-900',
-      'dark:hover:text-white',
-      'px-3',
-      'py-2',
-      'text-sm',
-      'font-medium'
-    );
+    expect(backToSiteLink).toHaveClass('text-mid', 'hover:text-foreground', 'text-sm', 'font-medium');
   });
 });

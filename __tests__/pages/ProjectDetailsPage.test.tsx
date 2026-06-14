@@ -4,7 +4,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { notFound } from 'next/navigation';
-import ProjectPage, { generateStaticParams, generateMetadata } from '@/app/projects/[slug]/page';
+import ProjectPage, { generateStaticParams, generateMetadata } from '@/app/(site)/projects/[slug]/page';
 import * as contentModule from '@/lib/content';
 import * as formatModule from '@/lib/format';
 
@@ -345,8 +345,8 @@ describe('Project Details Page', () => {
       const component = await ProjectPage({ params });
       render(component);
 
-      const githubLink = screen.getByRole('link', { name: 'View on GitHub →' });
-      const demoLink = screen.getByRole('link', { name: 'Live Demo →' });
+      const githubLink = screen.getByRole('link', { name: 'View on GitHub ↗' });
+      const demoLink = screen.getByRole('link', { name: 'Live Demo ↗' });
 
       expect(githubLink).toBeInTheDocument();
       expect(githubLink).toHaveAttribute('href', 'https://github.com/user/repo');
@@ -379,8 +379,8 @@ describe('Project Details Page', () => {
       const component = await ProjectPage({ params });
       render(component);
 
-      expect(screen.getByRole('link', { name: 'View on GitHub →' })).toBeInTheDocument();
-      expect(screen.queryByRole('link', { name: 'Live Demo →' })).not.toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'View on GitHub ↗' })).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Live Demo ↗' })).not.toBeInTheDocument();
     });
 
     it('should render project content with MDXRemote', async () => {
