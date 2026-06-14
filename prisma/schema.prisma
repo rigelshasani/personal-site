@@ -37,6 +37,7 @@ model Post {
   tagsJson    String?
   order       Int?
   imagesJson  String?
+  featured    Boolean  @default(false)
   content     String
 
   projectSlug String?
