@@ -1,6 +1,5 @@
-// src/lib/constants.ts
 export const statusColors = {
-  active: 'bg-blue-50 text-blue-600 dark:bg-green-800 dark:text-green-100',
-  completed: 'bg-blue-100 text-blue-800 dark:bg-green-900/20 dark:text-green-300',
-  archived: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300',
+  active: 'bg-status-active-bg text-status-active-text',
+  completed: 'bg-status-completed-bg text-status-completed-text',
+  archived: 'bg-status-archived-bg text-status-archived-text',
 };
