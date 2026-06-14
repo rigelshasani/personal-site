@@ -18,7 +18,7 @@ model Project {
   description String
   date        DateTime
   status      String   // 'active' | 'completed' | 'archived'
-  techJson    String?
+  tech        Json?
   github      String?
   demo        String?
   featured    Boolean  @default(false)
@@ -34,9 +34,9 @@ model Post {
   description String
   date        DateTime
   readingTime String
-  tagsJson    String?
+  tags        Json?
   order       Int?
-  imagesJson  String?
+  images      Json?
   featured    Boolean  @default(false)
   content     String
 

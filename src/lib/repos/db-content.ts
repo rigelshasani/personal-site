@@ -13,9 +13,9 @@ function mapPostRecord(r: {
   description: string
   date: Date
   readingTime: string
-  tagsJson: string | null
+  tags: unknown
   order: number | null
-  imagesJson: string | null
+  images: unknown
   featured: boolean
   content: string
   projectSlug: string | null
@@ -26,10 +26,10 @@ function mapPostRecord(r: {
       title: r.title,
       description: r.description,
       date: r.date.toISOString().split('T')[0],
-      tags: r.tagsJson ? (JSON.parse(r.tagsJson) as string[]) : undefined,
+      tags: r.tags as string[] | undefined,
       project: r.projectSlug || undefined,
       order: r.order || undefined,
-      images: r.imagesJson ? (JSON.parse(r.imagesJson) as string[]) : undefined,
+      images: r.images as string[] | undefined,
       featured: r.featured || undefined,
     } satisfies PostMeta,
     content: r.content,
@@ -67,7 +67,7 @@ export async function dbGetAllProjects(): Promise<Project[]> {
       description: p.description,
       date: p.date.toISOString().split('T')[0],
       status: p.status as ProjectMeta['status'],
-      tech: p.techJson ? (JSON.parse(p.techJson) as string[]) : undefined,
+      tech: p.tech as string[] | undefined,
       github: p.github || undefined,
       demo: p.demo || undefined,
       featured: p.featured,
@@ -88,7 +88,7 @@ export async function dbGetProject(slug: string): Promise<Project | null> {
       description: p.description,
       date: p.date.toISOString().split('T')[0],
       status: p.status as ProjectMeta['status'],
-      tech: p.techJson ? (JSON.parse(p.techJson) as string[]) : undefined,
+      tech: p.tech as string[] | undefined,
       github: p.github || undefined,
       demo: p.demo || undefined,
       featured: p.featured,
@@ -106,10 +106,10 @@ export async function dbCreatePost(slug: string, meta: PostMeta, content: string
       description: meta.description,
       date: new Date(meta.date),
       readingTime: calculateReadingTime(content),
-      tagsJson: meta.tags ? JSON.stringify(meta.tags) : null,
+      tags: meta.tags ?? null,
       projectSlug: meta.project || null,
       order: typeof meta.order === 'number' ? meta.order : null,
-      imagesJson: meta.images ? JSON.stringify(meta.images) : null,
+      images: meta.images ?? null,
       featured: meta.featured ?? false,
       content,
     },
@@ -126,10 +126,10 @@ export async function dbUpdatePost(slug: string, meta: PostMeta, content: string
       description: meta.description,
       date: new Date(meta.date),
       readingTime: calculateReadingTime(content),
-      tagsJson: meta.tags ? JSON.stringify(meta.tags) : null,
+      tags: meta.tags ?? null,
       projectSlug: meta.project || null,
       order: typeof meta.order === 'number' ? meta.order : null,
-      imagesJson: meta.images ? JSON.stringify(meta.images) : null,
+      images: meta.images ?? null,
       featured: meta.featured ?? false,
       content,
     },
