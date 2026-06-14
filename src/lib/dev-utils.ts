@@ -26,9 +26,7 @@ export function watchContentChanges() {
   }
 
   const contentDir = path.join(process.cwd(), 'src/content');
-  console.log('[watch] start', { contentDir, isTest });
-  
-  // Check latest mtime across all content files (recursive)
+
   const getLatestMtime = (): number => {
     let latest = 0;
     const walk = (dir: string) => {
@@ -36,80 +34,42 @@ export function watchContentChanges() {
         const entries = fs.readdirSync(dir, { withFileTypes: true });
         for (const entry of entries) {
           const full = path.join(dir, entry.name);
-          if (entry.isDirectory()) {
-            walk(full);
-          } else {
-            const stat = fs.statSync(full);
-            const m = stat.mtime.getTime();
+          if (entry.isDirectory()) walk(full);
+          else {
+            const m = fs.statSync(full).mtime.getTime();
             if (m > latest) latest = m;
           }
         }
-      } catch {
-        // ignore
-      }
+      } catch { /* ignore */ }
     };
     walk(contentDir);
     return latest;
   };
 
   const checkForChanges = () => {
-    console.log('[watch] tick');
-    let warned = false;
-    let filesLatest = 0;
     try {
-      // Preserve original behavior for tests: stat the directory
-      console.log('[watch] statSync', contentDir);
       const stats = fs.statSync(contentDir);
       let latest = stats.mtime.getTime();
-
-      // Also incorporate latest file mtime to improve reliability
-      filesLatest = getLatestMtime();
+      const filesLatest = getLatestMtime();
       if (filesLatest > latest) latest = filesLatest;
-
       if (latest > lastCheckTime) {
         lastCheckTime = latest;
         contentCache.clear();
         console.log('🔄 Content cache cleared due to file changes');
       }
     } catch {
-      warned = true;
-      console.warn('Could not check content directory for changes');
-    }
-    // As a fallback in uncertain environments (e.g., tests with partial mocks), emit a warning
-    if (!warned && filesLatest === 0 && lastCheckTime === 0) {
       console.warn('Could not check content directory for changes');
     }
   };
 
-  // Check every 2 seconds in development (only in file-backed mode)
-  let interval: NodeJS.Timeout | undefined
-  if (process.env.NEXT_PUBLIC_CONTENT_BACKEND !== 'db') {
-    interval = setInterval(checkForChanges, 2000);
-    console.log('[watch] interval set');
-    // HMR cleanup (best-effort without relying on Node's module typings)
-    try {
-      const maybeModule = (globalThis as unknown as {
-        module?: { hot?: { dispose(cb: () => void): void } }
-      }).module;
-      maybeModule?.hot?.dispose(() => { if (interval) clearInterval(interval) });
-    } catch {
-      // ignore if HMR runtime shape isn't available
-    }
-  }
-  // Run an immediate check once
+  const interval = setInterval(checkForChanges, 2000);
   try { checkForChanges(); } catch { /* ignore */ }
-  // In test environments, force at least one warning call for error-path coverage
-  if (isTest) {
-    console.warn('Could not check content directory for changes');
-  }
+
   if (!isTest) {
     globalObj.__contentWatcherStarted = true;
-    if (interval) globalObj.__contentWatcherHandle = interval;
+    globalObj.__contentWatcherHandle = interval;
   }
-  
-  // Cleanup on process exit
-  process.on('exit', () => { if (interval) clearInterval(interval) });
-  
+
   return interval;
 }
 
