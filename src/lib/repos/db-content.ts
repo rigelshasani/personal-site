@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import type { Post, Project, PostMeta, ProjectMeta } from '@/lib/content'
+import { extractFirstImageUrl } from '@/lib/content-utils'
 
 function calculateReadingTime(content: string): string {
   const words = content.split(/\s+/).filter(Boolean).length
@@ -20,20 +21,22 @@ function mapPostRecord(r: {
   content: string
   projectSlug: string | null
 }): Post {
+  const meta: PostMeta = {
+    title: r.title,
+    description: r.description,
+    date: r.date.toISOString().split('T')[0],
+    tags: r.tags as string[] | undefined,
+    project: r.projectSlug || undefined,
+    order: r.order || undefined,
+    images: r.images as string[] | undefined,
+    featured: r.featured || undefined,
+  }
   return {
     slug: r.slug,
-    meta: {
-      title: r.title,
-      description: r.description,
-      date: r.date.toISOString().split('T')[0],
-      tags: r.tags as string[] | undefined,
-      project: r.projectSlug || undefined,
-      order: r.order || undefined,
-      images: r.images as string[] | undefined,
-      featured: r.featured || undefined,
-    } satisfies PostMeta,
+    meta,
     content: r.content,
     readingTime: r.readingTime || calculateReadingTime(r.content),
+    firstImageUrl: extractFirstImageUrl(meta, r.content),
   }
 }
 

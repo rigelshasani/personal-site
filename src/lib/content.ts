@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { cacheContent, devLog, validatePost, watchContentChanges } from './dev-utils';
+import { extractFirstImageUrl } from './content-utils';
 
 // Initialize content watching in development
 if (process.env.NODE_ENV === 'development') {
@@ -57,20 +58,6 @@ function calculateReadingTime(content: string): string {
   return `${minutes} min`;
 }
 
-// Robustly extract first image URL from content (markdown image, <Figure>, or <img>)
-function extractFirstImageUrl(content: string): string | undefined {
-  // Markdown image
-  const md = content.match(/!\[[^\]]*\]\(([^)]+)\)/);
-  if (md?.[1]) return md[1].trim();
-  // <Figure src="..."> or <Figure src='...'>
-  const fig = content.match(/<Figure[^>]+src=(?:\"([^\"]+)\"|'([^']+)')/);
-  if (fig?.[1] || fig?.[2]) return (fig[1] || fig[2])!.trim();
-  // <img src="..."> or <img src='...'>
-  const img = content.match(/<img[^>]+src=(?:\"([^\"]+)\"|'([^']+)')/i);
-  if (img?.[1] || img?.[2]) return (img[1] || img[2])!.trim();
-  return undefined;
-}
-
 // Get all posts
 export function getAllPosts(): Post[] {
   return cacheContent('all-posts', () => {
@@ -96,12 +83,7 @@ export function getAllPosts(): Post[] {
         // Validate post in development (frontmatter + content)
         validatePost(data, content, filename);
         
-        // Compute first image URL from frontmatter or content
-        const firstImageUrl = (() => {
-          const meta = data as PostMeta;
-          if (meta.images && meta.images.length > 0) return meta.images[0];
-          return extractFirstImageUrl(content);
-        })();
+        const firstImageUrl = extractFirstImageUrl(data as PostMeta, content);
         
         return {
           slug,

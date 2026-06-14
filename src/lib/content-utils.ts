@@ -1,17 +1,14 @@
-import type { Post } from "@/lib/content";
+import type { PostMeta } from "@/lib/content";
 
-// Extract first image URL from a post (frontmatter images, markdown image, or Figure src)
-export function getFirstImageUrl(post: Post): string | null {
-  if (post.meta.images && post.meta.images.length > 0) {
-    return post.meta.images[0];
-  }
-  const mdImage = post.content.match(/!\[.*?\]\((.*?)\)/);
-  if (mdImage?.[1]) return mdImage[1].trim();
-
-  const figureImage = post.content.match(/<Figure[^>]+src=\"([^\"]+)\"/);
-  if (figureImage?.[1]) return figureImage[1].trim();
-
-  return null;
+export function extractFirstImageUrl(meta: PostMeta, content: string): string | undefined {
+  if (meta.images && meta.images.length > 0) return meta.images[0];
+  const md = content.match(/!\[[^\]]*\]\(([^)]+)\)/);
+  if (md?.[1]) return md[1].trim();
+  const fig = content.match(/<Figure[^>]+src=(?:"([^"]+)"|'([^']+)')/);
+  if (fig?.[1] || fig?.[2]) return (fig[1] || fig[2])!.trim();
+  const img = content.match(/<img[^>]+src=(?:"([^"]+)"|'([^']+)')/i);
+  if (img?.[1] || img?.[2]) return (img[1] || img[2])!.trim();
+  return undefined;
 }
 
 export function isValidImageUrl(url: string): boolean {
