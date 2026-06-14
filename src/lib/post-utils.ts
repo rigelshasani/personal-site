@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { PostMeta } from './content';
+import { validateFrontmatter } from './dev-utils';
 export { generateSlug } from './slug';
 
 const contentDirectory = path.join(process.cwd(), 'src/content/posts');
@@ -48,35 +49,15 @@ export function deletePostFile(slug: string): void {
 }
 
 export function validatePostData(meta: PostMeta, content: string): void {
-  if (!meta.title?.trim()) {
-    throw new Error('Title is required');
-  }
-  
-  if (!meta.description?.trim()) {
-    throw new Error('Description is required');
-  }
-  
-  if (!meta.date) {
-    throw new Error('Date is required');
-  }
-  
-  if (!content?.trim()) {
-    throw new Error('Content is required');
-  }
-  
-  // Validate date format
-  const date = new Date(meta.date);
-  if (isNaN(date.getTime())) {
-    throw new Error('Invalid date format');
-  }
-  
-  // Validate tags if provided
-  if (meta.tags && !Array.isArray(meta.tags)) {
-    throw new Error('Tags must be an array');
-  }
-  
-  // Validate order if provided
-  if (meta.order && (!Number.isInteger(meta.order) || meta.order < 1)) {
-    throw new Error('Order must be a positive integer');
+  if (!meta.title?.trim()) throw new Error('Title is required');
+  if (!meta.description?.trim()) throw new Error('Description is required');
+  if (!meta.date) throw new Error('Date is required');
+  if (!content?.trim()) throw new Error('Content is required');
+
+  const { errors } = validateFrontmatter(meta as Record<string, unknown>, 'post');
+  for (const err of errors) {
+    if (err.message.startsWith('Invalid date format')) throw new Error('Invalid date format');
+    if (err.message === 'Tags must be an array') throw new Error('Tags must be an array');
+    if (err.message === 'Order must be a positive integer') throw new Error('Order must be a positive integer');
   }
 }
