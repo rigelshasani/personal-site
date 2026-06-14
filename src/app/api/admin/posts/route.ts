@@ -3,6 +3,24 @@ import { requireAdmin } from '@/lib/auth';
 import { PostMeta } from '@/lib/content';
 import { createPostFile, generateSlug, validatePostData } from '@/lib/post-utils';
 import { shouldUseDb, createPost as createPostDb } from '@/lib/content-service';
+import { getAllPosts } from '@/lib/content-gateway';
+
+export async function GET() {
+  try {
+    await requireAdmin();
+    const posts = (await getAllPosts()).map(p => ({
+      slug: p.slug,
+      meta: p.meta,
+      readingTime: p.readingTime,
+    }));
+    return NextResponse.json({ success: true, posts });
+  } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized: Admin access required') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {

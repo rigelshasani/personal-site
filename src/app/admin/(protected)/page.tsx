@@ -15,7 +15,7 @@ export default function AdminDashboard() {
     // Fetch posts on client side to avoid hydration issues
     const fetchPosts = async () => {
       try {
-        const response = await fetch('/api/admin/posts/list');
+        const response = await fetch('/api/admin/posts');
         if (response.ok) {
           const data = await response.json();
           setPosts(data.posts);

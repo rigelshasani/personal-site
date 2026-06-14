@@ -3,11 +3,27 @@ import { requireAdmin } from '@/lib/auth';
 import { PostMeta } from '@/lib/content';
 import { updatePostFile, deletePostFile, validatePostData } from '@/lib/post-utils';
 import { shouldUseDb, updatePost as updatePostDb, deletePost as deletePostDb } from '@/lib/content-service';
+import { getPost } from '@/lib/content-gateway';
 
 const SLUG_RE = /^[a-z0-9-]+$/
 
 interface RouteContext {
   params: Promise<{ slug: string }>;
+}
+
+export async function GET(_req: NextRequest, context: RouteContext) {
+  try {
+    await requireAdmin();
+    const { slug } = await context.params;
+    const post = await getPost(slug);
+    if (!post) return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    return NextResponse.json({ success: true, post });
+  } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized: Admin access required') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    return NextResponse.json({ error: 'Failed to fetch post' }, { status: 500 });
+  }
 }
 
 export async function PUT(request: NextRequest, context: RouteContext) {

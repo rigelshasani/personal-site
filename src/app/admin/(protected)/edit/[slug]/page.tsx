@@ -37,7 +37,7 @@ export default function EditPostPage({ params }: { params: Params }) {
     let cancelled = false;
     const fetchPost = async () => {
       try {
-        const response = await fetch(`/api/admin/posts/${slug}/get`);
+        const response = await fetch(`/api/admin/posts/${slug}`);
         if (!response.ok) {
           if (response.status === 404) {
             if (!cancelled) setError('Post not found');
