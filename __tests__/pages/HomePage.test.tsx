@@ -71,7 +71,6 @@ describe('Home Page', () => {
     // Mock empty data
     mockContent.getAllProjects.mockReturnValue([]);
     mockContent.getAllPosts.mockReturnValue([]);
-    mockContent.getStandalonePosts.mockReturnValue([]);
 
     render(await Home());
 
@@ -104,7 +103,6 @@ describe('Home Page', () => {
 
     mockContent.getAllProjects.mockReturnValue([]);
     mockContent.getAllPosts.mockReturnValue(mockPostsWithImages);
-    mockContent.getStandalonePosts.mockReturnValue(mockPostsWithImages);
 
     render(await Home());
 
@@ -156,7 +154,6 @@ describe('Home Page', () => {
 
     mockContent.getAllProjects.mockReturnValue([]);
     mockContent.getAllPosts.mockReturnValue(mockPostsWithImages);
-    mockContent.getStandalonePosts.mockReturnValue(mockPostsWithImages);
 
     render(await Home());
 
@@ -193,7 +190,6 @@ describe('Home Page', () => {
 
     mockContent.getAllProjects.mockReturnValue(mockProjects);
     mockContent.getAllPosts.mockReturnValue([]);
-    mockContent.getStandalonePosts.mockReturnValue([]);
 
     render(await Home());
 
@@ -231,7 +227,6 @@ describe('Home Page', () => {
 
     mockContent.getAllProjects.mockReturnValue(mockProjects);
     mockContent.getAllPosts.mockReturnValue([]);
-    mockContent.getStandalonePosts.mockReturnValue([]);
 
     render(await Home());
 
@@ -268,7 +263,6 @@ describe('Home Page', () => {
 
     mockContent.getAllProjects.mockReturnValue([]);
     mockContent.getAllPosts.mockReturnValue(mockRegularPosts);
-    mockContent.getStandalonePosts.mockReturnValue(mockRegularPosts);
 
     render(await Home());
 
@@ -298,7 +292,6 @@ describe('Home Page', () => {
 
     mockContent.getAllProjects.mockReturnValue([]);
     mockContent.getAllPosts.mockReturnValue(mockPosts);
-    mockContent.getStandalonePosts.mockReturnValue([]);
 
     render(await Home());
 
@@ -338,7 +331,6 @@ describe('Home Page', () => {
 
     mockContent.getAllProjects.mockReturnValue([]);
     mockContent.getAllPosts.mockReturnValue(allPosts);
-    mockContent.getStandalonePosts.mockReturnValue(allPosts);
 
     render(await Home());
 
@@ -369,7 +361,6 @@ describe('Home Page', () => {
 
     mockContent.getAllProjects.mockReturnValue(mockProjects);
     mockContent.getAllPosts.mockReturnValue([]);
-    mockContent.getStandalonePosts.mockReturnValue([]);
 
     render(await Home());
 
@@ -390,7 +381,6 @@ describe('Home Page', () => {
 
     mockContent.getAllProjects.mockReturnValue([]);
     mockContent.getAllPosts.mockReturnValue(mockRegularPosts);
-    mockContent.getStandalonePosts.mockReturnValue(mockRegularPosts);
 
     render(await Home());
 
@@ -401,7 +391,6 @@ describe('Home Page', () => {
   it('should hide sections when no content is available', async () => {
     mockContent.getAllProjects.mockReturnValue([]);
     mockContent.getAllPosts.mockReturnValue([]);
-    mockContent.getStandalonePosts.mockReturnValue([]);
 
     render(await Home());
 

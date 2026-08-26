@@ -145,12 +145,6 @@ export function getAllProjects(): Project[] {
   });
 }
 
-// Get posts that don't belong to any project
-export function getStandalonePosts(): Post[] {
-  const allPosts = getAllPosts();
-  return allPosts.filter(post => !post.meta.project);
-}
-
 // Get a specific project with its posts
 export function getProject(slug: string): Project | null {
   const projects = getAllProjects();
