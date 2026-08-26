@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
-import ViewCounter, { ViewCount, ViewTracker } from '@/components/ViewCounter'
+import { render, screen } from '@testing-library/react'
+import ViewCounter from '@/components/ViewCounter'
 import * as viewCounterModule from '@/lib/view-counter'
 
 // Mock the view counter module
@@ -22,7 +22,7 @@ describe('ViewCounter Component', () => {
     mockViewCounter.getViewCount.mockReturnValue(5)
     mockViewCounter.formatViewCount.mockReturnValue('5 views')
 
-    render(<ViewCount slug="test-post" />)
+    render(<ViewCounter slug="test-post" showIcon={false} />)
 
     expect(screen.getByText('5 views')).toBeInTheDocument()
     expect(mockViewCounter.getViewCount).toHaveBeenCalledWith('test-post')
@@ -33,7 +33,7 @@ describe('ViewCounter Component', () => {
     mockViewCounter.getViewCount.mockReturnValue(0)
     mockViewCounter.formatViewCount.mockReturnValue('0 views')
 
-    const { container } = render(<ViewCount slug="new-post" />)
+    const { container } = render(<ViewCounter slug="new-post" showIcon={false} />)
 
     // Component should return null for 0 views
     expect(container.firstChild).toBeNull()
@@ -43,7 +43,7 @@ describe('ViewCounter Component', () => {
     mockViewCounter.getViewCount.mockReturnValue(1500)
     mockViewCounter.formatViewCount.mockReturnValue('1.5k views')
 
-    render(<ViewCount slug="popular-post" />)
+    render(<ViewCounter slug="popular-post" showIcon={false} />)
 
     expect(screen.getByText('1.5k views')).toBeInTheDocument()
   })
@@ -52,14 +52,14 @@ describe('ViewCounter Component', () => {
     mockViewCounter.getViewCount.mockReturnValue(3)
     mockViewCounter.formatViewCount.mockReturnValue('3 views')
 
-    const { rerender } = render(<ViewCount slug="test-post" />)
+    const { rerender } = render(<ViewCounter slug="test-post" showIcon={false} />)
     expect(screen.getByText('3 views')).toBeInTheDocument()
 
     // Simulate view count increase
     mockViewCounter.getViewCount.mockReturnValue(4)
     mockViewCounter.formatViewCount.mockReturnValue('4 views')
 
-    rerender(<ViewCount slug="test-post" />)
+    rerender(<ViewCounter slug="test-post" showIcon={false} />)
     expect(screen.getByText('4 views')).toBeInTheDocument()
   })
 
@@ -73,8 +73,8 @@ describe('ViewCounter Component', () => {
 
     const { container } = render(
       <div>
-        <ViewCount slug="post-1" />
-        <ViewCount slug="post-2" />
+        <ViewCounter slug="post-1" showIcon={false} />
+        <ViewCounter slug="post-2" showIcon={false} />
       </div>
     )
 
@@ -88,14 +88,14 @@ describe('ViewCounter Component', () => {
     mockViewCounter.getViewCount.mockReturnValue(1)
     mockViewCounter.formatViewCount.mockReturnValue('1 view')
 
-    render(<ViewCount slug="test-post" />)
+    render(<ViewCounter slug="test-post" showIcon={false} />)
 
     const viewElement = screen.getByText('1 view')
     expect(viewElement.parentElement).toHaveClass('inline-flex', 'items-center', 'gap-1', 'text-sm')
   })
 
   it('should handle empty slug gracefully', () => {
-    const { container } = render(<ViewCount slug="" />)
+    const { container } = render(<ViewCounter slug="" showIcon={false} />)
 
     // Hook should early return for empty slug, so getViewCount is not called
     expect(mockViewCounter.getViewCount).not.toHaveBeenCalled()
@@ -107,7 +107,7 @@ describe('ViewCounter Component', () => {
     mockViewCounter.getViewCount.mockReturnValue(42)
     mockViewCounter.formatViewCount.mockReturnValue('42 views')
 
-    render(<ViewCount slug="test-post" />)
+    render(<ViewCounter slug="test-post" showIcon={false} />)
 
     const viewElement = screen.getByText('42 views')
     expect(viewElement.tagName.toLowerCase()).toBe('span')
@@ -125,18 +125,18 @@ describe('ViewCounter Component', () => {
       mockViewCounter.getViewCount.mockReturnValue(count)
       mockViewCounter.formatViewCount.mockReturnValue(expected)
 
-      const { unmount } = render(<ViewCount slug={`test-${count}`} />)
+      const { unmount } = render(<ViewCounter slug={`test-${count}`} showIcon={false} />)
       expect(screen.getByText(expected)).toBeInTheDocument()
       unmount()
     })
   })
 
-  describe('ViewTracker Component', () => {
+  describe('with recording enabled (former ViewTracker behavior)', () => {
     it('should render with recording enabled', () => {
       mockViewCounter.getViewCount.mockReturnValue(10)
       mockViewCounter.formatViewCount.mockReturnValue('10 views')
 
-      render(<ViewTracker slug="tracker-test" />)
+      render(<ViewCounter slug="tracker-test" shouldRecord />)
 
       expect(screen.getByText('10 views')).toBeInTheDocument()
       // Check for SVG element with eye icon paths
@@ -148,20 +148,10 @@ describe('ViewCounter Component', () => {
       mockViewCounter.getViewCount.mockReturnValue(3)
       mockViewCounter.formatViewCount.mockReturnValue('3 views')
 
-      render(<ViewTracker slug="styled-test" className="custom-class" />)
+      render(<ViewCounter slug="styled-test" className="custom-class" shouldRecord />)
 
       const container = screen.getByText('3 views').closest('span').parentElement
       expect(container).toHaveClass('custom-class')
-    })
-
-    it('should record views by default', () => {
-      mockViewCounter.getViewCount.mockReturnValue(5)
-      mockViewCounter.formatViewCount.mockReturnValue('5 views')
-
-      render(<ViewTracker slug="record-test" />)
-      
-      // ViewTracker should render with shouldRecord=true
-      expect(screen.getByText('5 views')).toBeInTheDocument()
     })
   })
 
