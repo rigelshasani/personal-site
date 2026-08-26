@@ -8,9 +8,23 @@ const SLUG_RE = /^[a-z0-9-]+$/
 const WINDOW_MS = 10 * 60 * 1000
 const MAX_PER_WINDOW = 3
 const ipWindows = new Map<string, number[]>()
+let lastCleanup = Date.now()
+
+// Sweep stale IPs at most once per window instead of on every request,
+// so the map doesn't grow unbounded without needing a background timer.
+function cleanupStaleEntries(now: number) {
+  if (now - lastCleanup < WINDOW_MS) return
+  lastCleanup = now
+  for (const [ip, timestamps] of ipWindows) {
+    if (timestamps.every((t) => now - t >= WINDOW_MS)) {
+      ipWindows.delete(ip)
+    }
+  }
+}
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now()
+  cleanupStaleEntries(now)
   const timestamps = (ipWindows.get(ip) ?? []).filter((t) => now - t < WINDOW_MS)
   if (timestamps.length >= MAX_PER_WINDOW) return true
   ipWindows.set(ip, [...timestamps, now])
