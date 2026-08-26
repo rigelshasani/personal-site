@@ -6,10 +6,15 @@ import { getCommentsDb, createCommentDb } from '@/lib/repos/comments-repo'
 const mockGetComments = getCommentsDb as jest.MockedFunction<typeof getCommentsDb>
 const mockCreateComment = createCommentDb as jest.MockedFunction<typeof createCommentDb>
 
+let ipCounter = 0
 const makeRequest = (method: string, body?: object) =>
   new NextRequest(`http://localhost/api/comments/test-slug`, {
     method,
-    headers: body ? { 'Content-Type': 'application/json' } : {},
+    headers: {
+      ...(body ? { 'Content-Type': 'application/json' } : {}),
+      // Unique IP per request so tests don't share rate-limit buckets
+      'x-forwarded-for': `10.0.0.${++ipCounter}`,
+    },
     body: body ? JSON.stringify(body) : undefined,
   })
 
@@ -104,5 +109,27 @@ describe('POST /api/comments/[slug]', () => {
       makeCtx('test-slug')
     )
     expect(res.status).toBe(500)
+  })
+
+  it('returns 429 when the same IP exceeds 3 comments per window', async () => {
+    const fixedIp = '192.0.2.1'
+    const makeFixedIpRequest = (body: object) =>
+      new NextRequest('http://localhost/api/comments/test-slug', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-forwarded-for': fixedIp },
+        body: JSON.stringify(body),
+      })
+
+    mockCreateComment.mockResolvedValue({
+      id: '1', username: 'User', content: 'Hi', timestamp: new Date().toISOString(),
+    })
+
+    const payload = { username: 'User', content: 'Hi' }
+    await POST(makeFixedIpRequest(payload), makeCtx('test-slug'))
+    await POST(makeFixedIpRequest(payload), makeCtx('test-slug'))
+    await POST(makeFixedIpRequest(payload), makeCtx('test-slug'))
+
+    const res = await POST(makeFixedIpRequest(payload), makeCtx('test-slug'))
+    expect(res.status).toBe(429)
   })
 })
