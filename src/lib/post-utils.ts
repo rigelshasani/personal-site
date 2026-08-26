@@ -54,7 +54,7 @@ export function validatePostData(meta: PostMeta, content: string): void {
   if (!meta.date) throw new Error('Date is required');
   if (!content?.trim()) throw new Error('Content is required');
 
-  const { errors } = validateFrontmatter(meta as Record<string, unknown>, 'post');
+  const { errors } = validateFrontmatter(meta as unknown as Record<string, unknown>, 'post');
   for (const err of errors) {
     if (err.message.startsWith('Invalid date format')) throw new Error('Invalid date format');
     if (err.message === 'Tags must be an array') throw new Error('Tags must be an array');

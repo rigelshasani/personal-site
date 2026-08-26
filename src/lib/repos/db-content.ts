@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/db'
 import type { Post, Project, PostMeta, ProjectMeta } from '@/lib/content'
 import { extractFirstImageUrl } from '@/lib/content-utils'
@@ -109,10 +110,10 @@ export async function dbCreatePost(slug: string, meta: PostMeta, content: string
       description: meta.description,
       date: new Date(meta.date),
       readingTime: calculateReadingTime(content),
-      tags: meta.tags ?? null,
+      tags: meta.tags ?? Prisma.JsonNull,
       projectSlug: meta.project || null,
       order: typeof meta.order === 'number' ? meta.order : null,
-      images: meta.images ?? null,
+      images: meta.images ?? Prisma.JsonNull,
       featured: meta.featured ?? false,
       content,
     },
@@ -129,10 +130,10 @@ export async function dbUpdatePost(slug: string, meta: PostMeta, content: string
       description: meta.description,
       date: new Date(meta.date),
       readingTime: calculateReadingTime(content),
-      tags: meta.tags ?? null,
+      tags: meta.tags ?? Prisma.JsonNull,
       projectSlug: meta.project || null,
       order: typeof meta.order === 'number' ? meta.order : null,
-      images: meta.images ?? null,
+      images: meta.images ?? Prisma.JsonNull,
       featured: meta.featured ?? false,
       content,
     },
