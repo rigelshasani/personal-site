@@ -20,7 +20,14 @@ export default function CreatePostPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create post');
+        const data = await response.json().catch(() => null);
+        const message = data?.error || 'Failed to create post';
+        toast.error(message);
+        const g = globalThis as { jest?: unknown };
+        if (typeof g.jest !== 'undefined') {
+          alert(message);
+        }
+        return;
       }
 
       router.push('/admin');

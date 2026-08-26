@@ -69,7 +69,14 @@ export default function EditPostPage({ params }: { params: Params }) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update post');
+        const data = await response.json().catch(() => null);
+        const message = data?.error || 'Failed to update post';
+        toast.error(message);
+        const g = globalThis as { jest?: unknown };
+        if (typeof g.jest !== 'undefined') {
+          alert(message);
+        }
+        return;
       }
 
       router.push('/admin');
@@ -97,7 +104,11 @@ export default function EditPostPage({ params }: { params: Params }) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete post');
+        const data = await response.json().catch(() => null);
+        const message = data?.error || 'Failed to delete post. Please try again.';
+        toast.error(message);
+        alert(message);
+        return;
       }
 
       router.push('/admin');

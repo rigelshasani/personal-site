@@ -29,6 +29,12 @@ jest.mock('@/components/PostEditor', () => ({
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
+// Mock toast so we can assert on the user-visible error message
+const mockToastError = jest.fn();
+jest.mock('@/components/Toast', () => ({
+  useToast: () => ({ show: jest.fn(), success: jest.fn(), error: mockToastError, info: jest.fn() }),
+}));
+
 describe('Admin Create Post Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -144,6 +150,25 @@ describe('Admin Create Post Page', () => {
 
     // Give some time for the async operation to complete
     await new Promise(resolve => setTimeout(resolve, 100));
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it('should surface the server-provided error message on creation failure', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({ error: 'Post with this slug already exists' }),
+    } as Response);
+
+    render(<CreatePostPage />);
+
+    const saveButton = screen.getByRole('button', { name: 'Save Post' });
+    fireEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith('Post with this slug already exists');
+    });
+
     expect(mockPush).not.toHaveBeenCalled();
   });
 

@@ -52,6 +52,12 @@ jest.mock('@/components/PostEditor', () => ({
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
+// Mock toast so we can assert on the user-visible error message
+const mockToastError = jest.fn();
+jest.mock('@/components/Toast', () => ({
+  useToast: () => ({ show: jest.fn(), success: jest.fn(), error: mockToastError, info: jest.fn() }),
+}));
+
 // Mock window methods
 const mockConfirm = jest.fn();
 const mockAlert = jest.fn();
@@ -253,10 +259,48 @@ describe('Admin Edit Post Page', () => {
     });
 
     const saveButton = screen.getByRole('button', { name: 'Save Changes' });
-    
+
     fireEvent.click(saveButton);
     await new Promise(resolve => setTimeout(resolve, 0));
     // Should not redirect on failure
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it('should surface the server-provided error message on update failure', async () => {
+    const mockPost = {
+      meta: {
+        title: 'Test Post',
+        description: 'Test description',
+        date: '2024-01-01',
+      },
+      content: 'Test content'
+    };
+
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ post: mockPost }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        json: async () => ({ error: 'Post with this slug already exists' }),
+      } as Response);
+
+    const params = Promise.resolve({ slug: 'test-post' });
+    render(<EditPostPage params={params} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1, name: 'Edit Post' })).toBeInTheDocument();
+    });
+
+    const saveButton = screen.getByRole('button', { name: 'Save Changes' });
+    fireEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith('Post with this slug already exists');
+    });
+
     expect(mockPush).not.toHaveBeenCalled();
   });
 
