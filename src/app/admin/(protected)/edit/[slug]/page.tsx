@@ -70,22 +70,13 @@ export default function EditPostPage({ params }: { params: Params }) {
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        const message = data?.error || 'Failed to update post';
-        toast.error(message);
-        const g = globalThis as { jest?: unknown };
-        if (typeof g.jest !== 'undefined') {
-          alert(message);
-        }
+        toast.error(data?.error || 'Failed to update post');
         return;
       }
 
       router.push('/admin');
     } catch {
       toast.error('Failed to update post');
-      const g = globalThis as { jest?: unknown };
-      if (typeof g.jest !== 'undefined') {
-        alert('Failed to update post');
-      }
     }
   };
 
