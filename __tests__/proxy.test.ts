@@ -20,7 +20,7 @@ jest.mock('next/server', () => ({
   },
 }))
 
-describe('Middleware', () => {
+describe('Proxy', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     process.env.ADMIN_GITHUB_LOGINS = 'testadmin,anotheradmin'
@@ -40,7 +40,7 @@ describe('Middleware', () => {
     })
 
     // Import middleware after mocking
-    require('../src/middleware')
+    require('../src/proxy')
 
     // Verify withAuth was called with correct config
     expect(mockWithAuth).toHaveBeenCalled()
@@ -81,7 +81,7 @@ describe('Middleware', () => {
       return fn
     })
 
-    require('../src/middleware')
+    require('../src/proxy')
 
     // Create mock request for admin route
     const mockRequest = {
@@ -104,7 +104,7 @@ describe('Middleware', () => {
       return fn
     })
 
-    require('../src/middleware')
+    require('../src/proxy')
 
     // Create mock request for admin user
     const mockRequest = {
@@ -130,7 +130,7 @@ describe('Middleware', () => {
       return fn
     })
 
-    require('../src/middleware')
+    require('../src/proxy')
 
     const mockRequest = {
       nextUrl: { pathname: '/admin' },
@@ -152,7 +152,7 @@ describe('Middleware', () => {
       return fn
     })
 
-    require('../src/middleware')
+    require('../src/proxy')
 
     const mockRequest = {
       nextUrl: { pathname: '/posts/some-post' },
@@ -168,7 +168,7 @@ describe('Middleware', () => {
   })
 
   it('should have correct matcher config', () => {
-    const middleware = require('../src/middleware')
+    const middleware = require('../src/proxy')
     
     expect(middleware.config).toBeDefined()
     expect(middleware.config.matcher).toEqual(['/admin/:path*', '/api/admin/:path*'])
@@ -182,7 +182,7 @@ describe('Middleware', () => {
       return fn
     })
 
-    require('../src/middleware')
+    require('../src/proxy')
 
     const mockRequest = {
       nextUrl: { pathname: '/api/admin/posts' },
