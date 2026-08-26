@@ -8,12 +8,8 @@ export async function getAdminSession() {
   if (!session?.user?.login) {
     return null;
   }
-  
-  // Check against admin whitelist
-  const adminLogins = process.env.ADMIN_GITHUB_LOGINS?.split(',') || [];
-  const isAdmin = adminLogins.includes(session.user.login);
-  
-  return isAdmin ? session : null;
+
+  return isAdmin(session.user.login) ? session : null;
 }
 
 export async function requireAdmin() {
