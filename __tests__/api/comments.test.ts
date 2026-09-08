@@ -2,9 +2,22 @@ import { NextRequest } from 'next/server'
 import { GET, POST } from '@/app/api/comments/[slug]/route'
 
 jest.mock('@/lib/repos/comments-repo')
-import { getCommentsDb, createCommentDb } from '@/lib/repos/comments-repo'
+import {
+  getCommentsDb,
+  createCommentDb,
+  countRecentCommentsDb,
+} from '@/lib/repos/comments-repo'
 const mockGetComments = getCommentsDb as jest.MockedFunction<typeof getCommentsDb>
 const mockCreateComment = createCommentDb as jest.MockedFunction<typeof createCommentDb>
+const mockCountRecent = countRecentCommentsDb as jest.MockedFunction<
+  typeof countRecentCommentsDb
+>
+
+beforeEach(() => {
+  jest.clearAllMocks()
+  // Default to an uncontended slug; the rate-limit suite overrides this.
+  mockCountRecent.mockResolvedValue(0)
+})
 
 let ipCounter = 0
 const makeRequest = (method: string, body?: object) =>
@@ -131,5 +144,39 @@ describe('POST /api/comments/[slug]', () => {
 
     const res = await POST(makeFixedIpRequest(payload), makeCtx('test-slug'))
     expect(res.status).toBe(429)
+  })
+})
+
+describe('POST /api/comments/[slug] per-slug rate limit', () => {
+  it('rejects once the slug has hit its window ceiling', async () => {
+    // The in-process per-IP counter resets on every serverless cold start, so
+    // this database-backed check is what actually bounds a sustained flood.
+    mockCountRecent.mockResolvedValue(15)
+
+    const res = await POST(
+      makeRequest('POST', { username: 'Someone', content: 'Hello' }),
+      makeCtx('test-slug')
+    )
+
+    expect(res.status).toBe(429)
+    expect(mockCreateComment).not.toHaveBeenCalled()
+  })
+
+  it('allows a comment while the slug is below the ceiling', async () => {
+    mockCountRecent.mockResolvedValue(14)
+    mockCreateComment.mockResolvedValue({
+      id: '1',
+      username: 'Someone',
+      content: 'Hello',
+      timestamp: '2024-01-01T00:00:00.000Z',
+    })
+
+    const res = await POST(
+      makeRequest('POST', { username: 'Someone', content: 'Hello' }),
+      makeCtx('test-slug')
+    )
+
+    expect(res.status).toBe(201)
+    expect(mockCountRecent).toHaveBeenCalledWith('test-slug', expect.any(Date))
   })
 })

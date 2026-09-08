@@ -1,12 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getCommentsDb, createCommentDb } from '@/lib/repos/comments-repo'
+import {
+  getCommentsDb,
+  createCommentDb,
+  countRecentCommentsDb,
+} from '@/lib/repos/comments-repo'
 
 const SLUG_RE = /^[a-z0-9-]+$/
 
-// Allow 3 comments per IP per 10-minute window.
-// In-process only — sufficient for a personal blog on a single serverless instance.
+// Two layers, because neither is sufficient alone:
+//   - per-IP, in-process: cheap and precise, but every serverless cold start
+//     hands the next request an empty map, so it cannot bound a sustained flood.
+//   - per-slug, in the database: survives cold starts and instance fan-out, at
+//     the cost of being coarse — a burst of legitimate discussion on one post
+//     can hit it, so the ceiling is set well above the per-IP allowance.
 const WINDOW_MS = 10 * 60 * 1000
 const MAX_PER_WINDOW = 3
+const MAX_PER_SLUG_PER_WINDOW = 15
 const ipWindows = new Map<string, number[]>()
 let lastCleanup = Date.now()
 
@@ -58,6 +67,18 @@ export async function POST(req: NextRequest, ctx: { params: Promise<Params> }) {
       { error: 'Too many comments. Please wait before posting again.' },
       { status: 429 }
     )
+  }
+
+  try {
+    const recent = await countRecentCommentsDb(slug, new Date(Date.now() - WINDOW_MS))
+    if (recent >= MAX_PER_SLUG_PER_WINDOW) {
+      return NextResponse.json(
+        { error: 'This post is getting a lot of comments. Please try again shortly.' },
+        { status: 429 }
+      )
+    }
+  } catch {
+    return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 })
   }
 
   try {

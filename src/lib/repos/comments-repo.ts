@@ -37,3 +37,17 @@ export async function createCommentDb(
     timestamp: row.timestamp.toISOString(),
   }
 }
+
+export async function countRecentCommentsDb(
+  slug: string,
+  since: Date
+): Promise<number> {
+  return prisma.comment.count({
+    where: { slug, timestamp: { gte: since } },
+  })
+}
+
+export async function deleteCommentDb(id: number): Promise<boolean> {
+  const { count } = await prisma.comment.deleteMany({ where: { id } })
+  return count > 0
+}
