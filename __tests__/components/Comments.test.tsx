@@ -4,6 +4,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useSession } from 'next-auth/react';
 import { Comments } from '@/components/Comments';
 import * as formatModule from '@/lib/format';
 
@@ -229,5 +230,71 @@ describe('Comments Component', () => {
       const commentEl = screen.getByText((_, el) => el?.textContent === 'Line 1\nLine 2\nLine 3');
       expect(commentEl).toHaveClass('whitespace-pre-wrap');
     });
+  });
+});
+
+describe('Comments moderation', () => {
+  const testSlug = 'test-post-slug';
+  const user = userEvent.setup();
+  const comment = {
+    id: '7',
+    username: 'AnonymousReader1',
+    content: 'Spam',
+    timestamp: '2024-01-15T00:00:00.000Z',
+  };
+
+  const asUser = (isAdmin: boolean) =>
+    (useSession as jest.Mock).mockReturnValue({
+      data: { user: { login: 'someone', isAdmin } },
+      status: 'authenticated',
+    });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFormat.formatDate.mockReturnValue('Jan 15, 2024');
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({ success: true, comments: [comment] }),
+    });
+  });
+
+  afterEach(() => {
+    (useSession as jest.Mock).mockReturnValue({ data: null, status: 'loading' });
+  });
+
+  it('hides the delete control from non-admins', async () => {
+    asUser(false);
+    render(<Comments slug={testSlug} />);
+
+    await waitFor(() => expect(screen.getByText('Spam')).toBeInTheDocument());
+    expect(screen.queryByRole('button', { name: /delete comment/i })).not.toBeInTheDocument();
+  });
+
+  it('lets an admin delete a comment and drops it from the list', async () => {
+    asUser(true);
+    render(<Comments slug={testSlug} />);
+
+    await waitFor(() => expect(screen.getByText('Spam')).toBeInTheDocument());
+
+    await user.click(screen.getByRole('button', { name: /delete comment/i }));
+
+    await waitFor(() => expect(screen.queryByText('Spam')).not.toBeInTheDocument());
+    expect(mockFetch).toHaveBeenCalledWith('/api/admin/comments/7', { method: 'DELETE' });
+  });
+
+  it('keeps the comment and surfaces an error when the delete fails', async () => {
+    asUser(true);
+    render(<Comments slug={testSlug} />);
+    await waitFor(() => expect(screen.getByText('Spam')).toBeInTheDocument());
+
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: jest.fn().mockResolvedValue({ error: 'Comment not found' }),
+    });
+
+    await user.click(screen.getByRole('button', { name: /delete comment/i }));
+
+    await waitFor(() => expect(screen.getByText('Comment not found')).toBeInTheDocument());
+    expect(screen.getByText('Spam')).toBeInTheDocument();
   });
 });

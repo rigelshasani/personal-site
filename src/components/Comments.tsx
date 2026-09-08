@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { formatDate } from '@/lib/format';
 
 interface Comment {
@@ -41,6 +42,9 @@ export function Comments({ slug }: CommentsProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { data: session } = useSession();
+  const canModerate = session?.user?.isAdmin === true;
 
   useEffect(() => {
     setIsLoading(true);
@@ -80,6 +84,24 @@ export function Comments({ slug }: CommentsProps) {
       setError('Failed to post comment');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/comments/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setComments((prev) => prev.filter((c) => c.id !== id));
+      } else {
+        const data = await res.json().catch(() => null);
+        setError(data?.error ?? 'Failed to delete comment');
+      }
+    } catch {
+      setError('Failed to delete comment');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -141,6 +163,17 @@ export function Comments({ slug }: CommentsProps) {
                 <span className="text-xs text-mid">
                   {formatDate(comment.timestamp)}
                 </span>
+                {canModerate && (
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(comment.id)}
+                    disabled={deletingId === comment.id}
+                    aria-label={`Delete comment by ${comment.username}`}
+                    className="ml-auto text-xs text-red-500 hover:text-red-700 disabled:opacity-50"
+                  >
+                    {deletingId === comment.id ? 'Deleting...' : 'Delete'}
+                  </button>
+                )}
               </div>
               <p className="text-foreground whitespace-pre-wrap">
                 {comment.content}
