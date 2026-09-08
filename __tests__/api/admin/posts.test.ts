@@ -3,6 +3,7 @@ import { PUT, DELETE } from '@/app/api/admin/posts/[slug]/route'
 import { requireAdmin } from '@/lib/auth'
 import { createPostFile, updatePostFile, deletePostFile, generateSlug } from '@/lib/post-utils'
 import { NextRequest } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 // Mock dependencies
 jest.mock('@/lib/auth')
@@ -13,6 +14,16 @@ const mockCreatePostFile = createPostFile as jest.MockedFunction<typeof createPo
 const mockUpdatePostFile = updatePostFile as jest.MockedFunction<typeof updatePostFile>
 const mockDeletePostFile = deletePostFile as jest.MockedFunction<typeof deletePostFile>
 const mockGenerateSlug = generateSlug as jest.MockedFunction<typeof generateSlug>
+const mockRevalidatePath = revalidatePath as jest.MockedFunction<typeof revalidatePath>
+
+// The public site is statically rendered, so an admin write is only visible
+// once these paths are revalidated.
+function expectSiteRevalidated(slug: string) {
+  const revalidated = mockRevalidatePath.mock.calls.map(([path]) => path)
+  expect(revalidated).toEqual(
+    expect.arrayContaining(['/', '/posts', '/sitemap.xml', `/posts/${slug}`])
+  )
+}
 
 describe('/api/admin/posts', () => {
   beforeEach(() => {
@@ -51,6 +62,7 @@ describe('/api/admin/posts', () => {
         validPostData.meta,
         validPostData.content
       )
+      expectSiteRevalidated('test-post')
     })
 
     it('should return 401 for non-admin user', async () => {
@@ -138,6 +150,7 @@ describe('/api/admin/posts', () => {
         validPostData.meta,
         validPostData.content
       )
+      expectSiteRevalidated('test-post')
     })
 
     it('should return 401 for non-admin user', async () => {
@@ -193,6 +206,7 @@ describe('/api/admin/posts', () => {
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
       expect(mockDeletePostFile).toHaveBeenCalledWith('test-post')
+      expectSiteRevalidated('test-post')
     })
 
     it('should return 401 for non-admin user', async () => {

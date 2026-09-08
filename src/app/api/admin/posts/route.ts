@@ -4,6 +4,7 @@ import { PostMeta } from '@/lib/content';
 import { createPostFile, generateSlug, validatePostData } from '@/lib/post-utils';
 import { shouldUseDb, createPost as createPostDb } from '@/lib/content-service';
 import { getAllPosts } from '@/lib/content-gateway';
+import { revalidatePostPaths } from '@/lib/revalidate';
 
 export async function GET() {
   try {
@@ -50,6 +51,7 @@ export async function POST(request: NextRequest) {
       // Create the post file
       createPostFile(slug, meta, content);
     }
+    revalidatePostPaths(slug);
     return NextResponse.json({ success: true, slug, message: 'Post created successfully' });
     
   } catch (error) {

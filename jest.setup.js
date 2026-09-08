@@ -24,6 +24,13 @@ jest.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 
+// revalidatePath() only runs inside a Next.js request context, and the API route
+// tests invoke the handlers directly, so stub the cache module.
+jest.mock('next/cache', () => ({
+  revalidatePath: jest.fn(),
+  revalidateTag: jest.fn(),
+}))
+
 // Mock Monaco editor
 jest.mock('@monaco-editor/react', () => ({
   __esModule: true,

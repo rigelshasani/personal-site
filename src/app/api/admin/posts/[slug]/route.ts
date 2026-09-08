@@ -4,6 +4,7 @@ import { PostMeta } from '@/lib/content';
 import { updatePostFile, deletePostFile, validatePostData } from '@/lib/post-utils';
 import { shouldUseDb, updatePost as updatePostDb, deletePost as deletePostDb } from '@/lib/content-service';
 import { getPost } from '@/lib/content-gateway';
+import { revalidatePostPaths } from '@/lib/revalidate';
 
 const SLUG_RE = /^[a-z0-9-]+$/
 
@@ -47,7 +48,9 @@ export async function PUT(request: NextRequest, context: RouteContext) {
       // Update the post file
       updatePostFile(slug, meta, content);
     }
-    
+
+    revalidatePostPaths(slug);
+
     return NextResponse.json({ 
       success: true, 
       message: 'Post updated successfully' 
@@ -86,7 +89,9 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       // Delete the post file
       deletePostFile(slug);
     }
-    
+
+    revalidatePostPaths(slug);
+
     return NextResponse.json({ 
       success: true, 
       message: 'Post deleted successfully' 
