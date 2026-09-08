@@ -13,10 +13,12 @@ jest.mock('next-auth/middleware', () => ({
 // Mock NextResponse 
 const mockRedirect = jest.fn()
 const mockNext = jest.fn()
+const mockJson = jest.fn()
 jest.mock('next/server', () => ({
   NextResponse: {
     redirect: mockRedirect,
     next: mockNext,
+    json: mockJson,
   },
 }))
 
@@ -64,6 +66,14 @@ describe('Proxy', () => {
       req: { nextUrl: { pathname: '/admin' } }
     })
     expect(adminNoTokenResult).toBe(false)
+
+    // API routes pass through so the middleware body can answer with a 401
+    // instead of next-auth redirecting to the HTML sign-in page.
+    const apiNoTokenResult = authorizedCallback({
+      token: null,
+      req: { nextUrl: { pathname: '/api/admin/posts' } }
+    })
+    expect(apiNoTokenResult).toBe(true)
     
     // Test admin route with valid token - should allow
     const adminWithTokenResult = authorizedCallback({
@@ -174,7 +184,7 @@ describe('Proxy', () => {
     expect(middleware.config.matcher).toEqual(['/admin/:path*', '/api/admin/:path*'])
   })
 
-  it('should handle API admin routes', async () => {
+  it('should return 401 JSON for non-admin API requests', async () => {
     let middlewareFunction: any
 
     mockWithAuth.mockImplementation((fn) => {
@@ -190,9 +200,32 @@ describe('Proxy', () => {
       url: 'http://localhost:3000/api/admin/posts'
     } as any
 
-    // Should redirect non-admin users from API routes
-    const result = middlewareFunction(mockRequest)
+    middlewareFunction(mockRequest)
 
-    expect(mockRedirect).toHaveBeenCalledWith(new URL('/admin/login', mockRequest.url))
+    // A redirect here would hand the caller an HTML sign-in page to parse as JSON.
+    expect(mockJson).toHaveBeenCalledWith({ error: 'Unauthorized' }, { status: 401 })
+    expect(mockRedirect).not.toHaveBeenCalled()
+  })
+
+  it('should let admin users through to API routes', async () => {
+    let middlewareFunction: any
+
+    mockWithAuth.mockImplementation((fn) => {
+      middlewareFunction = fn
+      return fn
+    })
+
+    require('../src/proxy')
+
+    const mockRequest = {
+      nextUrl: { pathname: '/api/admin/posts' },
+      nextauth: { token: { login: 'testadmin' } },
+      url: 'http://localhost:3000/api/admin/posts'
+    } as any
+
+    middlewareFunction(mockRequest)
+
+    expect(mockNext).toHaveBeenCalled()
+    expect(mockJson).not.toHaveBeenCalled()
   })
 })

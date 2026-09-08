@@ -2,6 +2,9 @@ import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
 import { isAdmin } from "@/lib/auth"
 
+const isApiAdminPath = (pathname: string) => pathname.startsWith('/api/admin')
+const isAdminPath = (pathname: string) => pathname.startsWith('/admin')
+
 export default withAuth(
   function middleware(req) {
     const pathname = req.nextUrl.pathname
@@ -9,14 +12,20 @@ export default withAuth(
     if (pathname === '/admin/login') {
       return NextResponse.next()
     }
-    // Check if user is trying to access admin routes
-    if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
-      const userLogin = req.nextauth.token?.login;
 
-      // If not an admin, redirect to the login page
-      if (!isAdmin(typeof userLogin === 'string' ? userLogin : undefined)) {
-        return NextResponse.redirect(new URL('/admin/login', req.url));
-      }
+    const userLogin = req.nextauth.token?.login
+    const authorized = isAdmin(typeof userLogin === 'string' ? userLogin : undefined)
+
+    // An expired session in an open editor tab would otherwise follow the
+    // redirect and try to parse the sign-in page as JSON.
+    if (isApiAdminPath(pathname)) {
+      return authorized
+        ? NextResponse.next()
+        : NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    if (isAdminPath(pathname) && !authorized) {
+      return NextResponse.redirect(new URL('/admin/login', req.url));
     }
 
     return NextResponse.next();
@@ -24,11 +33,17 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // Require auth for admin routes
-        if (req.nextUrl.pathname === '/admin/login') {
+        const pathname = req.nextUrl.pathname
+        if (pathname === '/admin/login') {
           return true
         }
-        if (req.nextUrl.pathname.startsWith('/admin') || req.nextUrl.pathname.startsWith('/api/admin')) {
+        // Handled in the middleware body so the response is a 401 rather than
+        // next-auth's redirect to the sign-in page.
+        if (isApiAdminPath(pathname)) {
+          return true
+        }
+        // Require auth for admin pages
+        if (isAdminPath(pathname)) {
           return !!token;
         }
         return true;
