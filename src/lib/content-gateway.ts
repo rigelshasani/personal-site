@@ -2,7 +2,10 @@ import type { Post, Project } from '@/lib/content'
 import { dbGetAllPosts, dbGetAllProjects, dbGetPost, dbGetProject } from '@/lib/repos/db-content'
 import * as fsContent from '@/lib/content'
 
-const USE_DB = (process.env.CONTENT_BACKEND || '').toLowerCase() === 'db'
+// Database-backed content is the production default: the filesystem backend
+// writes MDX files to disk, which no serverless host persists. Opt out with
+// CONTENT_BACKEND=fs for local work against src/content.
+const USE_DB = (process.env.CONTENT_BACKEND || 'db').toLowerCase() === 'db'
 
 export async function getAllPosts(): Promise<Post[]> {
   if (USE_DB) return dbGetAllPosts()

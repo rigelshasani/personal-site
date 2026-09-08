@@ -44,6 +44,9 @@ jest.mock('@monaco-editor/react', () => ({
 }))
 
 // Mock environment variables
+// The content backend defaults to 'db'; these suites exercise the filesystem
+// backend against src/content, so pin it explicitly.
+process.env.CONTENT_BACKEND = 'fs'
 process.env.ADMIN_GITHUB_LOGINS = 'testadmin'
 process.env.NEXTAUTH_SECRET = 'test-secret'
 process.env.GITHUB_ID = 'test-github-id'
