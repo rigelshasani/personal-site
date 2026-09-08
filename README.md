@@ -44,7 +44,14 @@ pnpm install
 
 ### Environment Variables
 
-Create a `.env.local` file:
+Copy `.env.example` to `.env.local` and fill it in — that file is the
+authoritative list and is kept in sync with the code:
+
+```bash
+cp .env.example .env.local
+```
+
+For reference:
 
 ```bash
 # NextAuth
@@ -61,10 +68,10 @@ ADMIN_GITHUB_LOGINS=yourusername
 
 # Neon PostgreSQL
 DATABASE_URL=postgresql://<pooled-connection-string>
-MIGRATE_DATABASE_URL=postgresql://<direct-connection-string>
+SHADOW_DATABASE_URL=postgresql://<direct-connection-string>
 
-# Content backend: "db" or "fs"
-CONTENT_BACKEND=db
+# Content backend — defaults to "db"; set "fs" to use the MDX files in src/content
+# CONTENT_BACKEND=db
 
 # Your production domain (used for sitemap and OG tags)
 NEXT_PUBLIC_SITE_URL=https://yourdomain.com
@@ -200,14 +207,36 @@ Visit `/admin/login` and sign in with GitHub. Your username must be listed in `A
 
 ## Deployment
 
-Deployed on Vercel. Set all environment variables from `.env.local` in the Vercel dashboard under **Project → Settings → Environment Variables**.
+Deployed on Vercel. First-deploy checklist:
 
-For the production GitHub OAuth app, set the callback URL to:
-```
-https://yourdomain.com/api/auth/callback/github
-```
+1. **Create a second GitHub OAuth app** for production. An OAuth app has exactly
+   one callback URL, so the local app cannot be reused:
+   ```
+   https://yourdomain.com/api/auth/callback/github
+   ```
+2. **Set every variable in `.env.example`** under **Project → Settings →
+   Environment Variables**, with production values:
+   - `NEXTAUTH_URL` and `NEXT_PUBLIC_SITE_URL` must be the real origin.
+     `NEXT_PUBLIC_SITE_URL` is baked in at build time, so changing it needs a
+     redeploy; leaving it unset falls back to `https://rigels.dev`.
+   - `GITHUB_ID` / `GITHUB_SECRET` come from the production OAuth app.
+   - `ADMIN_GITHUB_LOGINS` gates `/admin`. If it is empty, nobody can log in.
+   - `DATABASE_URL` is the pooled Neon string.
+3. **Run migrations against the production database** before the first deploy.
+   Prisma reads `DATABASE_URL` for migrations, and pooled connections do not
+   work, so point it at the direct Neon URL for the command:
+   ```bash
+   DATABASE_URL=<direct-url> pnpm prisma migrate deploy
+   ```
+4. Deploy. `postinstall` runs `prisma generate` during the build.
 
-The `postinstall` script runs `prisma generate` automatically during Vercel builds.
+The build reads content from the database, so `DATABASE_URL` must be reachable
+from the build environment as well as at runtime.
+
+### Publishing
+
+Posts written in the admin editor are saved to the database and the affected
+pages are revalidated immediately — no redeploy is needed to publish.
 
 ## Troubleshooting
 
