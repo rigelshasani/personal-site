@@ -1,6 +1,7 @@
 import { getAllPosts, getAllProjects } from '@/lib/content-gateway';
+import { getSiteUrl } from '@/lib/site-url';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://rigels.dev';
+const BASE_URL = getSiteUrl();
 
 export default async function sitemap() {
   const [posts, projects] = await Promise.all([getAllPosts(), getAllProjects()]);

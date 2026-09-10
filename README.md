@@ -218,7 +218,7 @@ Deployed on Vercel. First-deploy checklist:
    Environment Variables**, with production values:
    - `NEXTAUTH_URL` and `NEXT_PUBLIC_SITE_URL` must be the real origin.
      `NEXT_PUBLIC_SITE_URL` is baked in at build time, so changing it needs a
-     redeploy; leaving it unset falls back to `https://rigels.dev`.
+     redeploy; unset, it falls back to Vercel's own production hostname.
    - `GITHUB_ID` / `GITHUB_SECRET` come from the production OAuth app.
    - `ADMIN_GITHUB_LOGINS` gates `/admin`. If it is empty, nobody can log in.
    - `DATABASE_URL` is the pooled Neon string.

@@ -2,13 +2,14 @@
 import "@/styles/global.css";
 import { bellota } from "@/fonts";
 import type { Metadata } from "next";
+import { getSiteUrl } from "@/lib/site-url";
 import { DevToolbar } from "@/components/DevToolbar";
 import { SessionProvider } from "@/components/SessionProvider";
 import { AdminLoginButton } from "@/components/AdminLoginButton";
 import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://rigels.dev'),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: "Rigels · Thoughts & Analytics",
     template: "%s · Rigels",
